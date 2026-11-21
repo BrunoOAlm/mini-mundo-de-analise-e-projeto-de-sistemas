@@ -1217,6 +1217,297 @@ body.is-admin .chat-fab, body.is-admin .chat { display: none; }
   .how-media { border-radius: 20px; }
 }
 
+/* ===== v3: navegação clara, destinos, avaliações, rodapé, páginas internas e movimento ===== */
+:root { --ease-out: cubic-bezier(.16, 1, .3, 1); }
+html.has-smooth { scroll-behavior: auto; }
+body:not(.is-admin) { background: #fff; --c-primary: #111; --c-primary-hover: #2a2a2a; --c-surface-contrast: #111; --c-surface-contrast-hover: #2a2a2a; --c-on-accent: #111; }
+body:not(.is-admin) .hero { position: relative; isolation: isolate; width: min(1272px, calc(100% - 32px)); margin: 28px auto 0; padding: 44px 0 48px; border-radius: 28px; overflow: hidden; background: #16210f url("media/hero-poster.jpg") center 62% / cover; }
+body:not(.is-admin) .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.32) 55%, rgba(0,0,0,.52)); }
+body:not(.is-admin) .hero h1 { font-size: clamp(30px, 3vw, 44px); line-height: 1.1; font-weight: 500; letter-spacing: -0.025em; text-shadow: 0 6px 24px rgba(0,0,0,.4); }
+body:not(.is-admin) .hero .search-card { border-radius: 22px; box-shadow: 0 34px 60px -34px rgba(0,0,0,.7); }
+body:not(.is-admin) .seg { border-radius: 999px; }
+body:not(.is-admin) .seg__opt span { border-radius: 999px; }
+.how + .container > .sx:first-child { margin-top: 48px; }
+.sx-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.sx-btn { transition: background-color .3s var(--ease-out), transform .6s var(--ease-out), box-shadow .6s var(--ease-out); }
+.sx-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -14px rgba(230, 160, 0, .9); }
+.sx-btn--dark:hover { box-shadow: 0 14px 26px -14px rgba(0, 0, 0, .7); }
+.sx-btn--line { background: #fff; box-shadow: inset 0 0 0 1.5px #111; }
+.sx-btn--line:hover { background: #111; color: #fff; box-shadow: inset 0 0 0 1.5px #111, 0 14px 26px -14px rgba(0, 0, 0, .6); }
+
+/* Barra de navegação: links em pílula, menu do celular, versão clara fixa nas páginas internas */
+.vnav__links { gap: 6px; }
+.vnav__links a { padding: 9px 16px; border-radius: 999px; transition: background-color .35s var(--ease-out), opacity .35s var(--ease-out); }
+.vnav__links a:hover { text-decoration: none; background: rgba(255,255,255,.14); }
+.vnav__links a[aria-current="page"] { background: rgba(255,255,255,.2); opacity: 1; }
+.vnav__cta { transition: background-color .3s var(--ease-out), transform .5s var(--ease-out); }
+.vnav__cta:hover { transform: translateY(-1px); }
+.vnav__burger { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -6px; border: 0; border-radius: 50%; background: transparent; color: #fff; }
+.vnav__burger svg { width: 24px; height: 24px; }
+.vnav__burger:hover { background: rgba(255,255,255,.14); }
+.vnav__menu { position: absolute; left: 0; right: 0; top: calc(100% + 10px); z-index: 6; display: grid; gap: 2px; padding: 10px; border-radius: 24px; animation: menuIn .5s var(--ease-out) both; }
+.vnav__menu[hidden] { display: none; }
+.vnav__menu a { padding: 13px 16px; border-radius: 16px; color: #fff; font-size: 16px; font-weight: 500; text-decoration: none; }
+.vnav__menu a:hover, .vnav__menu a[aria-current="page"] { background: rgba(255,255,255,.14); }
+@keyframes menuIn { from { opacity: 0; translate: 0 -8px; } to { opacity: 1; translate: none; } }
+.vnav-wrap--light { position: sticky; top: 12px; z-index: 60; margin-top: 16px; }
+.vnav-wrap--light .glass-halo { display: none; }
+.vnav-wrap--light > .glass { background: rgba(255,255,255,.72); border-color: rgba(17,17,17,.07); box-shadow: 0 12px 34px -14px rgba(17,17,17,.18), 0 1px 2px rgba(17,17,17,.05); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); transition: background-color .5s var(--ease-out), box-shadow .6s var(--ease-out); }
+.vnav-wrap--light.is-scrolled > .glass { background: rgba(255,255,255,.86); box-shadow: 0 20px 44px -16px rgba(17,17,17,.24), 0 1px 2px rgba(17,17,17,.06); }
+.vnav-wrap--light .vnav__logo, .vnav-wrap--light .vnav__links a, .vnav-wrap--light .vnav__mine, .vnav-wrap--light .vnav__lang > summary, .vnav-wrap--light .vnav__burger, .vnav-wrap--light .vnav__menu a { color: #111; }
+.vnav-wrap--light .vnav__links a:hover, .vnav-wrap--light .vnav__burger:hover, .vnav-wrap--light .vnav__menu a:hover { background: rgba(17,17,17,.06); }
+.vnav-wrap--light .vnav__links a[aria-current="page"], .vnav-wrap--light .vnav__menu a[aria-current="page"] { background: #111; color: #fff; }
+.vnav-wrap--light .vnav__lang-panel, .vnav-wrap--light .vnav__menu { background: rgba(255,255,255,.96); border-color: rgba(17,17,17,.08); box-shadow: 0 18px 40px -12px rgba(17,17,17,.22); }
+.vnav-wrap--light :focus-visible { outline-color: #111; }
+body:not(.is-admin):not(.is-home) .demo-bar { position: relative; z-index: 61; }
+
+/* Destinos */
+.city-track { grid-auto-columns: calc((100% - 4 * 18px) / 5); gap: 18px; padding: 4px 2px 14px; margin: -4px -2px -14px; }
+.city-card { position: relative; isolation: isolate; aspect-ratio: 3 / 4; border-radius: 20px; box-shadow: none; background: #1b2414; color: #fff;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 1s var(--ease-out), box-shadow .8s var(--ease-out); }
+.city-card.is-tilting { transition: transform .2s ease-out, box-shadow .8s var(--ease-out); }
+.city-card:hover { box-shadow: 0 30px 50px -26px rgba(17,17,17,.55); }
+.city-card .city-card__img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; transition: transform 1.4s var(--ease-out); }
+.city-card:hover .city-card__img { transform: scale(1.08); }
+.city-card::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,.72) 100%); }
+.city-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.22), transparent 45%); opacity: 0; transition: opacity .6s var(--ease-out); }
+.city-card:hover::after { opacity: 1; }
+.city-card__body { margin-top: auto; padding: 20px; }
+.city-card__name { font-size: 20px; line-height: 1.2; font-weight: 600; letter-spacing: -0.01em; color: #fff; }
+.city-card__meta { margin-top: 4px; color: rgba(255,255,255,.82); font-size: 13px; }
+
+/* Avaliações */
+.rvw { overflow-x: clip; overflow-clip-margin: 24px; }
+.rvw-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 56px; }
+.rvw-title { line-height: 1.14; }
+.rvw-l2 { display: block; }
+.rvw-l1 { display: flex !important; align-items: center; flex-wrap: wrap; gap: 4px 20px; }
+.rvw-crowd { display: inline-flex; align-items: center; gap: 10px; }
+.rvw-avs { display: inline-flex; align-items: center; }
+.rvw-av { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 42px; height: 42px; margin-left: -10px; border-radius: 50%; border: 2.5px solid #fff; color: #fff; font-size: 12px; font-weight: 600; letter-spacing: 0; line-height: 1; box-shadow: 0 4px 10px -4px rgba(0,0,0,.3); }
+.rvw-avs .rvw-av:first-child { margin-left: 0; }
+.rvw-av--plus { background: #111; font-size: 22px; font-weight: 400; }
+.rvw-num { color: var(--c-text); font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+.rvw-side { max-width: 300px; margin-bottom: 8px; color: #6b7076; font-size: 15px; line-height: 1.6; }
+.rvw-body { position: relative; display: grid; grid-template-columns: minmax(110px, .55fr) minmax(0, 600px) minmax(0, 1fr); align-items: center; gap: 32px; padding-bottom: 8px; outline: none; }
+.rvw-body:focus-visible .rvw-card.is-on { box-shadow: 0 0 0 3px rgba(255,194,26,.6); }
+.rvw-count { color: #c3c6ca; font-size: 15px; font-weight: 500; }
+.rvw-cur { display: inline-block; min-width: 1.3em; color: var(--c-accent); font-size: 30px; font-weight: 500; letter-spacing: -0.02em; }
+.rvw-cur.is-tick { animation: tick .7s var(--ease-out); }
+@keyframes tick { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: none; } }
+.rvw-stage { display: grid; }
+.rvw-card { grid-area: 1 / 1; margin: 0; padding: 30px 32px 28px; border-radius: 18px; background: #fffbe6; border: 1px solid #f6ecc4; box-shadow: 0 30px 60px -36px rgba(130, 96, 0, .45);
+  opacity: 0; visibility: hidden; translate: 48px 0; scale: .97; filter: blur(8px);
+  transition: opacity .7s var(--ease-out), translate 1s var(--ease-out), scale 1s var(--ease-out), filter .7s var(--ease-out), visibility 0s linear 1s; }
+.rvw-card.is-on { opacity: 1; visibility: visible; translate: none; scale: 1; filter: none; transition: opacity .8s var(--ease-out) .1s, translate 1.1s var(--ease-out) .1s, scale 1.1s var(--ease-out) .1s, filter .8s var(--ease-out) .1s, visibility 0s; }
+.rvw-card.is-out { translate: -48px 0; }
+.rvw-stars { position: relative; display: inline-flex; }
+.rvw-stars__base, .rvw-stars__fill { display: flex; gap: 3px; white-space: nowrap; }
+.rvw-stars__base { color: #eadfb8; }
+.rvw-stars__fill { position: absolute; left: 0; top: 0; overflow: hidden; color: var(--c-accent); }
+.rvw-stars svg { width: 19px; height: 19px; flex-shrink: 0; }
+.rvw-quote { margin: 16px 0 0; color: #3f4248; font-size: 17px; line-height: 1.68; }
+.rvw-author { display: flex; align-items: center; gap: 12px; margin-top: 22px; }
+.rvw-author .rvw-av { width: 46px; height: 46px; margin: 0; border: 0; font-size: 15px; }
+.rvw-author b { display: block; color: var(--c-text); font-size: 16px; font-weight: 600; }
+.rvw-author small { display: block; margin-top: 2px; color: #8a8f95; font-size: 12px; }
+.rvw-ctrl { align-self: stretch; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+.rvw-dots { display: flex; gap: 7px; }
+.rvw-dot { position: relative; width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px; background: #e6e6e6; transition: width .6s var(--ease-out), background-color .4s var(--ease-out); }
+.rvw-dot::after { content: ""; position: absolute; inset: -9px -4px; }
+.rvw-dot:hover { background: #d4d4d4; }
+.rvw-dot.is-on { width: 30px; background: var(--c-accent); }
+.rvw-btns { position: absolute; right: 0; bottom: 0; display: flex; gap: 12px; }
+.rvw-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 46px; height: 46px; padding: 0; border-radius: 50%; border: 1.5px solid var(--c-accent); background: #fff; color: #111; transition: transform .6s var(--ease-out), background-color .3s var(--ease-out), box-shadow .6s var(--ease-out); }
+.rvw-btn svg { width: 18px; height: 18px; transition: transform .6s var(--ease-out); }
+.rvw-btn:hover { background: #fff7da; transform: translateY(-2px); }
+.rvw-btn:hover svg { transform: translateX(-2px); }
+.rvw-btn--next { background: var(--c-accent); }
+.rvw-btn--next:hover { background: var(--c-accent-hover); box-shadow: 0 14px 26px -14px rgba(230,160,0,.9); }
+.rvw-btn--next:hover svg { transform: translateX(2px); }
+.rvw-note { grid-column: 2; margin-top: -14px; }
+
+/* Perguntas frequentes */
+body:not(.is-admin) .faq { gap: 0 48px; }
+body:not(.is-admin) .faq__item { border-bottom: 1px solid #ececec; }
+body:not(.is-admin) .faq__q { padding: 22px 0; font-size: 17px; line-height: 1.4; transition: color .3s var(--ease-out); }
+body:not(.is-admin) .faq__q:hover { color: #000; }
+body:not(.is-admin) .faq__q svg { width: 32px; height: 32px; padding: 8px; border-radius: 50%; background: #f3f3f3; transition: transform .7s var(--ease-out), background-color .35s var(--ease-out); }
+body:not(.is-admin) .faq__q:hover svg { background: #ebebeb; }
+body:not(.is-admin) .faq__q[aria-expanded="true"] svg { background: var(--c-accent); }
+body:not(.is-admin) .faq__a { padding-bottom: 22px; color: #5d6168; }
+.faq__a:not([hidden]) { animation: abre .6s var(--ease-out); }
+@keyframes abre { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: none; } }
+
+/* Rodapé claro */
+.ft { margin-top: 120px; padding: 52px 0 28px; border-top: 1px solid #efefef; background: #fafafa; color: var(--c-text); }
+.ft :focus-visible { outline: 2px solid #111; outline-offset: 2px; }
+.ft-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; }
+.ft-logo { display: inline-flex; align-items: center; gap: 10px; color: #111; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; text-decoration: none; }
+.ft-logo svg { width: 34px; height: 34px; color: var(--c-accent); }
+.ft-nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.ft-nav a { padding: 8px 15px; border-radius: 999px; color: #5a5e64; font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color .35s var(--ease-out), color .35s var(--ease-out); }
+.ft-nav a:hover { color: #111; background: #efefef; }
+.ft-nav a[aria-current="page"] { color: #111; background: #ececec; font-weight: 600; }
+.ft-mid { display: grid; grid-template-columns: minmax(0, 1.15fr) auto minmax(0, 1fr); align-items: end; gap: 40px; margin-top: 52px; }
+.ft-h { color: #111; font-size: clamp(26px, 2.4vw, 34px); line-height: 1.15; font-weight: 500; letter-spacing: -0.02em; }
+.ft-news .ft-h { max-width: 9.5em; }
+.ft-news__sub { margin-top: 10px; color: #6b7076; font-size: 14px; }
+.ft-news__box { display: flex; align-items: center; gap: 8px; max-width: 430px; margin-top: 20px; padding: 6px 6px 6px 18px; border-radius: 12px; background: #fff; box-shadow: 0 14px 32px -16px rgba(17,17,17,.22), 0 0 0 1px rgba(17,17,17,.05); transition: box-shadow .5s var(--ease-out); }
+.ft-news__box:focus-within { box-shadow: 0 18px 38px -16px rgba(17,17,17,.28), 0 0 0 2px var(--c-accent); }
+.ft-news__box .fld { flex: 1; min-width: 0; }
+.ft-news__box input { width: 100%; height: 42px; border: 0; outline: 0; background: transparent; color: #111; font-size: 14px; }
+.ft-news__box .err { position: absolute; margin-top: 52px; }
+.ft-news__btn { flex-shrink: 0; height: 42px; padding: 0 22px; border: 0; border-radius: 9px; background: var(--c-accent); color: #111; font-size: 14px; font-weight: 600; box-shadow: 0 8px 18px -8px rgba(230,160,0,.9); transition: background-color .3s var(--ease-out), transform .5s var(--ease-out); }
+.ft-news__btn:hover { background: var(--c-accent-hover); transform: translateY(-1px); }
+.ft-news__cancel { margin-top: 12px; padding: 0; border: 0; background: none; color: #8a8f95; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.ft-news__cancel:hover { color: #111; }
+.ft-social { display: flex; gap: 10px; list-style: none; margin-bottom: 6px; padding: 8px; border-radius: 16px; background: #fff8df; }
+.ft-soc { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; padding: 0; border-radius: 11px; border: 2px solid #ffd862; background: #fff; color: #111; transition: transform .6s var(--ease-out), background-color .3s var(--ease-out), border-color .3s var(--ease-out); }
+.ft-soc svg { width: 18px; height: 18px; }
+.ft-soc:hover { transform: translateY(-3px); background: var(--c-accent); border-color: var(--c-accent); }
+.ft-contact { justify-self: end; }
+.ft-contact ul { list-style: none; display: grid; gap: 12px; margin-top: 18px; color: #4b4f55; font-size: 14px; }
+.ft-contact li { display: flex; align-items: center; gap: 10px; }
+.ft-contact svg { width: 18px; height: 18px; flex-shrink: 0; color: #111; }
+.ft-contact a, .ft-contact button { padding: 0; border: 0; background: none; color: inherit; font-size: 14px; text-decoration: none; }
+.ft-contact a:hover, .ft-contact button:hover { color: #111; text-decoration: underline; text-underline-offset: 3px; }
+.ft-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 28px; margin-top: 52px; padding-top: 22px; border-top: 1px solid #ececec; color: #7a7f85; font-size: 13px; }
+.ft-scam { display: inline-flex; align-items: center; gap: 8px; }
+.ft-scam svg { color: #d99a00; }
+.ft-bottom nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.ft-bottom a { color: inherit; text-decoration: none; transition: color .3s var(--ease-out); }
+.ft-bottom a:hover { color: #111; }
+body.is-home .ft, body:not(.is-admin) .ft { margin-top: 120px; }
+
+/* Páginas internas no mesmo estilo da home */
+body:not(.is-admin):not(.is-home) { background: radial-gradient(1000px 460px at 8% 0, rgba(255,210,80,.20), rgba(255,255,255,0) 70%) no-repeat, #fff; }
+body:not(.is-admin) .page > h1.t-h2 { margin-top: 16px; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.08; font-weight: 500; letter-spacing: -0.025em; }
+.svc-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+.svc-pills a { padding: 9px 16px; border-radius: 999px; border: 1px solid #e4e4e4; background: #fff; color: #33363b; font-size: 14px; font-weight: 500; text-decoration: none; transition: background-color .35s var(--ease-out), color .35s var(--ease-out), border-color .35s var(--ease-out); }
+.svc-pills a:hover { background: #f4f4f4; }
+.svc-pills a[aria-current="page"] { background: #111; border-color: #111; color: #fff; }
+body:not(.is-admin) .group-card { border-radius: 16px; border: 1px solid #ececec; box-shadow: none; transition: border-color .5s var(--ease-out), box-shadow .8s var(--ease-out), transform .8s var(--ease-out); }
+body:not(.is-admin) .group-card:hover { border-color: #e0e0e0; box-shadow: 0 26px 50px -30px rgba(17,17,17,.3); transform: translateY(-4px); }
+body:not(.is-admin) .group-card img { transition: transform 1s var(--ease-out); }
+body:not(.is-admin) .group-card:hover img { transform: translateX(6px) scale(1.05); }
+body:not(.is-admin) .badge { border-radius: 999px; padding-left: 10px; padding-right: 10px; }
+body:not(.is-admin) .page { padding-top: 56px; padding-bottom: 8px; }
+body:not(.is-admin) .page-head { align-items: flex-end; margin-bottom: 36px; }
+body:not(.is-admin) .page-head .eyebrow + * { margin-top: 16px; }
+body:not(.is-admin) .page-head h1, body:not(.is-admin) .page-head .t-h2 { font-size: clamp(32px, 3.4vw, 48px); line-height: 1.08; font-weight: 500; letter-spacing: -0.025em; }
+body:not(.is-admin) .page-head .t-h3 { font-size: clamp(24px, 2.2vw, 32px); line-height: 1.15; font-weight: 500; letter-spacing: -0.02em; }
+body:not(.is-admin) .page-head p { max-width: 700px; margin-top: 12px; color: #6b7076; font-size: 16px; line-height: 1.55; }
+body:not(.is-admin) .box { padding: 26px; border-radius: 20px; border: 1px solid #ececec; box-shadow: none; transition: border-color .5s var(--ease-out), box-shadow .8s var(--ease-out); }
+body:not(.is-admin) .box .box { border-radius: 16px; }
+body:not(.is-admin) .box h3 { font-size: 20px; line-height: 1.3; font-weight: 500; letter-spacing: -0.01em; }
+body:not(.is-admin) .card, body:not(.is-admin) .veh, body:not(.is-admin) .fleet-card { border-radius: 18px; border: 1px solid #ececec; box-shadow: none; transition: border-color .5s var(--ease-out), box-shadow .8s var(--ease-out), transform .8s var(--ease-out); }
+body:not(.is-admin) .card:hover, body:not(.is-admin) .veh:hover, body:not(.is-admin) .fleet-card:hover { border-color: #e0e0e0; box-shadow: 0 26px 50px -30px rgba(17,17,17,.3); transform: translateY(-4px); }
+body:not(.is-admin) .veh--rec { border-color: var(--c-accent); box-shadow: 0 0 0 1px var(--c-accent); }
+body:not(.is-admin) .veh__img, body:not(.is-admin) .card img { transition: transform 1s var(--ease-out); }
+body:not(.is-admin) .veh:hover .veh__img, body:not(.is-admin) .card:hover img { transform: scale(1.04); }
+body:not(.is-admin) .btn { border-radius: 10px; transition: background-color .3s var(--ease-out), box-shadow .5s var(--ease-out), color .3s var(--ease-out), transform .5s var(--ease-out); }
+body:not(.is-admin) .btn--primary { background: var(--c-accent); color: #111; font-weight: 600; }
+body:not(.is-admin) .btn--primary:hover { background: var(--c-accent-hover); transform: translateY(-1px); box-shadow: 0 12px 22px -12px rgba(230,160,0,.9); }
+body:not(.is-admin) .btn--featured { background: #111; color: #fff; }
+body:not(.is-admin) .btn--featured:hover { background: #2a2a2a; }
+body:not(.is-admin) .btn--ghost { box-shadow: inset 0 0 0 1px #dcdcdc; }
+body:not(.is-admin) .btn--ghost:hover { background: #f4f4f4; }
+body:not(.is-admin) .chip { border-radius: 999px; transition: background-color .3s var(--ease-out), color .3s var(--ease-out), box-shadow .3s var(--ease-out); }
+body:not(.is-admin) .chip[aria-checked="true"], body:not(.is-admin) .chip[aria-selected="true"] { background: #111; color: #fff; }
+body:not(.is-admin) .inp, body:not(.is-admin) .sel, body:not(.is-admin) .txt { border-radius: 10px; transition: border-color .3s var(--ease-out), box-shadow .3s var(--ease-out); }
+body:not(.is-admin) .inp:focus, body:not(.is-admin) .sel:focus, body:not(.is-admin) .txt:focus { border-color: #111; box-shadow: 0 0 0 3px rgba(255,194,26,.45); }
+body:not(.is-admin) .note { border-radius: 12px; }
+body:not(.is-admin) .tabs button { transition: color .3s var(--ease-out), border-color .3s var(--ease-out); }
+body:not(.is-admin) .carousel__btn { border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1.5px var(--c-accent); }
+body:not(.is-admin) .carousel__btn:hover:not(:disabled) { background: var(--c-accent); }
+
+/* Cartões da home: profundidade 3D, brilho e detalhes que se movem */
+.svc-card { isolation: isolate; overflow: hidden;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: background-color .45s var(--ease-out), border-color .45s var(--ease-out), box-shadow .8s var(--ease-out), transform 1s var(--ease-out); }
+.svc-card.is-tilting { transition: background-color .45s var(--ease-out), border-color .45s var(--ease-out), box-shadow .8s var(--ease-out), transform .2s ease-out; }
+.svc-card:hover { box-shadow: 0 30px 50px -32px rgba(17,17,17,.35); }
+.svc-card::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(255,194,26,.22), transparent 48%); opacity: 0; transition: opacity .6s var(--ease-out); }
+.svc-card:hover::after { opacity: 1; }
+.svc-card__arrow svg { transition: transform .7s var(--ease-out); }
+.svc-card:hover .svc-card__arrow svg { transform: rotate(45deg); }
+.svc-card__desc { transition: color .4s var(--ease-out); }
+.svc-card:hover .svc-card__desc { color: #3f4248; }
+.car-card__img { position: relative;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 1s var(--ease-out), background-color .6s var(--ease-out), box-shadow .8s var(--ease-out); }
+.car-card__img.is-tilting { transition: transform .2s ease-out, background-color .6s var(--ease-out), box-shadow .8s var(--ease-out); }
+.car-card__img img, .car-card__img .veh__ph { transition: transform 1.1s var(--ease-out); }
+.car-card:hover .car-card__img { background: #fff3c2; box-shadow: 0 26px 44px -30px rgba(130,96,0,.55); }
+.car-card:first-child:hover .car-card__img { background: #ececec; }
+.car-card:hover .car-card__img img { transform: translateX(8px) scale(1.07); }
+.car-card__price { transition: transform .6s var(--ease-out); }
+.car-card:hover .car-card__price { transform: translateY(-2px); }
+.how-step { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 1s var(--ease-out), background-color .5s var(--ease-out), box-shadow .8s var(--ease-out); }
+.how-step.is-tilting { transition: transform .2s ease-out, background-color .5s var(--ease-out), box-shadow .8s var(--ease-out); }
+.how-step:hover { background: #fff5cc; box-shadow: 0 24px 40px -30px rgba(130,96,0,.6); }
+.how-media video { transition: transform 1.4s var(--ease-out); }
+.how-media:hover video { transform: scale(1.03); }
+.how-play::before { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid rgba(255,255,255,.7); animation: pulso 2.6s var(--ease-out) infinite; }
+@keyframes pulso { from { opacity: .9; scale: 1; } to { opacity: 0; scale: 1.6; } }
+
+/* Revelação ao rolar (o JS liga só ao trocar de página) */
+.rv { opacity: 0; translate: 0 38px; filter: blur(6px); }
+.rv.is-in { opacity: 1; translate: none; filter: none; transition: opacity 1s var(--ease-out) var(--rv-d, 0ms), translate 1.25s var(--ease-out) var(--rv-d, 0ms), filter 1s var(--ease-out) var(--rv-d, 0ms), clip-path 1.4s var(--ease-out) var(--rv-d, 0ms); }
+.rv.rv--clip { translate: 0 24px; filter: none; clip-path: inset(10% 7% round 28px); }
+.rv.rv--clip.is-in { clip-path: inset(0 0 round 28px); }
+/* Entrada da página */
+body:not(.is-home) #view.view-in { animation: viewIn .9s var(--ease-out) both; }
+@keyframes viewIn { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: none; } }
+.view-in .vhero__title { animation: sobe 1.3s var(--ease-out) .15s both; }
+.view-in .vhero__sub { animation: sobe 1.3s var(--ease-out) .3s both; }
+.view-in .vsearch-wrap { animation: sobeLimpo 1.3s var(--ease-out) .45s both; }
+.view-in .vsearch__opts { animation: sobeLimpo 1.3s var(--ease-out) .6s both; }
+.view-in .vhero .vnav-wrap { animation: desce 1.1s var(--ease-out) .05s both; }
+.view-in .vhero__video, .view-in .vhero__poster { animation: zoomOut 2.4s var(--ease-out) both; }
+@keyframes sobe { from { opacity: 0; translate: 0 34px; filter: blur(10px); } to { opacity: 1; translate: none; filter: none; } }
+@keyframes sobeLimpo { from { opacity: 0; translate: 0 34px; } to { opacity: 1; translate: none; } }
+@keyframes desce { from { opacity: 0; translate: 0 -18px; } to { opacity: 1; translate: none; } }
+@keyframes zoomOut { from { scale: 1.12; } to { scale: 1; } }
+.vhero__video, .vhero__poster { will-change: translate; }
+
+@media (max-width: 1024px) {
+  .city-track { grid-auto-columns: calc((100% - 2 * 18px) / 3); }
+  .rvw-body { grid-template-columns: minmax(0, 1fr) minmax(0, 560px) minmax(0, 1fr); gap: 20px; }
+  .ft-mid { grid-template-columns: 1fr 1fr; }
+  .ft-social { grid-column: 1 / -1; order: 3; justify-self: start; }
+}
+@media (max-width: 960px) {
+  .vnav__burger { display: inline-flex; }
+  .vnav-wrap--light .vnav__cta { display: none; }
+}
+@media (max-width: 760px) {
+  .sx-actions { width: 100%; }
+  .sx-actions .sx-btn { margin-left: auto; }
+  .city-track { grid-auto-columns: 72%; }
+  .rvw-head { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
+  .rvw-body { grid-template-columns: 1fr; gap: 16px; padding-bottom: 0; }
+  .rvw-count { order: -1; }
+  .rvw-ctrl { flex-direction: row; align-items: center; justify-content: space-between; }
+  .rvw-btns { position: static; }
+  .rvw-note { grid-column: auto; margin-top: 0; }
+  .rvw-card { padding: 24px 22px; }
+  .rvw-quote { font-size: 16px; }
+  .ft { margin-top: 80px; padding-top: 40px; }
+  .ft-mid { grid-template-columns: 1fr; gap: 32px; margin-top: 36px; }
+  .ft-contact { justify-self: start; }
+  .ft-bottom { flex-direction: column; align-items: flex-start; }
+  body:not(.is-admin) .faq { grid-template-columns: 1fr; }
+  body:not(.is-admin) .page { padding-top: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rv { opacity: 1 !important; translate: none !important; filter: none !important; clip-path: none !important; }
+  .view-in *, #view.view-in, .how-play::before, .vnav__menu, .faq__a { animation: none !important; }
+  .rvw-card { transition: opacity .2s linear, visibility 0s; translate: none; scale: 1; filter: none; }
+}
+
 </style>
 </head>
 <body>
@@ -1478,7 +1769,7 @@ FC.buildSeed = function () {
     caucao: { adotada: true, modalidade: "Pré-autorização no cartão de crédito (simulada)" },
     motoristaDiaria: 280, taxaAeroportoPct: 10, maxCondutoresAdicionais: 2, pagadorDistinto: false,
     km: { definida: true, modalidades: [{ id: "LIVRE", nome: "Quilometragem livre", ajusteDiaria: 0, franquiaDia: null, excedente: null }, { id: "F150", nome: "Franquia de 150 km por dia", ajusteDiaria: -15, franquiaDia: 150, excedente: 0.9 }] },
-    fidelidade: true, loginGoogle: false, newsletter: true, loginMaxTentativas: 5, loginBloqueioMin: 10, codigoValidadeMin: 10, senhaMin: 8,
+    fidelidade: false, loginGoogle: false, newsletter: true, loginMaxTentativas: 5, loginBloqueioMin: 10, codigoValidadeMin: 10, senhaMin: 8,
     matrizCNH: { versao: "demo-2026.11", fonte: "CTB art. 143 — conferir com fonte oficial (RNF41)", carro: ["B", "AB", "C", "D", "E", "AC", "AD", "AE"], moto: ["A", "AB", "AC", "AD", "AE"] }
   };
   var historicoConfig = [{ versao: 1, data: iso(day(-30)), responsavel: "Gestor (demo)", justificativa: "Parâmetros iniciais de demonstração — decisões PM/DP pendentes", snapshot: JSON.stringify(config) }];
@@ -1882,7 +2173,6 @@ FC.buildSeed = function () {
         descontos.push({ tipo: "desconto", rotulo: "Cupom " + c.codigo + " — " + c.descricao, valor: -(c.tipo === "pct" ? base * c.valor / 100 : Math.min(c.valor, base)) });
       }
     }
-    if (sel.pontos > 0) descontos.push({ tipo: "desconto", rotulo: "Falls Club — " + sel.pontos + " pontos", valor: -Math.round(sel.pontos * (FC.CLUB ? FC.CLUB.valorPonto : 0.1) * 100) / 100 });
     var todos = itens.concat(taxas, descontos);
     var total = Math.round(todos.reduce(function (s, i) { return s + i.valor; }, 0) * 100) / 100;
     var caucao = cfg.caucao.adotada ? FC.grupoById(v.grupo).caucao : 0;
@@ -2183,7 +2473,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<div class="topbar__end">' + langBtns() + "</div></div></div>";
   }
   FC.langBtns = langBtns;
-  var TABS = [["#/", "Reservar"], ["#/frota", "Frota"], ["#/lojas", "Lojas"], ["#/fidelidade", "Fidelidade"], ["#/ajuda", "Ajuda"]];
+  var TABS = [["#/", "Reservar"], ["#/frota", "Frota"], ["#/lojas", "Lojas"], ["#/vantagens/retirada", "Serviços"], ["#/ajuda", "Ajuda"]];
   function header(active, admin) {
     var c = FC.clienteAtual(), u = FC.adminAtual();
     var right = admin
@@ -2199,25 +2489,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<nav aria-label="Conta"><div class="header__right">' + right + "</div></nav></div>" +
       "</div></header>";
   }
-  function footer() {
-    var cfg = FC.cfg();
-    var col = function (t, itens, tag) { return '<nav class="footer__col" aria-label="' + t + '"><h3>' + t + (tag || "") + "</h3><ul>" + itens.map(function (i) { return "<li>" + i + "</li>"; }).join("") + "</ul></nav>"; };
-    var a = function (h, t) { return '<a href="' + h + '">' + t + "</a>"; };
-    return '<footer class="footer"><div class="container">' +
-      '<div class="footer__cols">' +
-      col("Institucional", [a("#/lojas", "Lojas e destinos"), a("#/frota", "Frota e preços"), a("#/fidelidade", "Falls Club")]) +
-      col("Negócios", [a("#/produto/app", "Motoristas de app"), a("#/admin", "Área da empresa")]) +
-      col("Para você", [a("#/", "Reservar"), a("#/consultar", "Minhas reservas"), a("#/checkin", "Check-in online"), a("#/conta", "Minha conta")]) +
-      col("Contatos", [a("#/ajuda", "Enviar mensagem"), '<button type="button" data-abrir-chat>Chat</button>', '<a href="tel:+551140000000">Central (11) 4000-0000</a>', '<a href="https://wa.me/5511900000000" target="_blank" rel="noopener">WhatsApp (fictício)</a>', a("#/ajuda", "Perguntas frequentes")], rf("RF59", "RF61")) +
-      (cfg.newsletter ? '<form class="footer__col footer__news" id="news-form" novalidate><h3>Newsletter' + rf("RF57") + '</h3><label class="fld"><span class="visually-hidden">E-mail</span><div class="news-row"><input class="inp" type="email" id="news-email" autocomplete="email" placeholder="Seu e-mail"><button class="btn btn--primary" type="submit">Inscrever</button></div></label>' +
-        '<button type="button" class="news-cancel" id="news-cancel">Cancelar inscrição</button></form>' : "<div></div>") +
-      "</div>" +
-      '<div class="footer__mid"><ul aria-label="Redes sociais"><li class="lbl">Redes</li>' + ["Instagram", "YouTube", "LinkedIn", "TikTok"].map(function (s) { return '<li><button type="button" class="social" data-social="' + s + '">' + s + "</button></li>"; }).join("") + "</ul>" +
-      '<ul aria-label="Veja também"><li class="lbl">Veja também</li><li>' + a("#/produto/app", "Motoristas de app") + "</li></ul></div>" +
-      '<div class="footer__mid"><ul aria-label="Links legais"><li>' + a("#/termos", "Termos e contrato de locação") + "</li><li>" + a("#/privacidade", "Privacidade") + '</li><li><button type="button" id="pref-cookies">Preferências de cookies</button></li></ul></div>' +
-      '<p class="scam-line">' + icon("shield", 16) + "<span>Nunca pedimos senha nem depósito em conta pessoal. Pague só pelo site, pelo link do seu e-mail ou no balcão." + rf("RF61") + "</span></p>" +
-      '<p class="footer__copy">© 2026 Falls Car · protótipo acadêmico' + rf("RNF16") + "</p></div></footer>";
-  }
+  function footer() { return FC.rodape(); }
 
   /* ---------- Atendimento: chat simulado com respostas prontas ---------- */
   function chatResposta(k) {
@@ -2260,8 +2532,8 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
   };
 
   FC.render = function () {
-    // bases salvas antes do Falls Club: liga o programa uma única vez
-    if (!FC.db.clubMigrado) { FC.cfg().fidelidade = true; FC.db.clubMigrado = true; FC.save(); }
+    // Falls Club e pontos foram retirados do site
+    if (FC.cfg().fidelidade) { FC.cfg().fidelidade = false; FC.save(); }
     FC.limparBloqueios();
     if (!$("#modal").hidden && FC._lastHash !== location.hash) $("#modal").hidden = true;
     FC._lastHash = location.hash;
@@ -2275,9 +2547,10 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     document.body.classList.toggle("is-admin", admin); FC.chatInit();
     var home = !admin && fn === FC.routes.inicio;
     document.body.classList.toggle("is-home", home);
-    app.innerHTML = demoBar() + (home ? "" : header(activeTab, admin)) + '<main id="view" tabindex="-1"></main>' + (admin ? "" : footer());
+    app.innerHTML = demoBar() + (home ? "" : admin ? header(activeTab, admin) : FC.siteNav(activeTab)) + '<main id="view" tabindex="-1"></main>' + (admin ? "" : footer());
     fn($("#view"), r);
     bindLayout();
+    FC.motion.depois(admin);
     if (!FC._firstRender) { $("#view").focus({ preventScroll: true }); window.scrollTo(0, 0); }
     FC._firstRender = false;
   };
@@ -2473,6 +2746,44 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     "3. Informe quem dirige": ["3. Tell us who drives", "3. Indica quién conduce"], "Confirmamos a CNH. Sem CNH? Contrate motorista.": ["We check the license. No license? Hire a driver.", "Verificamos la licencia. ¿Sin licencia? Contrata un conductor."],
     "4. Pague e pronto": ["4. Pay and you're set", "4. Paga y listo"], "Pagou, confirmou. Você recebe o código.": ["Paid, confirmed. You get the code.", "Pagaste, confirmado. Recibes el código."],
     "Conhecer o Falls Club": ["Discover Falls Club", "Conocer Falls Club"],
+    "Destinos": ["Destinations", "Destinos"],
+    "Retire seu carro onde a viagem começa.": ["Pick up your car where the trip begins.", "Retira tu auto donde empieza el viaje."],
+    "Clientes felizes,": ["Happy customers,", "Clientes felices,"],
+    "viagens tranquilas.": ["easy journeys.", "viajes tranquilos."],
+    "+100 mil": ["100k+", "+100 mil"],
+    "Descubra por que nossos clientes sempre voltam. Histórias reais de quem pegou a estrada com a gente.": ["Discover why our customers keep coming back. Real stories from people who hit the road with us.", "Descubre por qué nuestros clientes siempre vuelven. Historias reales de quienes salieron a la carretera con nosotros."],
+    "Depoimentos de exemplo.": ["Sample testimonials.", "Testimonios de ejemplo."],
+    "Reservei pelo celular em poucos minutos e o carro estava impecável na retirada. A equipe foi atenciosa do início ao fim e a devolução foi rápida. Viagem sem nenhuma preocupação.": ["I booked on my phone in a few minutes and the car was spotless at pick-up. The staff were attentive from start to finish and the return was quick. A worry-free trip.", "Reservé desde el celular en pocos minutos y el auto estaba impecable al retirarlo. El equipo fue atento de principio a fin y la devolución fue rápida. Un viaje sin preocupaciones."],
+    "Escolhi exatamente o carro das fotos e foi ele que recebi. Fiz o check-in online, mostrei o QR code no balcão e em dez minutos já estava na estrada.": ["I chose the exact car in the photos and that is the one I got. I checked in online, showed the QR code at the counter and was on the road in ten minutes.", "Elegí exactamente el auto de las fotos y fue el que recibí. Hice el check-in online, mostré el código QR en el mostrador y en diez minutos ya estaba en la ruta."],
+    "Preço claro desde o começo, sem taxa surpresa no balcão. O SUV era confortável, econômico e coube a bagagem da família inteira.": ["Clear pricing from the start, no surprise fees at the counter. The SUV was comfortable, economical and fit the whole family's luggage.", "Precio claro desde el principio, sin cargos sorpresa en el mostrador. La SUV era cómoda, económica y entró el equipaje de toda la familia."],
+    "Precisei devolver o carro em outra cidade e foi tudo simples. Atendimento rápido pelo chat e o veículo estava revisado e limpo.": ["I had to return the car in another city and it was all simple. Fast support via chat, and the vehicle was serviced and clean.", "Tuve que devolver el auto en otra ciudad y todo fue simple. Atención rápida por chat y el vehículo estaba revisado y limpio."],
+    "Aluguei uma moto para o fim de semana e a experiência foi ótima. Retirada pontual, moto nova e devolução sem burocracia.": ["I rented a motorcycle for the weekend and it was great. On-time pick-up, a new bike and a hassle-free return.", "Alquilé una moto para el fin de semana y la experiencia fue excelente. Retiro puntual, moto nueva y devolución sin trámites."],
+    "Não tenho CNH e contratei um motorista junto com o carro. Ele foi pontual, educado e o trajeto foi tranquilo. Com certeza vou reservar de novo.": ["I don't have a driver's license, so I hired a driver with the car. He was punctual and polite and the ride was smooth. I'll definitely book again.", "No tengo licencia y contraté un conductor junto con el auto. Fue puntual, amable y el trayecto fue tranquilo. Sin duda volveré a reservar."],
+    "Avaliação anterior": ["Previous review", "Reseña anterior"],
+    "Próxima avaliação": ["Next review", "Siguiente reseña"],
+    "Avaliações de clientes": ["Customer reviews", "Reseñas de clientes"],
+    "Dúvidas": ["Questions", "Dudas"],
+    "Tudo o que você precisa saber antes de reservar.": ["Everything you need to know before booking.", "Todo lo que necesitas saber antes de reservar."],
+    "Início": ["Home", "Inicio"],
+    "Assine nossa newsletter": ["Subscribe to our newsletter", "Suscríbete a nuestro boletín"],
+    "Ofertas, novidades e dicas de viagem. Sem spam.": ["Deals, news and travel tips. No spam.", "Ofertas, novedades y consejos de viaje. Sin spam."],
+    "Digite seu e-mail": ["Enter your email", "Escribe tu correo"],
+    "Assinar": ["Subscribe", "Suscribirme"],
+    "Contato": ["Contact", "Contacto"],
+    "Falar no chat": ["Chat with us", "Hablar por chat"],
+    "Termos de uso": ["Terms of use", "Términos de uso"],
+    "Nunca pedimos senha nem depósito em conta pessoal.": ["We never ask for passwords or deposits into personal accounts.", "Nunca pedimos contraseñas ni depósitos en cuentas personales."],
+    "contato@fallscar.com.br (fictício)": ["contato@fallscar.com.br (fictional)", "contato@fallscar.com.br (ficticio)"],
+    "Abrir menu": ["Open menu", "Abrir menú"],
+    "Menu": ["Menu", "Menú"],
+    "Nossa frota": ["Our fleet", "Nuestra flota"],
+    "Nossas lojas": ["Our stores", "Nuestras tiendas"],
+    "Central de ajuda": ["Help center", "Centro de ayuda"],
+    "Resultados da busca": ["Search results", "Resultados de búsqueda"],
+    "Reserva em 5 etapas": ["Booking in 5 steps", "Reserva en 5 pasos"],
+    "Retirada digital": ["Digital pick-up", "Retiro digital"],
+    "Carro exato": ["Exact car", "Auto exacto"],
+    "Lojas 24 horas": ["24-hour stores", "Tiendas 24 horas"],
     "Serviços": ["Services", "Servicios"], "Alugar um carro nunca foi tão fácil.": ["Renting a car has never been this easy.", "Alquilar un auto nunca fue tan fácil."],
     "Escolha entre diversos veículos, reserve em poucos passos e aproveite sua viagem com liberdade e tranquilidade.": ["Choose from many vehicles, book in a few steps and enjoy your trip with freedom and peace of mind.", "Elige entre muchos vehículos, reserva en pocos pasos y disfruta tu viaje con libertad y tranquilidad."],
     "Ver todos": ["View all", "Ver todos"], "Lojas abertas 24 horas": ["Stores open 24 hours", "Tiendas abiertas 24 horas"], "Retire e devolva a qualquer hora nos aeroportos com loja 24h.": ["Pick up and return any time at airports with a 24h store.", "Retira y devuelve a cualquier hora en aeropuertos con tienda 24 h."],
@@ -3102,19 +3413,22 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     return "img/cidades/" + s + ".jpg";
   };
   var GLOBO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5c2.6 2.8 3.9 6 3.9 9.5S14.6 18.7 12 21.5M12 2.5C9.4 5.3 8.1 8.5 8.1 12s1.3 6.7 3.9 9.5"/></svg>';
-  FC.heroNav = function () {
+  FC.heroNav = function (light, active) {
     var c = FC.clienteAtual();
     var lang = FC.i18n ? FC.i18n.lang() : "pt";
-    var moeda = { pt: "R$", en: "R$", es: "R$" }[lang] || "R$";
-    var links = [["#/frota", "Frota"], ["#/lojas", "Lojas"], ["#/fidelidade", "Fidelidade"], ["#/ajuda", "Ajuda"]];
-    return '<div class="glass-wrap vnav-wrap"><div class="glass-halo" aria-hidden="true"></div><header class="glass vnav">' +
+    var id = light ? "vnav-menu-l" : "vnav-menu";
+    var cur = function (h) { return active && active !== "#/" && h.indexOf(active) === 0 ? ' aria-current="page"' : ""; };
+    var menu = FC.NAV_LINKS.concat([[c ? "#/conta" : "#/consultar", "Minhas reservas"], ["#/produto/app", "Motoristas de app"]]);
+    return '<div class="glass-wrap vnav-wrap' + (light ? " vnav-wrap--light" : "") + '"><div class="glass-halo" aria-hidden="true"></div><header class="glass vnav">' +
       '<a class="vnav__logo" href="#/" aria-label="Falls Car — página inicial"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-car"/></svg><span>Falls Car</span></a>' +
-      '<nav class="vnav__links" aria-label="Seções do site">' + links.map(function (l) { return '<a href="' + l[0] + '">' + l[1] + "</a>"; }).join("") + "</nav>" +
+      '<nav class="vnav__links" aria-label="Seções do site">' + FC.NAV_LINKS.map(function (l) { return '<a href="' + l[0] + '"' + cur(l[0]) + ">" + l[1] + "</a>"; }).join("") + "</nav>" +
       '<div class="vnav__end">' +
-      '<details class="vnav__lang"><summary aria-label="Idioma e moeda">' + GLOBO + '<span class="vs-lang-txt" data-notr>' + lang.toUpperCase() + " | " + moeda + '</span></summary><div class="glass vnav__lang-panel">' + (FC.langBtns ? FC.langBtns() : "") + "</div></details>" +
+      '<details class="vnav__lang"><summary aria-label="Idioma e moeda">' + GLOBO + '<span class="vs-lang-txt" data-notr>' + lang.toUpperCase() + ' | R$</span></summary><div class="glass vnav__lang-panel">' + (FC.langBtns ? FC.langBtns() : "") + "</div></details>" +
       '<a class="vnav__mine" href="' + (c ? "#/conta" : "#/consultar") + '">Minhas reservas</a>' +
       '<a class="vnav__cta" href="#/conta">' + (c ? esc(c.nome.split(" ")[0]) : "Entrar") + "</a>" +
-      "</div></header></div>";
+      '<button type="button" class="vnav__burger" aria-expanded="false" aria-controls="' + id + '" aria-label="Abrir menu">' + BURGER + "</button>" +
+      "</div></header>" +
+      '<nav class="glass vnav__menu" id="' + id + '" aria-label="Menu" hidden>' + menu.map(function (l) { return '<a href="' + l[0] + '"' + cur(l[0]) + ">" + l[1] + "</a>"; }).join("") + "</nav></div>";
   };
   FC.heroSearch = function (b) {
     var cfg = FC.cfg();
@@ -3204,7 +3518,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<h2 class="sx-title" id="how-t">Alugue um carro em 4 passos simples.</h2>' +
       '<p class="sx-sub">Sem burocracia: escolha, reserve, pague e retire. Rápido, simples e seguro.</p></div></div>' +
       '<div class="how-steps">' + passos.map(function (p) { return '<div class="how-step"><h3 class="how-step__t">' + p[0] + '</h3><p class="how-step__d">' + p[1] + "</p></div>"; }).join("") + "</div>" +
-      '<div class="how-media"><video preload="none" muted loop playsinline poster="' + FC.HERO_POSTER + '" aria-label="Vídeo: carro na estrada"><source src="' + FC.HERO_VIDEO + '" type="video/mp4"></video>' +
+      '<div class="how-media"><video preload="none" muted loop playsinline poster="' + FC.COMO_POSTER + '" aria-label="Vídeo: dirigindo na estrada"><source src="' + FC.COMO_VIDEO + '" type="video/mp4"></video>' +
       '<button type="button" class="how-play" aria-label="Reproduzir vídeo"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5v11l9-5.5z"/></svg></button></div>' +
       '</div></section><div class="container">';
   };
@@ -3220,6 +3534,266 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       v.addEventListener("pause", function () { if (!v.seeking) { box.classList.remove("is-playing"); v.removeAttribute("controls"); } });
     }
   };
+
+
+  /* ---------- v3: destinos, avaliações, rodapé, navegação e movimento ---------- */
+  FC.COMO_VIDEO = "media/como-funciona.mp4";
+  FC.COMO_POSTER = "media/como-funciona-poster.jpg";
+  var SVG_OFF = ' style="fill:none" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"';
+  var SETA_E = '<svg viewBox="0 0 24 24" stroke-width="2"' + SVG_OFF + ' aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
+  var SETA_D = '<svg viewBox="0 0 24 24" stroke-width="2"' + SVG_OFF + ' aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  var ESTRELA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.85 5.95 6.55.85-4.8 4.55 1.22 6.5L12 17.3l-5.82 3.15 1.22-6.5L2.6 9.4l6.55-.85z"/></svg>';
+  var AV_CORES = ["linear-gradient(135deg,#f6b73c,#e0731f)", "linear-gradient(135deg,#5b8def,#2f4fb5)", "linear-gradient(135deg,#3fb68b,#1d7a5a)", "linear-gradient(135deg,#e26d8f,#a83a64)", "linear-gradient(135deg,#9a7cf0,#5c3fc2)", "linear-gradient(135deg,#58585f,#1f1f24)"];
+  FC.AVALIACOES = [
+    { n: 5, t: "Reservei pelo celular em poucos minutos e o carro estava impecável na retirada. A equipe foi atenciosa do início ao fim e a devolução foi rápida. Viagem sem nenhuma preocupação.", a: "Mariana C.", c: "São Paulo, SP" },
+    { n: 4.5, t: "Escolhi exatamente o carro das fotos e foi ele que recebi. Fiz o check-in online, mostrei o QR code no balcão e em dez minutos já estava na estrada.", a: "Rafael M.", c: "Rio de Janeiro, RJ" },
+    { n: 5, t: "Preço claro desde o começo, sem taxa surpresa no balcão. O SUV era confortável, econômico e coube a bagagem da família inteira.", a: "Juliana P.", c: "Belo Horizonte, MG" },
+    { n: 5, t: "Precisei devolver o carro em outra cidade e foi tudo simples. Atendimento rápido pelo chat e o veículo estava revisado e limpo.", a: "Carlos A.", c: "Brasília, DF" },
+    { n: 4.5, t: "Aluguei uma moto para o fim de semana e a experiência foi ótima. Retirada pontual, moto nova e devolução sem burocracia.", a: "Fernanda L.", c: "Curitiba, PR" },
+    { n: 5, t: "Não tenho CNH e contratei um motorista junto com o carro. Ele foi pontual, educado e o trajeto foi tranquilo. Com certeza vou reservar de novo.", a: "Eduardo S.", c: "Recife, PE" }
+  ];
+  function iniciais(nome) { return String(nome).split(/\s+/).map(function (p) { return p.charAt(0); }).join("").slice(0, 2).toUpperCase(); }
+  function avatar(nome, i, cls) { return '<span class="rvw-av' + (cls ? " " + cls : "") + '" style="background:' + AV_CORES[i % AV_CORES.length] + '" aria-hidden="true">' + iniciais(nome) + "</span>"; }
+  function estrelas(n) {
+    var cinco = ESTRELA + ESTRELA + ESTRELA + ESTRELA + ESTRELA;
+    return '<span class="rvw-stars" role="img" aria-label="' + String(n).replace(".", ",") + ' de 5 estrelas"><span class="rvw-stars__base">' + cinco + '</span><span class="rvw-stars__fill" style="width:' + (n / 5 * 100) + '%">' + cinco + "</span></span>";
+  }
+  function dois(n) { return (n < 10 ? "0" : "") + n; }
+
+  FC.secDestinos = function () {
+    var cid = {}, lojas = FC.db.lojas.filter(function (l) { return l.ativa; });
+    lojas.forEach(function (l) { var k = l.cidade + "|" + l.uf; (cid[k] = cid[k] || { cidade: l.cidade, uf: l.uf, n: 0, aero: 0 }).n++; if (l.tipo === "aeroporto") cid[k].aero++; });
+    var lista = Object.keys(cid).map(function (k) { return cid[k]; }).sort(function (a, b) { return b.n - a.n || a.cidade.localeCompare(b.cidade); });
+    var h24 = lojas.filter(function (l) { return FC.horarioTexto(l).indexOf("24") >= 0; }).length;
+    return '<section class="sx" aria-labelledby="dst-t"><div class="sx-head"><div class="sx-head__txt"><span class="eyebrow">Destinos</span>' +
+      '<h2 class="sx-title" id="dst-t">Retire seu carro onde a viagem começa.' + rf("RF54") + "</h2>" +
+      '<p class="sx-sub">' + lojas.length + " lojas em " + lista.length + " cidades · " + h24 + " abertas 24 horas.</p></div>" +
+      '<div class="sx-actions"><button type="button" class="rvw-btn" id="ct-prev" aria-label="Cidades anteriores">' + SETA_E + '</button><button type="button" class="rvw-btn rvw-btn--next" id="ct-next" aria-label="Próximas cidades">' + SETA_D + '</button><a class="sx-btn" href="#/lojas">Ver todas no mapa</a></div></div>' +
+      '<div class="city-track" id="ct-track">' + lista.map(function (c) {
+        return '<a class="city-card" href="#/lojas?cidade=' + encodeURIComponent(c.cidade) + '"><img class="city-card__img" src="' + FC.cidadeFoto(c.cidade) + '" alt="' + esc(c.cidade) + '" loading="lazy" width="800" height="500">' +
+          '<div class="city-card__body"><p class="city-card__name">' + esc(c.cidade) + '</p><p class="city-card__meta">' + c.uf + " · " + c.n + (c.n > 1 ? " lojas" : " loja") + (c.aero ? " · aeroporto" : "") + "</p></div></a>";
+      }).join("") + '</div><p class="small muted" style="margin-top:12px">Fotos ilustrativas das cidades.</p></section>';
+  };
+
+  FC.secAvaliacoes = function () {
+    var L = FC.AVALIACOES, total = dois(L.length);
+    return '<section class="sx rvw" aria-labelledby="rvw-t"><div class="rvw-head"><div><span class="eyebrow">Avaliações</span>' +
+      '<h2 class="sx-title rvw-title" id="rvw-t"><span class="rvw-l1"><span>Clientes felizes,</span><span class="rvw-crowd"><span class="rvw-avs">' + L.slice(0, 3).map(function (r, i) { return avatar(r.a, i); }).join("") + '<span class="rvw-av rvw-av--plus" aria-hidden="true">+</span></span><span class="rvw-num">+100 mil</span></span></span>' +
+      '<span class="rvw-l2">viagens tranquilas.</span>' + rf("RF69") + "</h2></div>" +
+      '<p class="rvw-side">Descubra por que nossos clientes sempre voltam. Histórias reais de quem pegou a estrada com a gente.</p></div>' +
+      '<div class="rvw-body" role="region" aria-roledescription="carrossel" aria-label="Avaliações de clientes" tabindex="0">' +
+      '<p class="rvw-count" aria-hidden="true"><b class="rvw-cur">01</b>/' + total + "</p>" +
+      '<div class="rvw-stage" aria-live="polite">' + L.map(function (r, i) {
+        return '<figure class="rvw-card' + (i === 0 ? " is-on" : "") + '" data-i="' + i + '"' + (i === 0 ? "" : ' aria-hidden="true"') + ">" + estrelas(r.n) +
+          '<blockquote class="rvw-quote">' + esc(r.t) + "</blockquote>" +
+          '<figcaption class="rvw-author">' + avatar(r.a, i) + "<span><b>" + esc(r.a) + "</b><small>" + esc(r.c) + "</small></span></figcaption></figure>";
+      }).join("") + "</div>" +
+      '<div class="rvw-ctrl"><div class="rvw-dots">' + L.map(function (r, i) { return '<button type="button" class="rvw-dot' + (i === 0 ? " is-on" : "") + '" data-i="' + i + '" aria-label="Avaliação ' + (i + 1) + '"' + (i === 0 ? ' aria-current="true"' : "") + "></button>"; }).join("") + "</div>" +
+      '<div class="rvw-btns"><button type="button" class="rvw-btn" data-dir="-1" aria-label="Avaliação anterior">' + SETA_E + '</button><button type="button" class="rvw-btn rvw-btn--next" data-dir="1" aria-label="Próxima avaliação">' + SETA_D + "</button></div></div>" +
+      '<p class="small muted rvw-note">Depoimentos de exemplo.</p></div></section>';
+  };
+  FC.bindAvaliacoes = function (view) {
+    var box = $(".rvw-body", view); if (!box) return;
+    var cards = $$(".rvw-card", box), dots = $$(".rvw-dot", box), cur = $(".rvw-cur", box), at = 0, timer = 0, parado = false;
+    function ir(n, dir) {
+      n = (n + cards.length) % cards.length; if (n === at) return;
+      var velho = cards[at];
+      velho.classList.remove("is-on"); velho.classList.toggle("is-out", dir > 0); velho.setAttribute("aria-hidden", "true");
+      var novo = cards[n];
+      novo.classList.remove("is-out"); novo.style.transition = "none"; novo.style.translate = dir > 0 ? "48px 0" : "-48px 0";
+      void novo.offsetWidth; novo.style.transition = ""; novo.style.translate = "";
+      cards[n].classList.add("is-on"); cards[n].removeAttribute("aria-hidden");
+      dots[at].classList.remove("is-on"); dots[at].removeAttribute("aria-current");
+      dots[n].classList.add("is-on"); dots[n].setAttribute("aria-current", "true");
+      cur.classList.remove("is-tick"); void cur.offsetWidth; cur.textContent = dois(n + 1); cur.classList.add("is-tick");
+      at = n;
+    }
+    function agenda() { clearTimeout(timer); timer = setTimeout(function () { if (!document.body.contains(box)) return; if (!parado && !document.hidden) ir(at + 1, 1); agenda(); }, 7000); }
+    box.addEventListener("click", function (e) {
+      var d = e.target.closest("[data-dir]"), p = e.target.closest(".rvw-dot");
+      if (d) { var k = +d.dataset.dir; ir(at + k, k); agenda(); }
+      else if (p) { var i = +p.dataset.i; ir(i, i > at ? 1 : -1); agenda(); }
+    });
+    box.addEventListener("keydown", function (e) { if (e.key === "ArrowRight") { ir(at + 1, 1); agenda(); } else if (e.key === "ArrowLeft") { ir(at - 1, -1); agenda(); } });
+    box.addEventListener("mouseenter", function () { parado = true; });
+    box.addEventListener("mouseleave", function () { parado = false; });
+    box.addEventListener("focusin", function () { parado = true; });
+    box.addEventListener("focusout", function () { parado = false; });
+    if (!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) agenda();
+  };
+
+  FC.secFaq = function () {
+    return '<section class="sx" aria-labelledby="faq-t"><div class="sx-head"><div class="sx-head__txt"><span class="eyebrow">Dúvidas</span>' +
+      '<h2 class="sx-title" id="faq-t">Perguntas frequentes</h2><p class="sx-sub">Tudo o que você precisa saber antes de reservar.</p></div>' +
+      '<a class="sx-btn sx-btn--line" href="#/ajuda">Ver todas na Ajuda</a></div><div class="faq">' +
+      FC.FAQ.slice(0, 6).map(function (f, i) { return '<div class="faq__item"><h3 style="margin:0"><button class="faq__q" type="button" aria-expanded="false" aria-controls="hfa' + i + '"><span>' + esc(f[0]) + "</span>" + icon("chevron-down") + '</button></h3><div class="faq__a" id="hfa' + i + '" hidden><p>' + esc(f[1]) + "</p></div></div>"; }).join("") +
+      "</div></section>";
+  };
+
+  /* Navegação de vidro (escura na hero, clara nas páginas internas) */
+  FC.NAV_LINKS = [["#/frota", "Frota"], ["#/lojas", "Lojas"], ["#/vantagens/retirada", "Serviços"], ["#/ajuda", "Ajuda"]];
+  FC.siteNav = function (active) { return FC.heroNav(true, active); };
+  var BURGER = '<svg viewBox="0 0 24 24" stroke-width="1.8"' + SVG_OFF + ' aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+
+  /* Rodapé claro */
+  var SOCIAL = {
+    X: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.2-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>',
+    LinkedIn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zm7 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.1c0-1.2 0-2.8-1.7-2.8s-2 1.3-2 2.7V21h-4z"/></svg>',
+    Facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.2C16.7 2.1 15.6 2 14.4 2 11.8 2 10 3.6 10 6.5v2H7.3V12H10v10h4V12h2.8l.4-3.5z"/></svg>',
+    Instagram: '<svg viewBox="0 0 24 24" stroke-width="1.9"' + SVG_OFF + ' aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" style="fill:currentColor" stroke="none"/></svg>'
+  };
+  var CT_ICO = {
+    pin: '<svg viewBox="0 0 24 24" stroke-width="1.7"' + SVG_OFF + ' aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+    tel: '<svg viewBox="0 0 24 24" stroke-width="1.7"' + SVG_OFF + ' aria-hidden="true"><path d="M21 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.1 4.2 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L7.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" stroke-width="1.7"' + SVG_OFF + ' aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" stroke-width="1.7"' + SVG_OFF + ' aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"/></svg>'
+  };
+  FC.rodape = function () {
+    var cfg = FC.cfg(), h = location.hash || "#/";
+    var nav = [["#/", "Início"], ["#/frota", "Frota"], ["#/lojas", "Lojas"], ["#/vantagens/retirada", "Serviços"], ["#/produto/app", "Motoristas de app"], ["#/ajuda", "Ajuda"]];
+    var ativo = function (href) { return href === "#/" ? (h === "#/" || h === "#" || h === "") : h.indexOf(href.split("/").slice(0, 2).join("/")) === 0; };
+    return '<footer class="ft"><div class="container">' +
+      '<div class="ft-top"><a class="ft-logo" href="#/" aria-label="Falls Car — página inicial"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-car"/></svg><span>Falls Car</span></a>' +
+      '<nav class="ft-nav" aria-label="Rodapé">' + nav.map(function (n) { return '<a href="' + n[0] + '"' + (ativo(n[0]) ? ' aria-current="page"' : "") + ">" + n[1] + "</a>"; }).join("") + "</nav></div>" +
+      '<div class="ft-mid">' +
+      (cfg.newsletter ? '<form class="ft-news" id="news-form" novalidate><h3 class="ft-h">Assine nossa newsletter' + rf("RF57") + '</h3><p class="ft-news__sub">Ofertas, novidades e dicas de viagem. Sem spam.</p>' +
+        '<div class="ft-news__box"><label class="fld"><span class="visually-hidden">E-mail</span><input type="email" id="news-email" autocomplete="email" placeholder="Digite seu e-mail"></label><button class="ft-news__btn" type="submit">Assinar</button></div>' +
+        '<button type="button" class="ft-news__cancel" id="news-cancel">Cancelar inscrição</button></form>' : "<div></div>") +
+      '<ul class="ft-social" aria-label="Redes sociais">' + Object.keys(SOCIAL).map(function (s) { return '<li><button type="button" class="ft-soc" data-social="' + s + '" aria-label="' + s + '" title="' + s + '">' + SOCIAL[s] + "</button></li>"; }).join("") + "</ul>" +
+      '<div class="ft-contact"><h3 class="ft-h">Contato' + rf("RF59", "RF61") + "</h3><ul>" +
+      "<li>" + CT_ICO.pin + "<span>Av. Paulista, 1000 · Bela Vista, São Paulo/SP</span></li>" +
+      '<li>' + CT_ICO.tel + '<a href="tel:+551140000000">(11) 4000-0000</a></li>' +
+      "<li>" + CT_ICO.mail + "<span>contato@fallscar.com.br (fictício)</span></li>" +
+      '<li>' + CT_ICO.chat + '<button type="button" data-abrir-chat>Falar no chat</button></li></ul></div></div>' +
+      '<div class="ft-bottom"><p>© 2026 Falls Car · protótipo acadêmico' + rf("RNF16") + "</p>" +
+      '<p class="ft-scam">' + icon("shield", 15) + "<span>Nunca pedimos senha nem depósito em conta pessoal." + rf("RF61") + "</span></p>" +
+      '<nav aria-label="Links legais"><a href="#/termos">Termos de uso</a><a href="#/privacidade">Privacidade</a><a href="#/admin">Área da empresa</a></nav></div>' +
+      "</div></footer>";
+  };
+
+  /* Movimento: revelação ao rolar, cartões com profundidade, rolagem suave */
+  FC.motion = (function () {
+    var reduz = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var fino = !!(window.matchMedia && matchMedia("(pointer: fine)").matches);
+    var REVELA = [".sx-head", ".svc-card", ".car-card", ".car-more", ".how-step", ".how-media", ".city-card", ".rvw-head", ".rvw-body", ".faq__item",
+      ".page-head", ".box", ".veh", ".card", ".fleet-card", ".tabs", ".chips", ".ft-top", ".ft-mid > *", ".ft-bottom"].join(",");
+    var FORA = ".vhero, .modal, #modal, .chat, .demo-bar, .vnav-wrap, .header";
+    var io = null, ultimo = null;
+    function revela(lista) {
+      lista.sort(function (a, b) { return a.compareDocumentPosition(b) & 4 ? -1 : 1; });
+      lista.forEach(function (el, i) {
+        var d = Math.min(i, 7) * 85;
+        el.style.setProperty("--rv-d", d + "ms");
+        el.classList.add("is-in");
+        setTimeout(function () { el.classList.remove("rv", "is-in", "rv--clip"); el.style.removeProperty("--rv-d"); }, 1400 + d);
+      });
+    }
+    function prepara(root) {
+      if (reduz || !("IntersectionObserver" in window)) return;
+      if (!io) io = new IntersectionObserver(function (es) {
+        var entra = [];
+        es.forEach(function (e) { if (e.isIntersecting) { entra.push(e.target); io.unobserve(e.target); } });
+        if (entra.length) revela(entra);
+      }, { rootMargin: "0px 0px -4% 0px", threshold: 0.06 });
+      $$(REVELA, root).forEach(function (el) {
+        if (el.closest(FORA) || (el.parentElement && el.parentElement.closest(".rv"))) return;
+        el.classList.add("rv"); if (el.classList.contains("how-media")) el.classList.add("rv--clip");
+        io.observe(el);
+      });
+    }
+    /* cartões com inclinação 3D e brilho que segue o mouse */
+    var TILT = ".svc-card, .how-step, .city-card, .car-card__img", tEl = null, tEv = null, tRaf = 0;
+    function solta(el) { el.classList.remove("is-tilting"); el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); }
+    function inclina() {
+      tRaf = 0; var e = tEv; if (!e) return;
+      var el = e.target && e.target.closest ? e.target.closest(TILT) : null;
+      if (el !== tEl) { if (tEl) solta(tEl); tEl = el; }
+      if (!el) return;
+      var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      el.classList.add("is-tilting");
+      el.style.setProperty("--rx", ((0.5 - y) * 6).toFixed(2) + "deg");
+      el.style.setProperty("--ry", ((x - 0.5) * 8).toFixed(2) + "deg");
+      el.style.setProperty("--mx", (x * 100).toFixed(1) + "%");
+      el.style.setProperty("--my", (y * 100).toFixed(1) + "%");
+    }
+    if (!reduz && fino) {
+      document.addEventListener("pointermove", function (e) { if (e.pointerType !== "mouse") return; tEv = e; if (!tRaf) tRaf = requestAnimationFrame(inclina); }, { passive: true });
+      document.addEventListener("pointerout", function (e) { if (!e.relatedTarget && tEl) { solta(tEl); tEl = null; } }, { passive: true });
+    }
+    /* rolagem suave da roda do mouse (interpolação a cada quadro) */
+    var sc = { cur: 0, tgt: 0, raf: 0, last: 0, t: 0 };
+    function maxY() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
+    function rolaDentro(el, dy) {
+      while (el && el.nodeType === 1 && el !== document.body && el !== document.documentElement) {
+        var s = getComputedStyle(el);
+        if (/(auto|scroll)/.test(s.overflowY) && el.scrollHeight > el.clientHeight + 1) {
+          if (dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0) return true;
+        }
+        el = el.parentElement;
+      }
+      return false;
+    }
+    function quadro(ts) {
+      var dt = sc.t ? Math.min(250, ts - sc.t) : 16.7; sc.t = ts;
+      if (Math.abs(window.scrollY - sc.last) > 4) { sc.raf = 0; sc.t = 0; return; } // usuário arrastou a barra: solta
+      var d = sc.tgt - sc.cur;
+      if (Math.abs(d) < 0.5) { sc.cur = sc.tgt; window.scrollTo(0, sc.cur); sc.raf = 0; sc.t = 0; return; }
+      sc.cur += d * (1 - Math.pow(1 - 0.085, dt / 16.7));
+      window.scrollTo(0, sc.cur); sc.last = window.scrollY;
+      sc.raf = requestAnimationFrame(quadro);
+    }
+    function para() { if (sc.raf) cancelAnimationFrame(sc.raf); sc.raf = 0; sc.t = 0; }
+    if (!reduz && fino) {
+      document.documentElement.classList.add("has-smooth");
+      window.addEventListener("wheel", function (e) {
+        if (e.defaultPrevented || e.ctrlKey || e.metaKey) return;
+        var m = document.getElementById("modal"); if (m && !m.hidden) return;
+        var dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
+        if (!dy || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        if (rolaDentro(e.target, dy) || (e.target.closest && e.target.closest("select, .chat, .vnav__menu"))) return;
+        e.preventDefault();
+        if (!sc.raf) { sc.cur = sc.tgt = window.scrollY; sc.last = window.scrollY; }
+        sc.tgt = Math.max(0, Math.min(maxY(), sc.tgt + dy));
+        if (!sc.raf) sc.raf = requestAnimationFrame(quadro);
+      }, { passive: false });
+    }
+    /* parallax do vídeo da hero e barra clara que ganha corpo ao rolar */
+    var pRaf = 0;
+    function rolou() {
+      pRaf = 0; var y = window.scrollY;
+      var v = document.querySelector(".vhero__video"), p = document.querySelector(".vhero__poster");
+      if (v && y < 1400) { var t = "0 " + (y * 0.28).toFixed(1) + "px"; v.style.translate = t; if (p) p.style.translate = t; }
+      var n = document.querySelector(".vnav-wrap--light"); if (n) n.classList.toggle("is-scrolled", y > 8);
+      if (io && y + window.innerHeight >= document.documentElement.scrollHeight - 4) { // fim da página: revela o que restou na tela
+        var resto = $$(".rv:not(.is-in)").filter(function (el) { return el.getBoundingClientRect().top < window.innerHeight; });
+        resto.forEach(function (el) { io.unobserve(el); });
+        if (resto.length) revela(resto);
+      }
+    }
+    window.addEventListener("scroll", function () { if (!pRaf) pRaf = requestAnimationFrame(rolou); }, { passive: true });
+    /* menu do celular e idioma: fecham ao clicar fora */
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest(".vnav__burger");
+      if (b) { var menu = document.getElementById(b.getAttribute("aria-controls")); var abre = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", String(abre)); if (menu) menu.hidden = !abre; return; }
+      $$(".vnav__burger[aria-expanded=true]").forEach(function (x) { var mm = document.getElementById(x.getAttribute("aria-controls")); if (mm && !mm.contains(e.target)) { x.setAttribute("aria-expanded", "false"); mm.hidden = true; } });
+      $$(".vnav__lang[open]").forEach(function (l) { if (!l.contains(e.target)) l.open = false; });
+    });
+    var OLHO = { frota: "Nossa frota", lojas: "Nossas lojas", ajuda: "Central de ajuda", conta: "Minha conta", veiculos: "Resultados da busca", reserva: "Reserva em 5 etapas", vantagens: "Serviços", produto: "Para motoristas de app", consultar: "Minhas reservas", checkin: "Check-in online", termos: "Documentos", privacidade: "Documentos" };
+    return {
+      depois: function (admin) {
+        var view = document.getElementById("view"), app = document.getElementById("app");
+        var rota = (location.hash.replace(/^#\/?/, "").split(/[?\/]/)[0]) || "inicio";
+        var tt = !admin && view ? view.querySelector(".page-head > div:first-child > :first-child, .page > h1") : null;
+        if (tt && OLHO[rota] && !tt.parentElement.querySelector(".eyebrow")) tt.insertAdjacentHTML("beforebegin", '<span class="eyebrow">' + OLHO[rota] + "</span>");
+        rolou();
+        if (admin || location.hash === ultimo) return;
+        ultimo = location.hash;
+        para();
+        if (view && !reduz) { view.classList.add("view-in"); setTimeout(function () { view.classList.remove("view-in"); }, 1800); }
+        prepara(app);
+      }
+    };
+  })();
 
   /* ---------- Página inicial ---------- */
   FC.route("inicio", function (view) {
@@ -3240,35 +3814,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
         (draft && draft.veiculoId ? '<div class="note vhero__note">' + icon("info", 16) + '<span>Reserva em andamento (' + esc(FC.veiculoById(draft.veiculoId).modelo) + "). <a class=\"link\" href=\"#/reserva\">Continuar</a>" + rf("RF91") + "</span></div>" : "") +
         (rec ? '<div class="note vhero__note">' + icon("pin", 16) + "<span>Mais perto de " + esc(FC.ponto.nome) + " (linha reta): " + rec.map(function (x, i) { return (i ? " · " : "") + "<strong>" + esc(x.loja.nome) + "</strong> " + x.km.toFixed(1) + " km"; }).join("") + "." + rf("RF09", "RN04") + "</span></div>" : "")) +
       '<div class="container">' + FC.secServicos() + FC.secVeiculos(tarifa) + FC.secComoFunciona() +
-      '<section class="section" aria-labelledby="club-t"><div class="section-header"><div><h2 class="t-h2" id="club-t">Falls Club</h2><p class="section-header__desc">' + FC.CLUB.ptsDiaria + " pontos por diária. Troque por desconto.</p></div>" + '<a class="btn btn--ghost" href="#/fidelidade">Conhecer o Falls Club</a></div>' +
-      (FC.clienteAtual() && FC.cfg().fidelidade ? FC.clubSaldoHtml(FC.clubSaldo(FC.clienteAtual().id)) : "") + FC.clubNiveisHtml(-1) + "</section>" +
-      (function () {
-        var cid = {}, lojas = FC.db.lojas.filter(function (l) { return l.ativa; });
-        lojas.forEach(function (l) { var k = l.cidade + "|" + l.uf; (cid[k] = cid[k] || { cidade: l.cidade, uf: l.uf, n: 0, aero: 0 }).n++; if (l.tipo === "aeroporto") cid[k].aero++; });
-        var lista = Object.keys(cid).map(function (k) { return cid[k]; }).sort(function (a, b) { return b.n - a.n || a.cidade.localeCompare(b.cidade); });
-        var h24 = lojas.filter(function (l) { return FC.horarioTexto(l).indexOf("24") >= 0; }).length;
-        return '<section class="section" aria-labelledby="dst-t"><div class="section-header"><div><h2 class="t-h2" id="dst-t">Destinos e lojas' + rf("RF54") + '</h2><p class="section-header__desc">' + lojas.length + " lojas em " + lista.length + " cidades · " + h24 + " abertas 24 horas.</p></div>" +
-          '<div class="fleet__nav"><button type="button" class="carousel__btn" id="ct-prev" aria-label="Cidades anteriores">' + icon("chevron-left", 16) + '</button><button type="button" class="carousel__btn" id="ct-next" aria-label="Próximas cidades">' + icon("chevron-right", 16) + '</button><a class="btn btn--ghost" href="#/lojas">Ver todas no mapa</a></div></div>' +
-          '<div class="city-track" id="ct-track">' + lista.map(function (c, i) {
-            return '<a class="city-card" href="#/lojas?cidade=' + encodeURIComponent(c.cidade) + '">' + '<img class="city-card__img" src="' + FC.cidadeFoto(c.cidade) + '" alt="' + esc(c.cidade) + '" loading="lazy" width="800" height="500">' + '<div class="city-card__body"><p class="city-card__name">' + esc(c.cidade) + '</p><p class="city-card__meta">' + c.uf + " · " + c.n + (c.n > 1 ? " lojas" : " loja") + (c.aero ? " · aeroporto" : "") + "</p></div></a>";
-          }).join("") + '</div><p class="small muted" style="margin-top:8px">Fotos ilustrativas das cidades.</p></section>';
-      })() +
-      (function () {
-        var av = FC.db.reservas.filter(function (r) { return r.avaliacao && r.avaliacao.nota; });
-        if (!av.length) return "";
-        var media = av.reduce(function (s, r) { return s + r.avaliacao.nota; }, 0) / av.length;
-        var dist = [5, 4, 3, 2, 1].map(function (n) { return [n, av.filter(function (r) { return r.avaliacao.nota === n; }).length]; });
-        var recentes = av.slice().sort(function (a, b) { return new Date(b.avaliacao.data) - new Date(a.avaliacao.data); }).slice(0, 4);
-        return '<section class="section" aria-labelledby="av-t"><div class="section-header"><div><h2 class="t-h2" id="av-t">Avaliações' + rf("RF69") + '</h2><p class="section-header__desc">Notas dadas após a devolução. <span class="demo-label">dados fictícios</span></p></div></div>' +
-          '<div class="reviews"><div class="box"><p class="reviews__avg">' + media.toFixed(1).replace(".", ",") + '</p><p class="stars" aria-hidden="true">' + "★".repeat(Math.round(media)) + "☆".repeat(5 - Math.round(media)) + '</p><p class="small muted">' + av.length + ' avaliações</p><ul class="rating-bars" style="margin-top:16px">' +
-          dist.map(function (d) { return '<li><div class="rating-bar__row"><span>' + d[0] + " estrelas</span><small>" + d[1] + '</small></div><div class="rating-bar__track"><div class="rating-bar__fill" style="width:' + Math.round(d[1] / av.length * 100) + '%"></div></div></li>'; }).join("") + "</ul></div>" +
-          '<ul class="review-list">' + recentes.map(function (r) {
-            return '<li><p><span class="stars" aria-label="' + r.avaliacao.nota + ' de 5">' + "★".repeat(r.avaliacao.nota) + "☆".repeat(5 - r.avaliacao.nota) + '</span></p><p style="margin-top:4px">' + (r.avaliacao.comentario ? "“" + esc(r.avaliacao.comentario) + "”" : '<span class="muted">Sem comentário.</span>') + '</p><p class="small muted" style="margin-top:8px">' + esc(FC.grupoById(r.grupo).nome) + " · " + esc(FC.lojaById(r.lojaRetirada).nome) + " · " + FC.dataBR(r.avaliacao.data).slice(3) + "</p></li>";
-          }).join("") + "</ul></div></section>";
-      })() +
-      '<section class="section"><div class="section-header"><h2 class="t-h2">Perguntas frequentes</h2><a class="link" href="#/ajuda">Ver todas na Ajuda</a></div><div class="faq">' +
-      FC.FAQ.slice(0, 4).map(function (f, i) { return '<div class="faq__item"><h3 style="margin:0"><button class="faq__q" type="button" aria-expanded="false" aria-controls="hfa' + i + '"><span>' + esc(f[0]) + "</span>" + icon("chevron-down") + '</button></h3><div class="faq__a" id="hfa' + i + '" hidden><p>' + esc(f[1]) + "</p></div></div>"; }).join("") +
-      "</div></section></div>";
+      FC.secDestinos() + FC.secAvaliacoes() + FC.secFaq() + "</div>";
     FC.bindSearchForm(view);
     FC.bindFaq(view);
     FC.bindHeroVideo(view);
@@ -3276,6 +3822,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     var ct = $("#ct-track", view);
     if (ct) { $("#ct-prev", view).addEventListener("click", function () { ct.scrollBy({ left: -ct.clientWidth, behavior: "smooth" }); }); $("#ct-next", view).addEventListener("click", function () { ct.scrollBy({ left: ct.clientWidth, behavior: "smooth" }); }); }
     FC.bindSecoes(view);
+    FC.bindAvaliacoes(view);
 
   });
 
@@ -3967,6 +4514,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<div class="club-progress"><p class="small" style="opacity:.72">' + (s.prox ? "Faltam " + (s.prox.min - s.ganhos) + " pontos para " + s.prox.nome : "Nível máximo") + '</p><div class="club-progress__bar"><span style="width:' + pct + '%"></span></div></div></div>';
   };
   FC.route("fidelidade", function (view) {
+    location.replace("#/"); return; // Falls Club retirado
     var c = FC.clienteAtual(), on = FC.cfg().fidelidade;
     view.innerHTML = '<div class="container page"><div class="page-head"><div><h1 class="t-h2">Falls Club' + rf("RF33") + "</h1><p>" + FC.CLUB.ptsDiaria + " pontos por diária. 100 pontos = " + brl(100 * FC.CLUB.valorPonto) + " de desconto. Regras de demonstração.</p></div></div>" +
       (!on ? '<div class="note" style="margin-bottom:16px">' + icon("info", 16) + "<span>Programa pausado pela empresa (DP01).</span></div>" : "") +
@@ -4037,7 +4585,8 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
         '<p class="small muted" style="margin-top:12px">Valores de referência. Você escolhe na etapa 2 da reserva.</p>' +
         '<div class="row" style="margin-top:24px"><a class="btn btn--primary" href="#/">Reservar</a></div>';
     } else h = '<h1 class="t-h2">Página não encontrada</h1><p style="margin-top:12px"><a class="link" href="#/">Voltar ao início</a></p>';
-    view.innerHTML = '<div class="container page" style="max-width:960px">' + h + "</div>";
+    var SV = [["retirada", "Retirada digital"], ["exato", "Carro exato"], ["adicionais", "Adicionais e proteções"]];
+    view.innerHTML = '<div class="container page" style="max-width:960px"><nav class="svc-pills" aria-label="Serviços">' + SV.map(function (s) { return '<a href="#/vantagens/' + s[0] + '"' + (s[0] === k ? ' aria-current="page"' : "") + ">" + s[1] + "</a>"; }).join("") + '<a href="#/lojas">Lojas 24 horas</a></nav>' + h + "</div>";
   });
 
   /* ---------- Check-in online (simulado) ---------- */
@@ -4280,7 +4829,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       FC.authWidget($("#auth", view), function () { FC.render(); });
       return;
     }
-    var TABS = [["reservas", "Reservas"], ["pagamentos", "Pagamentos e despesas"], ["documentos", "Documentos"], ["dados", "Dados e preferências"], ["seguranca", "Segurança"], ["privacidade", "Privacidade"], ["mensagens", "Mensagens"], ["club", "Falls Club"]];
+    var TABS = [["reservas", "Reservas"], ["pagamentos", "Pagamentos e despesas"], ["documentos", "Documentos"], ["dados", "Dados e preferências"], ["seguranca", "Segurança"], ["privacidade", "Privacidade"], ["mensagens", "Mensagens"]];
     view.innerHTML = '<div class="container page"><div class="page-head"><div><h1 class="t-h2">Olá, ' + esc(c.nome.split(" ")[0]) + "</h1><p>Você vê somente as suas reservas, pagamentos e documentos." + rf("RF53", "RNF32") + '</p></div><button class="btn btn--ghost" type="button" id="ct-sair">' + icon("logout", 16) + "Sair</button></div>" +
       (c.bloqueado ? '<div class="note note--bad" style="margin-bottom:16px">' + icon("alert", 16) + "<span>Cadastro em revisão: " + esc(c.bloqueado.motivo) + ". Reservas pagas não foram canceladas; nossa equipe entrará em contato." + rf("RF67") + "</span></div>" : "") +
       '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === contaTab) + '" data-tab="' + t[0] + '">' + t[1] + "</button>"; }).join("") + '</div><div id="ct-body"></div></div>';
@@ -5385,7 +5934,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     } else if (tarTab === "politicas") {
       var c = FC.cfg();
       var campos = [["antecedenciaMin", "Antecedência mínima (min)", "PM02"], ["intervaloHorarioMin", "Intervalo entre horários (min)", "PM02"], ["periodoCobrancaHoras", "Período de cobrança (h)", "PM02"], ["toleranciaDevolucaoMin", "Tolerância de devolução (min)", "PM02"], ["holdMin", "Bloqueio durante pagamento (min)", "DP02"], ["margemPreparacaoMin", "Margem de preparação da transferência (min)", "RF94"], ["velocidadeMediaKmh", "Velocidade média de transferência (km/h)", "RF94"], ["motoristaDiaria", "Diária do motorista (R$)", "PM01"], ["taxaAeroportoPct", "Taxa de aeroporto (%)", "RF16"], ["maxCondutoresAdicionais", "Máx. condutores adicionais", "DP04"], ["loginMaxTentativas", "Tentativas de login", "RNF06"], ["loginBloqueioMin", "Bloqueio de login (min)", "RNF06"], ["senhaMin", "Tamanho mínimo da senha", "RNF06"]];
-      var flags = [["fidelidade", "Programa de fidelidade habilitado", "RF33 · DP01"], ["loginGoogle", "Login Google (simulado) priorizado", "RF51"], ["newsletter", "Newsletter na entrega", "RF57"], ["pagadorDistinto", "Permitir pagador distinto", "RF47 · DP04"]];
+      var flags = [["loginGoogle", "Login Google (simulado) priorizado", "RF51"], ["newsletter", "Newsletter na entrega", "RF57"], ["pagadorDistinto", "Permitir pagador distinto", "RF47 · DP04"]];
       body.innerHTML = '<form class="box" id="pl-f"><h3>Parâmetros (versão ' + c.versao + ", por " + esc(c.responsavel) + ")</h3><p class=\"small muted\">Todos são valores de demonstração até as decisões PM/DP. A versão usada fica gravada em cada reserva.</p><div class=\"form-grid form-grid--3\" style=\"margin-top:12px\">" +
         campos.map(function (x) { return FC.fld(x[1] + ' <span class="muted">(' + x[2] + ")</span>", '<input class="inp" type="number" min="0" data-k="' + x[0] + '" value="' + c[x[0]] + '">'); }).join("") +
         FC.fld("Devolução em outra loja: base (R$) <span class=\"muted\">(PM03)</span>", '<input class="inp" type="number" id="pl-db" value="' + c.devolucaoOutraLoja.base + '">') + FC.fld("Devolução: R$ por km", '<input class="inp" type="number" step="0.1" id="pl-dk" value="' + c.devolucaoOutraLoja.porKm + '">') +
