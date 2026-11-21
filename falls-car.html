@@ -1004,6 +1004,17 @@ li.is-done .fa-steps__t { color: #5b6475; }
 .club-sim__range::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--c-white); border: 4px solid var(--c-accent); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
 .club-sim__range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--c-white); border: 4px solid var(--c-accent); }
 .club-sim__range:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 4px; }
+.club-sim__row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--s-3); }
+.club-sim__cat { display: grid; gap: 2px; font-size: var(--fs-xs); color: rgba(255,255,255,.72); }
+.club-sim__cat select { height: 36px; padding: 0 var(--s-3); border: 1px solid rgba(255,255,255,.24); border-radius: var(--r-sm); background: #0b1830; color: var(--c-white); font: inherit; font-size: var(--fs-sm); cursor: pointer; }
+.club-sim__mult { margin-top: var(--s-2); font-size: var(--fs-xs); font-weight: 600; color: var(--c-accent); }
+.club-road { cursor: pointer; touch-action: none; }
+.club-road__car { cursor: grab; }
+.club-road.is-drag .club-road__car { cursor: grabbing; transform: translate(-50%, -50%) scale(1.12); transition: none; }
+.club-road.is-drag .club-road__fill { transition: none; }
+.club-sim { position: relative; }
+.club-confete { position: absolute; z-index: 3; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 2px; pointer-events: none; animation: club-confete 1.3s cubic-bezier(.2,.7,.3,1) forwards; }
+@keyframes club-confete { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(var(--dx), calc(var(--dy) + 80px)) rotate(var(--rot)); opacity: 0; } }
 .club-sim__chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
 .club-sim__chip { height: 32px; padding: 0 var(--s-3); border-radius: 16px; border: 1px solid rgba(255,255,255,.24); background: transparent; color: var(--c-white); font-size: var(--fs-xs); cursor: pointer; transition: background-color .15s var(--ease), color .15s var(--ease); }
 .club-sim__chip:hover { background: rgba(255,255,255,.08); }
@@ -2199,7 +2210,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       "</div></header>";
   }
   /* ---------- Prévia interativa do app (home + rodapé) ---------- */
-  var APP_PTS0 = 1850;
+  var APP_PTS0 = 3150; // nível Estrada na regra nova
   var APP_CONQ = [["viagem", "car", "Primeira viagem", true], ["explorador", "pin", "Explorador", true], ["relampago", "clock", "Check-in relâmpago"], ["critico", "heart", "Crítico"], ["embaixador", "users", "Embaixador"], ["moto", "moto", "Motociclista"]];
   function appRetirada() { var d = new Date(); d.setDate(d.getDate() + 1); return FC.pad(d.getDate()) + "/" + FC.pad(d.getMonth() + 1) + "/" + d.getFullYear(); }
   FC.appPhoneHtml = function (mini) {
@@ -2244,9 +2255,9 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<li><span class="fa-m__ic">' + icon("moto", 18) + '</span><span class="fa-m__t"><span>Experimente uma moto</span><small>+80 pontos</small></span><button type="button" class="fa-btn fa-btn--sm" data-ganho="80" data-conq="moto">Aceitar</button></li>' +
       "</ul></div></section>";
     var conta = '<section class="fa-tela" data-tela="conta"><header class="fa-head">Minha conta</header><div class="fa-sheet">' +
-      '<article class="fa-card fa-lvl"><p class="fa-lvl__lbl">Falls Club · Nível Rodovia</p><b class="fa-lvl__pts">' + pts + " <span>pontos</span></b>" +
+      '<article class="fa-card fa-lvl"><p class="fa-lvl__lbl">Falls Club · Nível Estrada</p><b class="fa-lvl__pts">' + pts + " <span>pontos</span></b>" +
       '<p class="fa-lvl__lbl">≈ <b data-brl>' + FC.brl(APP_PTS0 * FC.CLUB.valorPonto) + "</b> <span>de desconto em reservas</span></p>" +
-      '<div class="fa-lvlbar">' + FC.CLUB.niveis.map(function (n) { return '<span class="is-on">' + icon("check", 12) + n.nome + "</span>"; }).join("") + "</div></article>" +
+      '<div class="fa-lvlbar">' + FC.CLUB.niveis.map(function (n, i) { return "<span" + (i < 2 ? ' class="is-on"' : "") + ">" + icon(i < 2 ? "check" : "lock", 12) + n.nome + "</span>"; }).join("") + "</div></article>" +
       '<p class="fa-sec">Conquistas <span class="fa-muted" data-conq-n></span></p><div class="fa-conq">' + APP_CONQ.map(function (c) {
         return '<div data-conq-id="' + c[0] + '"' + (c[3] ? ' class="is-on"' : "") + "><i>" + icon(c[1], 18) + "</i><span>" + c[2] + "</span></div>";
       }).join("") + "</div>" +
@@ -2268,7 +2279,6 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     document.body.appendChild(voo);
     destino.classList.remove("is-espera"); destino.style.visibility = "hidden";
     var y0 = window.scrollY, y1 = yFim == null ? y0 : yFim, t0 = performance.now(); dur = dur || 1300;
-    FC._vooAtual = function () { voo.remove(); destino.style.visibility = ""; t0 = -1e9; }; // cancelar: pousa já
     var ease = function (k) { return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
     (function frame(t) {
       if (!voo.isConnected) return;
@@ -2279,7 +2289,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       voo.style.top = (k < 1 ? Math.max(16, r0.top + (r1.top - r0.top) * e + lift) : r1.top) + "px"; // nunca sai da tela no meio do voo
       voo.style.transform = "scale(" + (s0 + (1 - s0) * e) + ") rotate(" + Math.sin(Math.PI * k) * -4 + "deg)";
       if (k < 1) { requestAnimationFrame(frame); return; }
-      voo.remove(); destino.style.visibility = ""; FC._vooAtual = null;
+      voo.remove(); destino.style.visibility = "";
       destino.classList.remove("is-pop"); void destino.offsetWidth; destino.classList.add("is-pop");
       if (fim) fim();
     })(t0);
@@ -2335,30 +2345,25 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
         if (!es[0].isIntersecting || !document.contains(ph)) return;
         io.disconnect(); FC._appSubiu = true;
         if (!ph.classList.contains("is-espera")) return; // o rodapé já trouxe o celular
-        var parar = null, timer = 0, cancelado = false;
-        // qualquer gesto da pessoa interrompe o tour e mostra o celular no lugar
-        var cancelar = function () {
-          cancelado = true; clearTimeout(timer); if (parar) parar(); if (FC._vooAtual) FC._vooAtual();
-          ph.classList.remove("is-espera"); ph.style.visibility = "";
-          var m = document.querySelector("[data-app-preview]"); if (m) m.classList.remove("is-lifting", "is-hop");
-          ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (ev) { window.removeEventListener(ev, cancelar); });
-        };
-        ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (ev) { window.addEventListener(ev, cancelar, { passive: true }); });
+        // o tour não pode ser interrompido: rolagem do usuário fica travada até o celular pousar (~6 s)
+        var TECLAS = { ArrowUp: 1, ArrowDown: 1, PageUp: 1, PageDown: 1, Home: 1, End: 1, " ": 1 };
+        var travar = function (e) { if (e.type !== "keydown" || TECLAS[e.key]) e.preventDefault(); };
+        var eventos = ["wheel", "touchmove", "keydown"];
+        eventos.forEach(function (ev) { window.addEventListener(ev, travar, { passive: false }); });
+        FC._tourAtivo = true;
+        var soltar = function () { FC._tourAtivo = false; eventos.forEach(function (ev) { window.removeEventListener(ev, travar); }); };
         var sec = ph.closest(".app-prev");
-        timer = setTimeout(function () {
+        setTimeout(function () {
           var mini = document.querySelector("[data-app-preview]");
-          if (!mini) { cancelar(); return; }
+          if (!mini) { ph.classList.remove("is-espera"); soltar(); return; }
           var mr = mini.getBoundingClientRect();
-          parar = FC.rolarAte(Math.max(0, window.scrollY + mr.top - (window.innerHeight - mr.height) / 2), 1800, function () {
-            if (cancelado) return;
+          FC.rolarAte(Math.max(0, window.scrollY + mr.top - (window.innerHeight - mr.height) / 2), 1800, function () {
             mini.classList.add("is-hop");
-            timer = setTimeout(function () {
-              if (cancelado) return;
+            setTimeout(function () {
               var r0 = mini.querySelector(".fa-phone").getBoundingClientRect(), sr = sec.getBoundingClientRect();
               mini.classList.remove("is-hop"); mini.classList.add("is-lifting");
               FC.appVoar(ph, r0, Math.max(0, window.scrollY + sr.top - (window.innerHeight - sr.height) / 2), function () {
-                mini.classList.remove("is-lifting");
-                ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (ev) { window.removeEventListener(ev, cancelar); });
+                mini.classList.remove("is-lifting"); soltar();
               }, 2600);
             }, 700);
           });
@@ -2507,7 +2512,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     var pc = $("#pref-cookies");
     if (pc) pc.addEventListener("click", function (e) { e.preventDefault(); FC.db.cookies = null; FC.save(); cookieBanner(true); });
     $$("[data-app-preview]").forEach(function (b) { b.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); b.click(); } }); b.addEventListener("click", function () {
-      if (b.classList.contains("is-lifting")) return;
+      if (b.classList.contains("is-lifting") || FC._tourAtivo) return;
       var alvo = document.getElementById("app-prev");
       var pousar = function () {
         var a = document.getElementById("app-prev"); if (!a) return;
@@ -2763,6 +2768,12 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     "Crítico": ["Critic", "Crítico"], "Embaixador": ["Ambassador", "Embajador"], "Motociclista": ["Rider", "Motociclista"], "Usar pontos numa reserva": ["Use points on a booking", "Usar puntos en una reserva"],
     "Início": ["Home", "Inicio"], "Conquista desbloqueada": ["Achievement unlocked", "Logro desbloqueado"], "Menu da prévia: use as abas lá embaixo.": ["Preview menu: use the tabs below.", "Menú de la vista previa: usa las pestañas de abajo."],
     "Abas do app": ["App tabs", "Pestañas de la app"], "Notificações": ["Notifications", "Notificaciones"],
+    "1 ponto por R$ 1 em diárias. Troque por desconto.": ["1 point per R$ 1 spent on daily rates. Redeem for discounts.", "1 punto por R$ 1 en diarias. Cámbialos por descuentos."],
+    "1 ponto por R$ 1 em diárias": ["1 point per R$ 1 on daily rates", "1 punto por R$ 1 en diarias"], "5% de volta em desconto": ["5% back as discounts", "5% de vuelta en descuentos"],
+    "Pontos 1,25× (6,25% de volta)": ["Points 1.25× (6.25% back)", "Puntos 1,25× (6,25% de vuelta)"], "Pontos 1,5× (7,5% de volta)": ["Points 1.5× (7.5% back)", "Puntos 1,5× (7,5% de vuelta)"],
+    "Cada R$ 1 em diárias gera 1 ponto (1,25× no nível Estrada e 1,5× no Rodovia).": ["Each R$ 1 on daily rates earns 1 point (1.25× at Estrada and 1.5× at Rodovia).", "Cada R$ 1 en diarias genera 1 punto (1,25× en Estrada y 1,5× en Rodovia)."],
+    "Use os pontos na revisão da reserva, até 30% das diárias.": ["Use your points when reviewing the booking, up to 30% of the daily rates.", "Usa los puntos al revisar la reserva, hasta el 30% de las diarias."],
+    "Categoria": ["Category", "Categoría"], "Arraste o carrinho": ["Drag the car", "Arrastra el auto"], "Falls Club · Nível Estrada": ["Falls Club · Estrada level", "Falls Club · Nivel Estrada"],
     "Destaque anterior": ["Previous highlight", "Destacado anterior"], "Próximo destaque": ["Next highlight", "Siguiente destacado"],
     "Destaque": ["Featured", "Destacado"], "Destaques": ["Highlights", "Destacados"],
     "Carro prateado com cupom de desconto, sacola e presentes em clima de Black Friday": ["Silver car with a discount coupon, shopping bag and gifts in a Black Friday mood", "Auto plateado con cupón de descuento, bolsa y regalos en clima de Black Friday"],
@@ -2996,6 +3007,11 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     [/^(\d+) avaliações$/, "{1} reviews", "{1} reseñas"],
     [/^(\d) estrelas$/, "{1} stars", "{1} estrellas"],
     [/^(\d+) diárias$/, "{1} days", "{1} días"],
+    [/^1 ponto por R\$ 1 em diárias\. 100 pontos = (R\$\s[\d.,]+) de desconto\. Regras de demonstração\.$/, "1 point per R$ 1 on daily rates. 100 points = {1} off. Demo rules.", "1 punto por R$ 1 en diarias. 100 puntos = {1} de descuento. Reglas de demostración."],
+    [/^100 pontos = (R\$\s[\d.,]+)\. Até 30% do valor das diárias\.$/, "100 points = {1}. Up to 30% of the daily rates.", "100 puntos = {1}. Hasta el 30% del valor de las diarias."],
+    [/^Nível (\S+) · pontos ([\d,]+)×$/, "{1} level · points {2}×", "Nivel {1} · puntos {2}×"],
+    [/^A partir de ([\d.]+) pontos$/, "From {1} points", "Desde {1} puntos"],
+    [/^(.+) · (R\$\s[\d.,]+)\/dia$/, "{1} · {2}/day", "{1} · {2}/día"],
     [/^\+(\d+) pontos$/, "+{1} points", "+{1} puntos"],
     [/^Cupom (\w+) copiado\. Use na revisão da reserva\.$/, "Coupon {1} copied. Use it when reviewing your booking.", "Cupón {1} copiado. Úsalo al revisar la reserva."],
     [/^Faltam (\d+) diárias$/, "{1} days to go", "Faltan {1} días"],
@@ -3435,8 +3451,8 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       [["search", "1. Busque", "Escolha loja e datas."], ["car", "2. Escolha a unidade", "Reserve o veículo exato, com fotos."], ["driver", "3. Informe quem dirige", "Confirmamos a CNH. Sem CNH? Contrate motorista."], ["lock", "4. Pague e pronto", "Pagou, confirmou. Você recebe o código."]].map(function (x) {
         return '<div class="snippet">' + icon(x[0], 24) + '<dt class="snippet__label"><strong>' + x[1] + '</strong></dt><dd class="small" style="margin:0">' + x[2] + "</dd></div>";
       }).join("") + "</dl></section>" +
-      '<section class="section" aria-labelledby="club-t"><div class="section-header"><div><h2 class="t-h2" id="club-t">Falls Club</h2><p class="section-header__desc">' + FC.CLUB.ptsDiaria + " pontos por diária. Troque por desconto.</p></div>" + '<a class="btn btn--ghost" href="#/fidelidade">Conhecer o Falls Club</a></div>' +
-      (FC.clienteAtual() && FC.cfg().fidelidade ? FC.clubSaldoHtml(FC.clubSaldo(FC.clienteAtual().id)) : "") + FC.clubSimHtml(FC.clienteAtual() ? Math.max(1, Math.min(FC.CLUB_SIM_MAX, Math.round(FC.clubSaldo(FC.clienteAtual().id).ganhos / FC.CLUB.ptsDiaria))) : 12) + "</section>" +
+      '<section class="section" aria-labelledby="club-t"><div class="section-header"><div><h2 class="t-h2" id="club-t">Falls Club</h2><p class="section-header__desc">' + "1 ponto por R$ 1 em diárias. Troque por desconto.</p></div>" + '<a class="btn btn--ghost" href="#/fidelidade">Conhecer o Falls Club</a></div>' +
+      (FC.clienteAtual() && FC.cfg().fidelidade ? FC.clubSaldoHtml(FC.clubSaldo(FC.clienteAtual().id)) : "") + FC.clubSimHtml(FC.clienteAtual() ? Math.max(1, Math.min(FC.CLUB_SIM_MAX, Math.round(FC.clubSaldo(FC.clienteAtual().id).ganhos / 120))) : 12) + "</section>" +
       (function () {
         var cid = {}, lojas = FC.db.lojas.filter(function (l) { return l.ativa; });
         lojas.forEach(function (l) { var k = l.cidade + "|" + l.uf; (cid[k] = cid[k] || { cidade: l.cidade, uf: l.uf, n: 0, aero: 0 }).n++; if (l.tipo === "aeroporto") cid[k].aero++; });
@@ -3606,7 +3622,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<p class="t-h4" style="margin-top:8px">' + esc(v.modelo) + '</p><p class="small muted">' + esc(FC.grupoById(v.grupo).nome) + " · unidade " + v.id + "</p>" +
       '<dl style="margin-top:12px"><dt>Retirada</dt><dd>' + esc(lr.nome) + "<br>" + FC.dtBR(sel.inicio) + "</dd><dt>Devolução</dt><dd>" + esc(ld.nome) + "<br>" + FC.dtBR(sel.fim) + "</dd>" +
       (sel.motorista ? "<dt>Motorista</dt><dd>" + esc(FC.motoristaById(sel.motorista).nome) + "</dd>" : "") + "</dl>" +
-      FC.priceBox(preco, { nota: false }) + (FC.cfg().fidelidade ? '<p class="small" style="margin-top:8px">Você ganha ' + preco.periodos * FC.CLUB.ptsDiaria + " pontos no Falls Club" + rf("RF33") + "</p>" : "") + "</aside>";
+      FC.priceBox(preco, { nota: false }) + (FC.cfg().fidelidade ? '<p class="small" style="margin-top:8px">Você ganha ' + FC.clubPontos(FC.valorDiarias(preco.itens), FC.clienteAtual() ? FC.clubSaldo(FC.clienteAtual().id).ganhos : 0) + " pontos no Falls Club" + rf("RF33") + "</p>" : "") + "</aside>";
   };
 
   function revalida(sel) {
@@ -3875,7 +3891,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<section class="box"><h3>Preço discriminado' + rf("RF16", "RN07") + "</h3>" + FC.priceBox(preco) + "</section>" +
       '<section class="box"><h3>Cupom de desconto' + rf("RF26", "RF62") + '</h3><div class="row"><label class="fld" style="flex:1"><span class="visually-hidden">Código do cupom</span><input class="inp" id="r-cupom" value="' + esc(sel.cupom || "") + '" placeholder="Digite o código"></label><button class="btn btn--ghost" type="button" id="r-cupom-ok">Aplicar</button>' + (sel.cupom ? '<button class="btn btn--link" type="button" id="r-cupom-rm">Remover</button>' : "") + "</div>" +
       (cupomInfo && cupomInfo.erro ? '<p class="err" style="margin-top:8px">' + esc(cupomInfo.erro) + "</p>" : cupomInfo && cupomInfo.cupom ? '<p class="small" style="margin-top:8px;color:#0d5c33">Cupom aplicado. Condições: ' + esc(cupomInfo.cupom.regulamento) + "</p>" : "") + "</section>" +
-      (club && (club.saldo > 0 || sel.pontos) ? '<section class="box"><h3>Falls Club' + rf("RF33") + '</h3><label class="chk"><input type="checkbox" id="r-pontos"' + (sel.pontos ? " checked" : "") + "> Usar meus pontos (" + club.saldo + ' disponíveis)</label><p class="small muted" style="margin-top:4px">' + (sel.pontos ? sel.pontos + " pontos = " + brl(sel.pontos * FC.CLUB.valorPonto) + " de desconto (simulado)." : "100 pontos = " + brl(100 * FC.CLUB.valorPonto) + ". Até metade do valor da locação.") + "</p></section>" : "") +
+      (club && (club.saldo > 0 || sel.pontos) ? '<section class="box"><h3>Falls Club' + rf("RF33") + '</h3><label class="chk"><input type="checkbox" id="r-pontos"' + (sel.pontos ? " checked" : "") + "> Usar meus pontos (" + club.saldo + ' disponíveis)</label><p class="small muted" style="margin-top:4px">' + (sel.pontos ? sel.pontos + " pontos = " + brl(sel.pontos * FC.CLUB.valorPonto) + " de desconto (simulado)." : "100 pontos = " + brl(100 * FC.CLUB.valorPonto) + ". Até 30% do valor das diárias.") + "</p></section>" : "") +
       '<section class="box"><h3>Retirada e devolução' + rf("RF37", "RF44") + '</h3><p class="small"><strong>Instruções da loja:</strong> ' + esc(lr.instrucoes) + "</p>" +
       '<p class="small" style="margin-top:8px"><strong>Tolerância na devolução:</strong> ' + FC.cfg().toleranciaDevolucaoMin + " minutos; depois disso, cobra-se mais um período. Parâmetro de demonstração (PM02) — não há regra especial por categoria de cliente.</p>" +
       '<p class="small" style="margin-top:8px"><strong>Cancelamento:</strong> ' + esc(FC.politicaCancelamento({ inicio: sel.inicio, preco: preco, pagamento: "aprovado" }).regra) + "</p>" +
@@ -4138,21 +4154,32 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
   });
 
   /* ---------- Falls Club (RF33; regras de demonstração) ---------- */
+  // 1 ponto por R$ 1 em diárias; 1 ponto = R$ 0,05 (5% de volta). Níveis multiplicam os pontos (até 7,5%).
+  // Teto de uso: 30% das diárias por reserva, para o desconto não comer a margem da locação.
   FC.CLUB = {
-    ptsDiaria: 10, valorPonto: 0.1, maxPct: 0.5,
+    ptsPorReal: 1, valorPonto: 0.05, maxPct: 0.3,
     niveis: [
-      { nome: "Asfalto", min: 0, vantagens: ["10 pontos por diária", "Pontos viram desconto"] },
-      { nome: "Estrada", min: 300, vantagens: ["Tudo do Asfalto", "Atendimento prioritário no balcão"] },
-      { nome: "Rodovia", min: 900, vantagens: ["Tudo do Estrada", "Suporte dedicado no chat"] }
+      { nome: "Asfalto", min: 0, mult: 1, vantagens: ["1 ponto por R$ 1 em diárias", "5% de volta em desconto"] },
+      { nome: "Estrada", min: 2500, mult: 1.25, vantagens: ["Pontos 1,25× (6,25% de volta)", "Atendimento prioritário no balcão"] },
+      { nome: "Rodovia", min: 8000, mult: 1.5, vantagens: ["Pontos 1,5× (7,5% de volta)", "Suporte dedicado no chat"] }
     ]
+  };
+  FC.clubNivelDe = function (pts) { return FC.CLUB.niveis.filter(function (n) { return pts >= n.min; }).length - 1; };
+  FC.clubPontos = function (valorDiarias, acumulado) { return Math.floor(valorDiarias * FC.CLUB.ptsPorReal * FC.CLUB.niveis[FC.clubNivelDe(acumulado || 0)].mult); };
+  var valorDiarias = FC.valorDiarias = function (itens) {
+    var loc = (itens || []).filter(function (i) { return i.tipo ? i.tipo === "locacao" : /^(Locação|Plano)/.test(i.rotulo); });
+    return loc.reduce(function (t, i) { return t + i.valor; }, 0);
   };
   var VALIDAS = ["confirmada", "em_andamento", "encerrada"];
   FC.clubSaldo = function (clienteId) {
-    var hist = FC.db.reservas.filter(function (r) { return r.clienteId === clienteId && VALIDAS.indexOf(r.estado) >= 0; }).map(function (r) {
-      return { r: r, ganhos: FC.duracao(r.inicio, r.fim).periodos * FC.CLUB.ptsDiaria, usados: r.pontosUsados || 0 };
-    });
+    var acum = 0;
+    var hist = FC.db.reservas.filter(function (r) { return r.clienteId === clienteId && VALIDAS.indexOf(r.estado) >= 0; })
+      .sort(function (a, b) { return new Date(a.inicio) - new Date(b.inicio); }).map(function (r) {
+        var g = FC.clubPontos(valorDiarias(r.preco && r.preco.itens), acum); acum += g; // nível vigente na hora da locação
+        return { r: r, ganhos: g, usados: r.pontosUsados || 0 };
+      });
     var ganhos = hist.reduce(function (s, h) { return s + h.ganhos; }, 0), usados = hist.reduce(function (s, h) { return s + h.usados; }, 0);
-    var nv = FC.CLUB.niveis.filter(function (n) { return ganhos >= n.min; }).length - 1;
+    var nv = FC.clubNivelDe(ganhos);
     return { hist: hist, ganhos: ganhos, usados: usados, saldo: Math.max(0, ganhos - usados), nivel: nv, prox: FC.CLUB.niveis[nv + 1] || null };
   };
   FC.pontosUsaveis = function (sel, clienteId) {
@@ -4165,37 +4192,59 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       return '<article class="club-level club-level--' + (i + 1) + (atual === i ? " is-current" : "") + '"><span class="club-level__tag">' + (i === 0 ? "Ao entrar" : "A partir de " + n.min + " pontos") + '</span><h3 class="club-level__name">' + n.nome + "</h3><ul>" + n.vantagens.map(function (v) { return "<li>" + v + "</li>"; }).join("") + "</ul></article>";
     }).join("") + "</div>";
   };
-  // Simulador gamificado da home: diárias/ano -> pontos, nível e estrada com marcos.
+  // Simulador gamificado da home: categoria + diárias/ano -> pontos (com multiplicador de nível), estrada com marcos.
   FC.CLUB_SIM_MAX = 120;
+  FC.clubSimPts = function (dias, diaria) { var p = 0; for (var d = 0; d < dias; d++) p += FC.clubPontos(diaria, p); return p; };
   FC.clubSimHtml = function (dias) {
-    var C = FC.CLUB, N = C.niveis, max = FC.CLUB_SIM_MAX * C.ptsDiaria;
+    var C = FC.CLUB, N = C.niveis, max = N[N.length - 1].min * 1.25;
     var pos = function (p) { return 4 + Math.min(p, max) / max * 92; };
+    var t = FC.tarifaVigente(), grupos = FC.db.grupos.filter(function (g) { return FC.db.veiculos.some(function (v) { return v.grupo === g.id && v.ativo; }); });
+    var minG = function (g) { return Math.min.apply(null, FC.db.veiculos.filter(function (v) { return v.grupo === g.id && v.ativo; }).map(function (v) { return FC.diariaVeiculo(t, v); })); };
     return '<div class="club-sim" id="club-sim"><div class="club-sim__top"><div class="club-sim__ctrl">' +
       '<p class="club-sim__eyebrow">' + icon("sparkle", 16) + "Simule sua jornada</p>" +
       '<label class="club-sim__q" for="cs-range">Quantas diárias você aluga por ano?</label>' +
-      '<p class="club-sim__val"><span id="cs-dias">' + dias + "</span> diárias</p>" +
+      '<div class="club-sim__row"><p class="club-sim__val"><span id="cs-dias">' + dias + "</span> diárias</p>" +
+      '<label class="club-sim__cat"><span>Categoria</span><select id="cs-cat">' + grupos.map(function (g) {
+        return '<option value="' + minG(g) + '"' + (g.id === "COM" ? " selected" : "") + ">" + esc(g.nome) + " · " + brl(minG(g)) + "/dia</option>";
+      }).join("") + "</select></label></div>" +
       '<input type="range" class="club-sim__range" id="cs-range" min="1" max="' + FC.CLUB_SIM_MAX + '" value="' + dias + '">' +
       '<div class="club-sim__chips">' + [["Férias no ano", 7], ["Uma viagem por mês", 24], ["Vivo na estrada", 90]].map(function (c) { return '<button type="button" class="club-sim__chip" data-dias="' + c[1] + '">' + c[0] + " · " + c[1] + "</button>"; }).join("") + "</div></div>" +
-      '<div class="club-sim__res"><p class="small">Você acumula</p><p class="club-sim__pts"><span id="cs-pts">0</span> pontos</p><p class="club-sim__brl">' + icon("gift", 16) + '<span>≈ <strong id="cs-brl"></strong> de desconto em locações</span></p></div></div>' +
-      '<div class="club-road" aria-hidden="true"><div class="club-road__fill" id="cs-fill"></div>' +
-      N.map(function (n, i) { return '<span class="club-road__stop" data-stop="' + i + '" style="left:' + pos(n.min) + '%"><i>' + icon("check", 14) + icon("lock", 12) + "</i><b>" + n.nome + "</b><small>" + n.min + " pts</small></span>"; }).join("") +
-      '<span class="club-road__car" id="cs-car">' + icon("car", 20) + "</span></div>" +
+      '<div class="club-sim__res"><p class="small">Você acumula</p><p class="club-sim__pts"><span id="cs-pts">0</span> pontos</p><p class="club-sim__brl">' + icon("gift", 16) + '<span>≈ <strong id="cs-brl"></strong> de desconto em locações</span></p><p class="club-sim__mult" id="cs-mult"></p></div></div>' +
+      '<div class="club-road" id="cs-road"><div class="club-road__fill" id="cs-fill"></div>' +
+      N.map(function (n, i) { return '<span class="club-road__stop" data-stop="' + i + '" style="left:' + pos(n.min) + '%" aria-hidden="true"><i>' + icon("check", 14) + icon("lock", 12) + "</i><b>" + n.nome + "</b><small>" + n.min.toLocaleString("pt-BR") + " pts</small></span>"; }).join("") +
+      '<span class="club-road__car" id="cs-car" title="Arraste o carrinho" aria-hidden="true">' + icon("car", 20) + "</span></div>" +
       '<p class="club-sim__next" id="cs-next" aria-live="polite"></p></div>' +
       '<div class="club-levels club-levels--sim">' + N.map(function (n, i) {
-        return '<article class="club-level club-level--' + (i + 1) + '" data-card="' + i + '"><div class="row row--between"><span class="club-level__tag">' + (i === 0 ? "Ao entrar" : "A partir de " + n.min + " pontos") + '</span><span class="club-level__st"></span></div><h3 class="club-level__name">' + n.nome + "</h3><ul>" + n.vantagens.map(function (v) { return "<li>" + v + "</li>"; }).join("") + "</ul></article>";
+        return '<article class="club-level club-level--' + (i + 1) + '" data-card="' + i + '"><div class="row row--between"><span class="club-level__tag">' + (i === 0 ? "Ao entrar" : "A partir de " + n.min.toLocaleString("pt-BR") + " pontos") + '</span><span class="club-level__st"></span></div><h3 class="club-level__name">' + n.nome + "</h3><ul>" + n.vantagens.map(function (v) { return "<li>" + v + "</li>"; }).join("") + "</ul></article>";
       }).join("") + "</div>";
   };
   FC.bindClubSim = function (root) {
     var el = $("#club-sim", root); if (!el) return;
-    var C = FC.CLUB, N = C.niveis, max = FC.CLUB_SIM_MAX * C.ptsDiaria, range = $("#cs-range", el), ptsEl = $("#cs-pts", el), last = -1, shown = 0, raf = 0;
+    var C = FC.CLUB, N = C.niveis, max = N[N.length - 1].min * 1.25, range = $("#cs-range", el), cat = $("#cs-cat", el), road = $("#cs-road", el), ptsEl = $("#cs-pts", el);
+    var last = -1, shown = 0, raf = 0, reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
     var cards = $$("[data-card]", root), stops = $$("[data-stop]", el), chips = $$("[data-dias]", el);
     var pop = function (e) { e.classList.remove("is-pop"); void e.offsetWidth; e.classList.add("is-pop"); };
+    var posDe = function (p) { return 4 + Math.min(p, max) / max * 92; };
+    function confete() {
+      if (reduz) return;
+      var cores = ["#FFC21A", "#ffffff", "#4cc9f0", "#f72585", "#7bd389", "#a78bfa"], r = stops[stops.length - 1].querySelector("i");
+      var o = r.getBoundingClientRect(), b = el.getBoundingClientRect();
+      for (var k = 0; k < 28; k++) {
+        var c = document.createElement("i"), ang = Math.random() * Math.PI * 2, dist = 50 + Math.random() * 90;
+        c.className = "club-confete";
+        c.style.cssText = "left:" + (o.left - b.left + o.width / 2) + "px;top:" + (o.top - b.top + o.height / 2) + "px;background:" + cores[k % cores.length] +
+          ";--dx:" + Math.cos(ang) * dist + "px;--dy:" + (Math.sin(ang) * dist - 40) + "px;--rot:" + (Math.random() * 540 - 270) + "deg;animation-delay:" + Math.random() * 80 + "ms" + (k % 3 ? "" : ";border-radius:50%");
+        el.appendChild(c);
+        setTimeout(function (n) { return function () { n.remove(); }; }(c), 1500);
+      }
+    }
+    function diasPara(alvo, diaria) { for (var d = 1; d <= FC.CLUB_SIM_MAX; d++) if (FC.clubSimPts(d, diaria) >= alvo) return d; return FC.CLUB_SIM_MAX; }
     function upd() {
-      var d = +range.value, p = d * C.ptsDiaria, i = 0, pos = 4 + Math.min(p, max) / max * 92;
-      N.forEach(function (n, k) { if (p >= n.min) i = k; });
-      var prox = N[i + 1], falta = function (k) { return Math.ceil((N[k].min - p) / C.ptsDiaria); };
+      var d = +range.value, diaria = +cat.value, p = FC.clubSimPts(d, diaria), i = FC.clubNivelDe(p), pos = posDe(p);
+      var prox = N[i + 1], falta = function (k) { return Math.max(0, diasPara(N[k].min, diaria) - d); };
       $("#cs-dias", el).textContent = d;
       $("#cs-brl", el).textContent = brl(p * C.valorPonto);
+      $("#cs-mult", el).textContent = "Nível " + N[i].nome + " · pontos " + String(N[i].mult).replace(".", ",") + "×";
       $("#cs-car", el).style.left = pos + "%"; $("#cs-fill", el).style.width = pos + "%";
       range.style.setProperty("--pct", (d - 1) / (FC.CLUB_SIM_MAX - 1) * 100 + "%");
       stops.forEach(function (s, k) { s.classList.toggle("is-on", k <= i); });
@@ -4204,13 +4253,26 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
         c.querySelector(".club-level__st").innerHTML = k > i ? icon("lock", 12) + "Faltam " + falta(k) + " diárias" : k === i ? icon("car", 12) + "Você está aqui" : icon("check", 12) + "Desbloqueado";
       });
       $("#cs-next", el).innerHTML = prox ? "Faltam <strong>" + falta(i + 1) + " diárias</strong> para o nível <strong>" + prox.nome + "</strong>." : "<strong>Nível máximo!</strong> Você chegou na <strong>" + N[i].nome + "</strong>.";
-      if (last >= 0 && i > last) { pop(stops[i]); pop(cards[i]); }
+      if (last >= 0 && i > last) { pop(stops[i]); pop(cards[i]); if (i === N.length - 1) confete(); }
       last = i;
       chips.forEach(function (c) { c.setAttribute("aria-pressed", String(+c.dataset.dias === d)); });
       var from = shown, t0 = performance.now(); cancelAnimationFrame(raf);
       (function step(t) { var k = Math.min(1, (t - t0) / 350); shown = Math.round(from + (p - from) * (1 - Math.pow(1 - k, 3))); ptsEl.textContent = shown.toLocaleString("pt-BR"); if (k < 1) raf = requestAnimationFrame(step); })(t0);
     }
+    // arrastar o carrinho (ou tocar na estrada) escolhe as diárias pelo ponto da estrada
+    function arrasta(e) {
+      var r = road.getBoundingClientRect(), pct = Math.min(96, Math.max(4, (e.clientX - r.left) / r.width * 100));
+      var d = diasPara((pct - 4) / 92 * max, +cat.value);
+      if (+range.value !== d) { range.value = d; upd(); }
+    }
+    road.addEventListener("pointerdown", function (e) {
+      road.setPointerCapture(e.pointerId); road.classList.add("is-drag"); arrasta(e);
+      var mover = function (ev) { arrasta(ev); };
+      var soltar = function () { road.classList.remove("is-drag"); road.removeEventListener("pointermove", mover); road.removeEventListener("pointerup", soltar); road.removeEventListener("pointercancel", soltar); };
+      road.addEventListener("pointermove", mover); road.addEventListener("pointerup", soltar); road.addEventListener("pointercancel", soltar);
+    });
     range.addEventListener("input", upd);
+    cat.addEventListener("change", upd);
     chips.forEach(function (c) { c.addEventListener("click", function () { range.value = c.dataset.dias; upd(); }); });
     upd();
   };
@@ -4222,11 +4284,11 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
   };
   FC.route("fidelidade", function (view) {
     var c = FC.clienteAtual(), on = FC.cfg().fidelidade;
-    view.innerHTML = '<div class="container page"><div class="page-head"><div><h1 class="t-h2">Falls Club' + rf("RF33") + "</h1><p>" + FC.CLUB.ptsDiaria + " pontos por diária. 100 pontos = " + brl(100 * FC.CLUB.valorPonto) + " de desconto. Regras de demonstração.</p></div></div>" +
+    view.innerHTML = '<div class="container page"><div class="page-head"><div><h1 class="t-h2">Falls Club' + rf("RF33") + "</h1><p>1 ponto por R$ 1 em diárias. 100 pontos = " + brl(100 * FC.CLUB.valorPonto) + " de desconto. Regras de demonstração.</p></div></div>" +
       (!on ? '<div class="note" style="margin-bottom:16px">' + icon("info", 16) + "<span>Programa pausado pela empresa (DP01).</span></div>" : "") +
       (on && c ? FC.clubSaldoHtml(FC.clubSaldo(c.id)) : on ? '<div class="box row row--between" style="margin-bottom:16px"><span>Entre para ver seu saldo.</span><a class="btn btn--primary" href="#/conta">Entrar/Cadastrar</a></div>' : "") +
       FC.clubNiveisHtml(on && c ? FC.clubSaldo(c.id).nivel : -1) +
-      '<section class="box" style="margin-top:16px"><h3>Como funciona</h3><ol class="checklist"><li>Cada diária paga gera ' + FC.CLUB.ptsDiaria + " pontos.</li><li>Use os pontos na revisão da reserva, até metade da locação.</li><li>Reserva cancelada devolve os pontos usados.</li></ol></section></div>";
+      '<section class="box" style="margin-top:16px"><h3>Como funciona</h3><ol class="checklist"><li>Cada R$ 1 em diárias gera 1 ponto (1,25× no nível Estrada e 1,5× no Rodovia).</li><li>Use os pontos na revisão da reserva, até 30% das diárias.</li><li>Reserva cancelada devolve os pontos usados.</li></ol></section></div>';
   });
 
   /* ---------- Motoristas de app: planos semanais (valores fictícios) ---------- */
