@@ -1059,13 +1059,13 @@ body.is-admin .chat-fab, body.is-admin .chat { display: none; }
 
 /* Título e subtítulo com sombra projetada */
 .vhero__content { margin-top: auto; padding: 48px 24px 44px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.vhero__title { color: #fff; font-size: clamp(46px, 7.6vw, 132px); line-height: .98; font-weight: 600; letter-spacing: -0.045em;
+.vhero__title { color: #fff; font-size: clamp(40px, 5.2vw, 100px); line-height: 1; font-weight: 600; letter-spacing: -0.04em;
   text-shadow: 0 10px 34px rgba(0,0,0,.42), 0 3px 10px rgba(0,0,0,.34); }
-.vhero__sub { margin-top: 18px; max-width: 34em; color: rgba(255,255,255,.95); font-size: clamp(16px, 1.5vw, 23px); line-height: 1.38; font-weight: 400;
+.vhero__sub { margin-top: 14px; max-width: 34em; color: rgba(255,255,255,.95); font-size: clamp(15px, 1.2vw, 19px); line-height: 1.4; font-weight: 400;
   text-shadow: 0 3px 16px rgba(0,0,0,.58), 0 1px 3px rgba(0,0,0,.45); }
 
 /* Barra de busca */
-.vsearch-wrap { margin-top: clamp(32px, 5vh, 60px); width: min(1100px, 100%); }
+.vsearch-wrap { margin-top: clamp(28px, 4.5vh, 52px); width: min(1100px, 100%); }
 .vsearch { display: flex; align-items: stretch; min-height: 74px; text-align: left; }
 .vsearch .field, .vsearch .field:first-child, .vsearch .field:last-child { position: relative; display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 14px; flex: 1 1 0; min-width: 0; height: auto; padding: 10px 20px; border-radius: 0; background: transparent; color: #fff; box-shadow: none; cursor: default; }
 .vsearch .field + .field { border-left: 1px solid rgba(255,255,255,.5); }
@@ -1080,10 +1080,12 @@ body.is-admin .chat-fab, body.is-admin .chat { display: none; }
 .vsearch select option, .vsearch select optgroup { color: #161616; background: #fff; }
 .vsearch .vs-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .vsearch .vs-row select { flex-shrink: 0; }
-.vsearch input[type="date"] { position: relative; flex: 0 0 auto; width: 104px; min-width: 104px; cursor: pointer; }
+.vsearch input[type="date"] { position: relative; flex: 0 0 auto; width: 100px; min-width: 100px; cursor: pointer; }
+.vsearch .field.vs-data { padding-right: 30px; }
+.vsearch .vs-data .vs-row { gap: 10px; }
 .vsearch input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0; position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; }
 .vsearch .vs-sep { color: rgba(255,255,255,.6); }
-.vsearch__loja { flex: 1.45 1 0 !important; }
+.vsearch__loja { flex: 1.3 1 0 !important; }
 .vsearch__loja select { flex: 1; padding-right: 8px; text-overflow: ellipsis; cursor: pointer; }
 .vsearch .field__icon { position: static; transform: none; width: 32px; height: 32px; color: #fff; border-radius: 50%; }
 .vsearch .field__icon:hover { background: rgba(255,255,255,.14); color: #fff; }
@@ -1145,6 +1147,75 @@ body.is-admin .chat-fab, body.is-admin .chat { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .vhero__video { display: none; } }
 @media (prefers-reduced-transparency: reduce) { .glass { background: rgba(10,14,10,.72); } }
+
+/* ===== Seções no estilo da referência (Serviços, Nossos veículos, Como funciona) ===== */
+.eyebrow { display: inline-flex; align-items: center; gap: 12px; color: var(--c-text); font-size: 16px; line-height: 20px; font-weight: 500; }
+.eyebrow::before { content: ""; width: 56px; height: 1.5px; background: linear-gradient(90deg, rgba(255,194,26,0), var(--c-accent)); }
+.sx { margin-top: 112px; }
+.sx-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 40px; }
+.sx-head__txt { max-width: 920px; }
+.sx-title { margin-top: 18px; color: var(--c-text); font-size: clamp(30px, 3vw, 46px); line-height: 1.08; font-weight: 500; letter-spacing: -0.025em; }
+.sx-sub { margin-top: 16px; max-width: 560px; color: #6b7076; font-size: 15px; line-height: 1.55; }
+.sx-btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 20px; border: 0; border-radius: 8px; background: var(--c-accent); color: #111; font-size: 15px; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color .15s var(--ease); }
+.sx-btn:hover { background: var(--c-accent-hover); }
+.sx-btn--dark { height: 40px; padding: 0 18px; border-radius: 6px; background: #111; color: #fff; font-size: 14px; }
+.sx-btn--dark:hover { background: #2a2a2a; }
+
+/* Serviços */
+.svc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.svc-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 260px; padding: 24px; border-radius: 14px; border: 1px solid #ececec; background: #fff; color: var(--c-text); text-decoration: none; transition: background-color .2s var(--ease), border-color .2s var(--ease); }
+.svc-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.svc-card__title { font-size: 19px; line-height: 1.3; font-weight: 500; letter-spacing: -0.01em; }
+.svc-card__arrow { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: #f1f1f1; color: #111; transition: background-color .2s var(--ease), color .2s var(--ease); }
+.svc-card__arrow svg { width: 16px; height: 16px; fill: none; }
+.svc-card__desc { margin-top: 32px; color: #6b7076; font-size: 14px; line-height: 1.55; }
+.svc-card.is-on, .svc-card:hover, .svc-card:focus-visible { background: #f4f4f4; border-color: #f4f4f4; }
+.svc-card.is-on .svc-card__arrow, .svc-card:hover .svc-card__arrow, .svc-card:focus-visible .svc-card__arrow { background: #111; color: var(--c-accent); }
+
+/* Nossos veículos */
+.car-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.car-card { display: flex; flex-direction: column; }
+.car-card__img { display: flex; align-items: center; justify-content: center; height: 190px; padding: 16px; border-radius: 14px; background: #fffbe2; overflow: hidden; }
+.car-card:first-child .car-card__img { background: #f2f2f2; }
+.car-card__img img, .car-card__img .veh__ph { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; background: transparent; }
+.car-card__name { margin-top: 18px; color: var(--c-text); font-size: 20px; line-height: 1.25; font-weight: 500; letter-spacing: -0.01em; }
+.car-card__ex { margin-top: 2px; color: #8a8f95; font-size: 13px; }
+.car-card__specs { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 12px; margin-top: 14px; color: #6b7076; font-size: 13px; }
+.car-card__specs span { display: inline-flex; align-items: center; gap: 6px; }
+.car-card__specs svg { width: 15px; height: 15px; color: #6b7076; }
+.car-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.car-card__price { color: var(--c-text); font-size: 24px; line-height: 1; font-weight: 500; letter-spacing: -0.02em; white-space: nowrap; }
+.car-card__price small { margin-left: 2px; color: #8a8f95; font-size: 11px; font-weight: 400; letter-spacing: 0; }
+.car-more { margin-top: 32px; }
+
+/* Como funciona */
+.how { margin-top: 112px; padding: 72px 0 80px; border-radius: 28px 28px 0 0; background: linear-gradient(180deg, #f5f5f5 0%, #fafafa 60%, rgba(250,250,250,0) 100%); }
+.how .sx-head { flex-direction: column; align-items: center; text-align: center; margin-bottom: 40px; }
+.how .sx-head__txt { max-width: 920px; display: flex; flex-direction: column; align-items: center; }
+.how .sx-sub { max-width: 520px; }
+.how-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; max-width: 1040px; margin: 0 auto; }
+.how-step { padding: 22px 22px 24px; border-radius: 14px; background: #fffbe4; }
+.how-step__t { color: var(--c-text); font-size: 20px; line-height: 1.25; font-weight: 500; letter-spacing: -0.01em; }
+.how-step__d { margin-top: 10px; color: #6b7076; font-size: 13px; line-height: 1.55; }
+.how-media { position: relative; max-width: 1040px; height: clamp(260px, 32vw, 480px); margin: 24px auto 0; border-radius: 28px; overflow: hidden; background: #1b2414; }
+.how-media video, .how-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.how-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; border: 2px solid #fff; background: rgba(255,255,255,.18); color: #fff; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); cursor: pointer; transition: transform .2s var(--ease), background-color .2s var(--ease); }
+.how-play:hover { transform: translate(-50%, -50%) scale(1.06); background: rgba(255,255,255,.3); }
+.how-play svg { width: 22px; height: 22px; margin-left: 3px; }
+.how-media.is-playing .how-play { opacity: 0; pointer-events: none; }
+.how + .section { margin-top: 40px; }
+
+@media (max-width: 1024px) {
+  .svc-grid, .car-grid, .how-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sx, .how { margin-top: 80px; }
+}
+@media (max-width: 640px) {
+  .sx-head { flex-direction: column; align-items: flex-start; }
+  .svc-grid, .car-grid, .how-steps { grid-template-columns: 1fr; }
+  .svc-card { min-height: 200px; }
+  .how { padding: 48px 0 56px; border-radius: 20px 20px 0 0; }
+  .how-media { border-radius: 20px; }
+}
 
 </style>
 </head>
@@ -2209,7 +2280,6 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     bindLayout();
     if (!FC._firstRender) { $("#view").focus({ preventScroll: true }); window.scrollTo(0, 0); }
     FC._firstRender = false;
-    cookieBanner();
   };
   FC._firstRender = true;
   document.addEventListener("click", function (e) {
@@ -2403,6 +2473,12 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     "3. Informe quem dirige": ["3. Tell us who drives", "3. Indica quién conduce"], "Confirmamos a CNH. Sem CNH? Contrate motorista.": ["We check the license. No license? Hire a driver.", "Verificamos la licencia. ¿Sin licencia? Contrata un conductor."],
     "4. Pague e pronto": ["4. Pay and you're set", "4. Paga y listo"], "Pagou, confirmou. Você recebe o código.": ["Paid, confirmed. You get the code.", "Pagaste, confirmado. Recibes el código."],
     "Conhecer o Falls Club": ["Discover Falls Club", "Conocer Falls Club"],
+    "Serviços": ["Services", "Servicios"], "Alugar um carro nunca foi tão fácil.": ["Renting a car has never been this easy.", "Alquilar un auto nunca fue tan fácil."],
+    "Escolha entre diversos veículos, reserve em poucos passos e aproveite sua viagem com liberdade e tranquilidade.": ["Choose from many vehicles, book in a few steps and enjoy your trip with freedom and peace of mind.", "Elige entre muchos vehículos, reserva en pocos pasos y disfruta tu viaje con libertad y tranquilidad."],
+    "Ver todos": ["View all", "Ver todos"], "Lojas abertas 24 horas": ["Stores open 24 hours", "Tiendas abiertas 24 horas"], "Retire e devolva a qualquer hora nos aeroportos com loja 24h.": ["Pick up and return any time at airports with a 24h store.", "Retira y devuelve a cualquier hora en aeropuertos con tienda 24 h."],
+    "Nossos veículos": ["Our vehicles", "Nuestros vehículos"], "Encontre o carro ideal para você.": ["Find the right car for you.", "Encuentra el auto ideal para ti."],
+    "Explore nossa seleção de veículos, dos modelos econômicos aos mais sofisticados, e encontre a opção perfeita para cada ocasião.": ["Explore our selection, from budget models to the most refined, and find the perfect option for every occasion.", "Explora nuestra selección, de los modelos económicos a los más sofisticados, y encuentra la opción perfecta para cada ocasión."],
+    "Alugue um carro em 4 passos simples.": ["Rent a car in 4 simple steps.", "Alquila un auto en 4 pasos simples."], "Sem burocracia: escolha, reserve, pague e retire. Rápido, simples e seguro.": ["No red tape: choose, book, pay and pick up. Fast, simple and safe.", "Sin trámites: elige, reserva, paga y retira. Rápido, simple y seguro."],
     "Vá além do destino.": ["Go beyond the destination.", "Ve más allá del destino."],
     "Carros selecionados para tornar cada viagem mais confortável, segura e inesquecível.": ["Carefully selected cars to make every trip more comfortable, safer and unforgettable.", "Autos seleccionados para que cada viaje sea más cómodo, seguro e inolvidable."],
     "Carros selecionados para tornar cada viagem": ["Carefully selected cars to make every trip", "Autos seleccionados para que cada viaje sea"], "mais confortável, segura e inesquecível.": ["more comfortable, safer and unforgettable.", "más cómodo, seguro e inolvidable."],
@@ -3053,9 +3129,9 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       '<div class="field vsearch__loja">' + icon("pin", 26).replace("<svg", '<svg class="vs-ico"') + '<div class="vs-body"><label class="field__label" for="b-loja">Loja de retirada' + rf("RF12", "RF09") + '</label>' +
       '<div class="vs-row"><select id="b-loja">' + FC.lojaOptions(b.loja) + '<optgroup label="Outras opções"><option value="__cidade">Informar cidade manualmente</option></optgroup></select></div></div>' +
       '<button type="button" class="field__icon" id="b-geo" aria-label="Usar minha localização" title="Usar minha localização"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="fill:none"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" style="fill:currentColor"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></svg></button></div>' +
-      '<div class="field">' + icon("calendar", 26).replace("<svg", '<svg class="vs-ico"') + '<div class="vs-body"><label class="field__label" for="b-dIni">Retirada</label>' +
+      '<div class="field vs-data">' + icon("calendar", 26).replace("<svg", '<svg class="vs-ico"') + '<div class="vs-body"><label class="field__label" for="b-dIni">Retirada</label>' +
       '<div class="vs-row"><input type="date" id="b-dIni" min="' + hoje + '" value="' + b.dIni + '" required><span class="vs-sep" aria-hidden="true">·</span><select id="b-hIni" aria-label="Hora de retirada">' + slotOptions(b.loja, b.dIni, b.hIni) + "</select></div></div></div>" +
-      '<div class="field">' + icon("calendar", 26).replace("<svg", '<svg class="vs-ico"') + '<div class="vs-body"><label class="field__label" for="b-dFim">Devolução</label>' +
+      '<div class="field vs-data">' + icon("calendar", 26).replace("<svg", '<svg class="vs-ico"') + '<div class="vs-body"><label class="field__label" for="b-dFim">Devolução</label>' +
       '<div class="vs-row"><input type="date" id="b-dFim" min="' + hoje + '" value="' + b.dFim + '" required><span class="vs-sep" aria-hidden="true">·</span><select id="b-hFim" aria-label="Hora de devolução">' + slotOptions(b.dev || b.loja, b.dFim, b.hFim) + "</select></div></div></div>" +
       '<button class="vsearch__go" type="submit" aria-label="Buscar veículos">' + icon("search", 28) + '<span class="vs-go-txt">Buscar</span></button>' +
       "</form></div>" +
@@ -3091,6 +3167,60 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     if (lang) document.addEventListener("click", function fecha(e) { if (!document.body.contains(lang)) { document.removeEventListener("click", fecha); return; } if (lang.open && !lang.contains(e.target)) lang.open = false; });
   };
 
+
+  /* ---------- Seções da home no estilo da referência ---------- */
+  var SETA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+  FC.secServicos = function () {
+    var itens = [
+      ["Retirada digital em minutos", "Check-in online e QR code no balcão.", "#/vantagens/retirada"],
+      ["Escolha o carro exato", "Placa e fotos da unidade que você reserva.", "#/vantagens/exato"],
+      ["Adicionais e proteções", "Cadeirinha, condutor extra e proteções.", "#/vantagens/adicionais"],
+      ["Lojas abertas 24 horas", "Retire e devolva a qualquer hora nos aeroportos com loja 24h.", "#/lojas"]
+    ];
+    return '<section class="sx" aria-labelledby="svc-t"><div class="sx-head"><div class="sx-head__txt"><span class="eyebrow">Serviços</span>' +
+      '<h2 class="sx-title" id="svc-t">Alugar um carro nunca foi tão fácil.</h2>' +
+      '<p class="sx-sub">Escolha entre diversos veículos, reserve em poucos passos e aproveite sua viagem com liberdade e tranquilidade.</p></div>' +
+      '<a class="sx-btn" href="#/vantagens/retirada">Ver todos</a></div>' +
+      '<div class="svc-grid">' + itens.map(function (s, i) {
+        return '<a class="svc-card' + (i === 0 ? " is-on" : "") + '" href="' + s[2] + '"><div class="svc-card__top"><h3 class="svc-card__title">' + s[0] + '</h3><span class="svc-card__arrow" aria-hidden="true">' + SETA + '</span></div><p class="svc-card__desc">' + s[1] + "</p></a>";
+      }).join("") + "</div></section>";
+  };
+  FC.secVeiculos = function (tarifa) {
+    var grupos = ["ECO", "SED", "SUV", "PRE"].map(function (id) { return FC.grupoById(id); }).filter(Boolean);
+    return '<section class="sx" aria-labelledby="car-t"><div class="sx-head"><div class="sx-head__txt"><span class="eyebrow">Nossos veículos</span>' +
+      '<h2 class="sx-title" id="car-t">Encontre o carro ideal para você.' + rf("RF55") + "</h2>" +
+      '<p class="sx-sub">Explore nossa seleção de veículos, dos modelos econômicos aos mais sofisticados, e encontre a opção perfeita para cada ocasião.</p></div></div>' +
+      '<div class="car-grid">' + grupos.map(function (g) {
+        var v = FC.db.veiculos.filter(function (x) { return x.grupo === g.id && x.foto && x.ativo; })[0] || FC.db.veiculos.filter(function (x) { return x.grupo === g.id; })[0];
+        return '<article class="car-card"><a class="car-card__img" href="#/frota?grupo=' + g.id + '" aria-label="Ver o grupo ' + esc(g.nome) + '">' + FC.vehImg(v, "veh__img") + "</a>" +
+          '<h3 class="car-card__name">' + esc(g.nome) + '</h3><p class="car-card__ex">Ex.: ' + esc(v.modelo) + "</p>" +
+          '<div class="car-card__specs"><span title="Lugares">' + icon("person", 15) + v.lugares + '</span><span title="Malas">' + icon("bags", 15) + v.malas + '</span><span title="Câmbio">' + icon("gear", 15) + esc(v.cambio === "Automático" ? "Auto" : v.cambio) + "</span>" + (v.ar ? '<span title="Ar-condicionado">' + icon("snow", 15) + "A/C</span>" : "") + "</div>" +
+          '<div class="car-card__foot"><button type="button" class="sx-btn sx-btn--dark" data-reservar-grupo="' + g.id + '">Reservar</button><p class="car-card__price">' + brl(tarifa.diarias[g.id]).replace(",00", "") + "<small>/dia</small></p></div></article>";
+      }).join("") + '</div><a class="sx-btn car-more" href="#/frota">Ver todos</a></section>';
+  };
+  FC.secComoFunciona = function () {
+    var passos = [["1. Busque", "Escolha loja e datas."], ["2. Escolha a unidade", "Reserve o veículo exato, com fotos."], ["3. Informe quem dirige", "Confirmamos a CNH. Sem CNH? Contrate motorista."], ["4. Pague e pronto", "Pagou, confirmou. Você recebe o código."]];
+    return '</div><section class="how" aria-labelledby="how-t"><div class="container"><div class="sx-head"><div class="sx-head__txt"><span class="eyebrow">Como funciona</span>' +
+      '<h2 class="sx-title" id="how-t">Alugue um carro em 4 passos simples.</h2>' +
+      '<p class="sx-sub">Sem burocracia: escolha, reserve, pague e retire. Rápido, simples e seguro.</p></div></div>' +
+      '<div class="how-steps">' + passos.map(function (p) { return '<div class="how-step"><h3 class="how-step__t">' + p[0] + '</h3><p class="how-step__d">' + p[1] + "</p></div>"; }).join("") + "</div>" +
+      '<div class="how-media"><video preload="none" muted loop playsinline poster="' + FC.HERO_POSTER + '" aria-label="Vídeo: carro na estrada"><source src="' + FC.HERO_VIDEO + '" type="video/mp4"></video>' +
+      '<button type="button" class="how-play" aria-label="Reproduzir vídeo"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5v11l9-5.5z"/></svg></button></div>' +
+      '</div></section><div class="container">';
+  };
+  FC.bindSecoes = function (view) {
+    view.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-reservar-grupo]");
+      if (b) { var g = FC.grupoById(b.dataset.reservarGrupo); FC.filtros.grupo = g.id; FC.busca.tipo = g.tipo; FC.busca.plano = null; FC.go("#/veiculos"); }
+    });
+    var box = $(".how-media", view);
+    if (box) {
+      var v = $("video", box), p = $(".how-play", box);
+      p.addEventListener("click", function () { var r = v.play(); if (r && r.catch) r.catch(function () {}); box.classList.add("is-playing"); v.setAttribute("controls", ""); v.focus(); });
+      v.addEventListener("pause", function () { if (!v.seeking) { box.classList.remove("is-playing"); v.removeAttribute("controls"); } });
+    }
+  };
+
   /* ---------- Página inicial ---------- */
   FC.route("inicio", function (view) {
     FC.busca.plano = null; // a busca da home é sempre a locação diária
@@ -3109,22 +3239,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       FC.heroVideo(FC.busca,
         (draft && draft.veiculoId ? '<div class="note vhero__note">' + icon("info", 16) + '<span>Reserva em andamento (' + esc(FC.veiculoById(draft.veiculoId).modelo) + "). <a class=\"link\" href=\"#/reserva\">Continuar</a>" + rf("RF91") + "</span></div>" : "") +
         (rec ? '<div class="note vhero__note">' + icon("pin", 16) + "<span>Mais perto de " + esc(FC.ponto.nome) + " (linha reta): " + rec.map(function (x, i) { return (i ? " · " : "") + "<strong>" + esc(x.loja.nome) + "</strong> " + x.km.toFixed(1) + " km"; }).join("") + "." + rf("RF09", "RN04") + "</span></div>" : "")) +
-      '<section class="perks-band" aria-label="Diferenciais"><div class="container perks">' +
-      [["phone", "Retirada digital em minutos", "Check-in online e QR code no balcão.", "#/vantagens/retirada"],
-       ["car", "Escolha o carro exato", "Placa e fotos da unidade que você reserva.", "#/vantagens/exato"],
-       ["shield", "Adicionais e proteções", "Cadeirinha, condutor extra e proteções.", "#/vantagens/adicionais"]].map(function (p) {
-        return '<div class="perk"><span class="perk__icon" aria-hidden="true">' + icon(p[0], 44) + '</span><div><h2 class="perk__title">' + p[1] + '</h2><p class="perk__desc">' + p[2] + '</p><a class="link perk__more" href="' + p[3] + '">Saiba mais<span class="visually-hidden"> sobre ' + p[1].toLowerCase() + "</span></a></div></div>";
-      }).join("") + "</div></section>" +
-      '<div class="container">' +
-      '<section class="section" aria-labelledby="g-t"><div class="section-header"><div><h2 class="t-h2" id="g-t">Grupos de veículos' + rf("RF55") + '</h2><p class="section-header__desc">Preço por diária. O total depende de datas e extras.</p></div>' +
-      '<div class="fleet__nav"><button type="button" class="carousel__btn" id="fl-prev" aria-label="Grupos anteriores">' + icon("chevron-left", 16) + '</button><button type="button" class="carousel__btn" id="fl-next" aria-label="Próximos grupos">' + icon("chevron-right", 16) + '</button><a class="btn btn--ghost" href="#/frota">Ver todos os grupos</a></div></div>' +
-      '<div class="fleet__track" id="fl-track">' + gruposHtml + "</div></section>" +
-      '<section class="section" aria-labelledby="app-t"><div class="section-header"><div><h2 class="t-h2" id="app-t">Carros para motoristas de app</h2><p class="section-header__desc">Plano semanal. Exige CNH com EAR.</p></div><a class="btn btn--ghost" href="#/produto/app">Ver planos</a></div>' +
-      '<div class="grid-3">' + FC.PLANOS_APP.map(function (p) { return '<a class="plan-card" href="#/produto/app" style="text-decoration:none">' + FC.planoAppCard(p, false).replace(/^<article class="plan-card">|<\/article>$/g, "") + "</a>"; }).join("") + "</div></section>" +
-      '<section class="section"><div class="section-header"><h2 class="t-h2">Como funciona</h2></div><dl class="snippets">' +
-      [["search", "1. Busque", "Escolha loja e datas."], ["car", "2. Escolha a unidade", "Reserve o veículo exato, com fotos."], ["driver", "3. Informe quem dirige", "Confirmamos a CNH. Sem CNH? Contrate motorista."], ["lock", "4. Pague e pronto", "Pagou, confirmou. Você recebe o código."]].map(function (x) {
-        return '<div class="snippet">' + icon(x[0], 24) + '<dt class="snippet__label"><strong>' + x[1] + '</strong></dt><dd class="small" style="margin:0">' + x[2] + "</dd></div>";
-      }).join("") + "</dl></section>" +
+      '<div class="container">' + FC.secServicos() + FC.secVeiculos(tarifa) + FC.secComoFunciona() +
       '<section class="section" aria-labelledby="club-t"><div class="section-header"><div><h2 class="t-h2" id="club-t">Falls Club</h2><p class="section-header__desc">' + FC.CLUB.ptsDiaria + " pontos por diária. Troque por desconto.</p></div>" + '<a class="btn btn--ghost" href="#/fidelidade">Conhecer o Falls Club</a></div>' +
       (FC.clienteAtual() && FC.cfg().fidelidade ? FC.clubSaldoHtml(FC.clubSaldo(FC.clienteAtual().id)) : "") + FC.clubNiveisHtml(-1) + "</section>" +
       (function () {
@@ -3160,8 +3275,8 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     var ft = $("#fl-track", view);
     var ct = $("#ct-track", view);
     if (ct) { $("#ct-prev", view).addEventListener("click", function () { ct.scrollBy({ left: -ct.clientWidth, behavior: "smooth" }); }); $("#ct-next", view).addEventListener("click", function () { ct.scrollBy({ left: ct.clientWidth, behavior: "smooth" }); }); }
-    $("#fl-prev", view).addEventListener("click", function () { ft.scrollBy({ left: -ft.clientWidth, behavior: "smooth" }); });
-    $("#fl-next", view).addEventListener("click", function () { ft.scrollBy({ left: ft.clientWidth, behavior: "smooth" }); });
+    FC.bindSecoes(view);
+
   });
 
   FC.bindFaq = function (root) {
