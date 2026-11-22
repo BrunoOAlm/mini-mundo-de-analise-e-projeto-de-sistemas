@@ -1,6 +1,6 @@
 # Fotos dos veículos
 
-Fotos da Wikimedia Commons, com licenças livres (Creative Commons ou domínio público). Cada link abre a página do arquivo com autor e licença. As fotos foram reduzidas para 800 px de largura.
+Fotos da Wikimedia Commons, com licenças livres (Creative Commons ou domínio público). Cada link abre a página do arquivo com autor e licença. O fundo de cada foto foi removido e trocado por branco (800 × 500 px). As fotos editadas seguem a mesma licença da original.
 
 Algumas fotos mostram um modelo parecido ou outra versão do mesmo carro ou moto.
 
@@ -12,7 +12,7 @@ Algumas fotos mostram um modelo parecido ou outra versão do mesmo carro ou moto
 | `bmw-g-310-gs.jpg` | [BMW G motorcycle in Athens on June 25, 2023.jpg](https://commons.wikimedia.org/wiki/File:BMW_G_motorcycle_in_Athens_on_June_25%2C_2023.jpg) |
 | `bmw-r-1250-gs.jpg` | [BMW R2150GS.png](https://commons.wikimedia.org/wiki/File:BMW_R2150GS.png) |
 | `bmw-r-1300-gs.jpg` | [BMW R1300 GS Option 719 Tramuntana.jpg](https://commons.wikimedia.org/wiki/File:BMW_R1300_GS_Option_719_Tramuntana.jpg) |
-| `bmw-s-1000-rr.jpg` | [BMW S 1000 RR - BMW M 1000 RR 50 Years M (22121615413).jpg](https://commons.wikimedia.org/wiki/File:BMW_S_1000_RR_-_BMW_M_1000_RR_50_Years_M_(22121615413).jpg) |
+| `bmw-s-1000-rr.jpg` | [BMW S1000 RR Studio.JPG](https://commons.wikimedia.org/wiki/File:BMW_S1000_RR_Studio.JPG) |
 | `bmw-x1.jpg` | [BMW U11 1X7A6826.jpg](https://commons.wikimedia.org/wiki/File:BMW_U11_1X7A6826.jpg) |
 | `bmw-x3.jpg` | [BMW G45 20 IMG 3794.jpg](https://commons.wikimedia.org/wiki/File:BMW_G45_20_IMG_3794.jpg) |
 | `bmw-x5.jpg` | [2019 BMW X5 M50d Automatic 3.0.jpg](https://commons.wikimedia.org/wiki/File:2019_BMW_X5_M50d_Automatic_3.0.jpg) |
@@ -27,7 +27,7 @@ Algumas fotos mostram um modelo parecido ou outra versão do mesmo carro ou moto
 | `chevrolet-tracker.jpg` | [Chevrolet Tracker 2021 (front).png](https://commons.wikimedia.org/wiki/File:Chevrolet_Tracker_2021_(front).png) |
 | `citroen-c3.jpg` | [Citroen C3 CC21 front 20230524 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Citroen_C3_CC21_front_20230524_(cropped).jpg) |
 | `ducati-monster.jpg` | [2003 Ducati Monster S4R.jpg](https://commons.wikimedia.org/wiki/File:2003_Ducati_Monster_S4R.jpg) |
-| `ferrari-roma.jpg` | [2021 Ferrari Roma in Rosso Fiorano, front right.jpg](https://commons.wikimedia.org/wiki/File:2021_Ferrari_Roma_in_Rosso_Fiorano%2C_front_right.jpg) |
+| `ferrari-roma.jpg` | [Ferrari Roma IMG 9620.jpg](https://commons.wikimedia.org/wiki/File:Ferrari_Roma_IMG_9620.jpg) |
 | `fiat-argo.jpg` | [Fiat Argo 2017b (cropped).jpg](https://commons.wikimedia.org/wiki/File:Fiat_Argo_2017b_(cropped).jpg) |
 | `fiat-cronos.jpg` | [Fiat Cronos 1.8 16V E.Torq Precision.jpg](https://commons.wikimedia.org/wiki/File:Fiat_Cronos_1.8_16V_E.Torq_Precision.jpg) |
 | `fiat-doblo.jpg` | [Fiat Doblo (22707961995).jpg](https://commons.wikimedia.org/wiki/File:Fiat_Doblo_(22707961995).jpg) |
@@ -38,13 +38,13 @@ Algumas fotos mostram um modelo parecido ou outra versão do mesmo carro ou moto
 | `ford-mustang-gt.jpg` | [Seventh generation 2024 Ford Mustang (cropped).jpg](https://commons.wikimedia.org/wiki/File:Seventh_generation_2024_Ford_Mustang_(cropped).jpg) |
 | `harley-davidson-fat-boy.jpg` | [Harley Davidson Fat Boy 2018 FLFBS.jpg](https://commons.wikimedia.org/wiki/File:Harley_Davidson_Fat_Boy_2018_FLFBS.jpg) |
 | `harley-davidson-street-glide.jpg` | [Harley-Davidson Electra Glide - 236.jpg](https://commons.wikimedia.org/wiki/File:Harley-Davidson_Electra_Glide_-_236.jpg) |
-| `honda-adv-160.jpg` | [Honda ADV150 in KISSA Commonplace - Jambi City, JA.jpg](https://commons.wikimedia.org/wiki/File:Honda_ADV150_in_KISSA_Commonplace_-_Jambi_City%2C_JA.jpg) |
-| `honda-africa-twin.jpg` | [Honda Africatwin.jpg](https://commons.wikimedia.org/wiki/File:Honda_Africatwin.jpg) |
-| `honda-biz-125.jpg` | [Honda BIZ flex 12 2013 MGF 01.jpg](https://commons.wikimedia.org/wiki/File:Honda_BIZ_flex_12_2013_MGF_01.jpg) |
-| `honda-bros-160.jpg` | [Honda NXR 150 Bros 01.jpg](https://commons.wikimedia.org/wiki/File:Honda_NXR_150_Bros_01.jpg) |
+| `honda-adv-160.jpg` | [Honda ADV Motorcycle 2023.jpg](https://commons.wikimedia.org/wiki/File:Honda_ADV_Motorcycle_2023.jpg) |
+| `honda-africa-twin.jpg` | [Honda Africa Twin 2025.jpg](https://commons.wikimedia.org/wiki/File:Honda_Africa_Twin_2025.jpg) |
+| `honda-biz-125.jpg` | [Honda C100 Biz 049.jpg](https://commons.wikimedia.org/wiki/File:Honda_C100_Biz_049.jpg) |
+| `honda-bros-160.jpg` | [Honda Tornado.jpg](https://commons.wikimedia.org/wiki/File:Honda_Tornado.jpg) (Honda Tornado, da mesma família) |
 | `honda-cb-300f-twister.jpg` | [CBF 250.jpg](https://commons.wikimedia.org/wiki/File:CBF_250.jpg) |
-| `honda-cg-160-fan.jpg` | [Moto Honda Flex Titan CG 150 Mix Fuel Injection 06 2009 Itu.jpg](https://commons.wikimedia.org/wiki/File:Moto_Honda_Flex_Titan_CG_150_Mix_Fuel_Injection_06_2009_Itu.jpg) (mesma foto da CG Titan) |
-| `honda-cg-160-titan.jpg` | [Moto Honda Flex Titan CG 150 Mix Fuel Injection 06 2009 Itu.jpg](https://commons.wikimedia.org/wiki/File:Moto_Honda_Flex_Titan_CG_150_Mix_Fuel_Injection_06_2009_Itu.jpg) |
+| `honda-cg-160-fan.jpg` | [Honda CG125.jpg](https://commons.wikimedia.org/wiki/File:Honda_CG125.jpg) (CG 125, mesma linha) |
+| `honda-cg-160-titan.jpg` | [ホンダ CG125.jpg](https://commons.wikimedia.org/wiki/File:%E3%83%9B%E3%83%B3%E3%83%80_CG125.jpg) (CG 125, mesma linha) |
 | `honda-city.jpg` | [Honda City 1.5 i-VTEC V (VIII, Facelift) – f 22032025.jpg](https://commons.wikimedia.org/wiki/File:Honda_City_1.5_i-VTEC_V_(VIII%2C_Facelift)_%E2%80%93_f_22032025.jpg) |
 | `honda-civic.jpg` | [2022 Honda Civic Touring in Lunar Silver Metallic, Front Left, 05-10-2022.jpg](https://commons.wikimedia.org/wiki/File:2022_Honda_Civic_Touring_in_Lunar_Silver_Metallic%2C_Front_Left%2C_05-10-2022.jpg) |
 | `honda-elite-125.jpg` | [Elite150 Deluxe.jpg](https://commons.wikimedia.org/wiki/File:Elite150_Deluxe.jpg) |
@@ -56,7 +56,7 @@ Algumas fotos mostram um modelo parecido ou outra versão do mesmo carro ou moto
 | `hyundai-hb20.jpg` | [Hyundai HB20 Comfort Plus 2025.jpg](https://commons.wikimedia.org/wiki/File:Hyundai_HB20_Comfort_Plus_2025.jpg) |
 | `hyundai-hb20s.jpg` | [2023 Hyundai HB20 1.0 T-GDi Platinum Plus (Brazil) front view.png](https://commons.wikimedia.org/wiki/File:2023_Hyundai_HB20_1.0_T-GDi_Platinum_Plus_(Brazil)_front_view.png) |
 | `jeep-renegade.jpg` | [Jeep Renegade 1.6 MultiJet 2WD Longitude – Frontansicht, 9. November 2014, Düsseldorf.jpg](https://commons.wikimedia.org/wiki/File:Jeep_Renegade_1.6_MultiJet_2WD_Longitude_%E2%80%93_Frontansicht%2C_9._November_2014%2C_D%C3%BCsseldorf.jpg) |
-| `kawasaki-ninja-400.jpg` | [HK SSP 長沙灣 Cheung Sha Wan 大南西街 Tai Nan West Street motorbike parking sidewalk December 2019 SS2 02.jpg](https://commons.wikimedia.org/wiki/File:HK_SSP_%E9%95%B7%E6%B2%99%E7%81%A3_Cheung_Sha_Wan_%E5%A4%A7%E5%8D%97%E8%A5%BF%E8%A1%97_Tai_Nan_West_Street_motorbike_parking_sidewalk_December_2019_SS2_02.jpg) |
+| `kawasaki-ninja-400.jpg` | [Kawasaki Ninja 400.jpg](https://commons.wikimedia.org/wiki/File:Kawasaki_Ninja_400.jpg) |
 | `kawasaki-ninja-zx-10r.jpg` | [Kwasaki ZX-10R tokyo.JPG](https://commons.wikimedia.org/wiki/File:Kwasaki_ZX-10R_tokyo.JPG) |
 | `lamborghini-huracan-evo.jpg` | [2017 Lamborghini Huracan LP610.jpg](https://commons.wikimedia.org/wiki/File:2017_Lamborghini_Huracan_LP610.jpg) |
 | `mercedes-e300.jpg` | [Mercedes-Benz W214 1X7A1841.jpg](https://commons.wikimedia.org/wiki/File:Mercedes-Benz_W214_1X7A1841.jpg) |
@@ -75,13 +75,13 @@ Algumas fotos mostram um modelo parecido ou outra versão do mesmo carro ou moto
 | `vw-gol.jpg` | [Volkswagen Gol Highline 2023 (53708009248) (cropped).jpg](https://commons.wikimedia.org/wiki/File:Volkswagen_Gol_Highline_2023_(53708009248)_(cropped).jpg) |
 | `vw-nivus.jpg` | [Volkswagen Taigo 1X7A0350.jpg](https://commons.wikimedia.org/wiki/File:Volkswagen_Taigo_1X7A0350.jpg) |
 | `vw-polo-track.jpg` | [2018 Volkswagen Polo SE 1.0 Front.jpg](https://commons.wikimedia.org/wiki/File:2018_Volkswagen_Polo_SE_1.0_Front.jpg) |
-| `vw-saveiro.jpg` | [Volkswagen Saveiro Cross Doble Cabina Mk6 in Uruguay - rear.jpg](https://commons.wikimedia.org/wiki/File:Volkswagen_Saveiro_Cross_Doble_Cabina_Mk6_in_Uruguay_-_rear.jpg) |
+| `vw-saveiro.jpg` | [Saveiro G6 Trend.jpg](https://commons.wikimedia.org/wiki/File:Saveiro_G6_Trend.jpg) |
 | `vw-t-cross.jpg` | [VW T-Cross Style (Facelift) – f 22022025.jpg](https://commons.wikimedia.org/wiki/File:VW_T-Cross_Style_(Facelift)_%E2%80%93_f_22022025.jpg) |
 | `vw-tiguan.jpg` | [Volkswagen Tiguan III IMG 8823 (cropped).jpg](https://commons.wikimedia.org/wiki/File:Volkswagen_Tiguan_III_IMG_8823_(cropped).jpg) |
 | `vw-virtus.jpg` | [2022 Volkswagen Virtus 1.5 GT (India) front view 02.png](https://commons.wikimedia.org/wiki/File:2022_Volkswagen_Virtus_1.5_GT_(India)_front_view_02.png) |
 | `yamaha-factor-150.jpg` | [Yamaha YBR 125 ED "Libero 125" colombiana, modelo 2018.jpg](https://commons.wikimedia.org/wiki/File:Yamaha_YBR_125_ED_%22Libero_125%22_colombiana%2C_modelo_2018.jpg) |
-| `yamaha-fazer-250.jpg` | [Yamaha Ys 250 Fazer Cinza.jpg](https://commons.wikimedia.org/wiki/File:Yamaha_Ys_250_Fazer_Cinza.jpg) |
+| `yamaha-fazer-250.jpg` | [YAMAHA YS250 Fazer Yamaha Communication Plaza.jpg](https://commons.wikimedia.org/wiki/File:YAMAHA_YS250_Fazer_Yamaha_Communication_Plaza.jpg) |
 | `yamaha-lander-250.jpg` | [Lander250jamil.jpg](https://commons.wikimedia.org/wiki/File:Lander250jamil.jpg) |
 | `yamaha-mt-03.jpg` | [Moscow, Yamaha MT-03, June 2025 01.jpg](https://commons.wikimedia.org/wiki/File:Moscow%2C_Yamaha_MT-03%2C_June_2025_01.jpg) |
 | `yamaha-mt-09.jpg` | [2024 Yamaha MT-09 Y-AMT.jpg](https://commons.wikimedia.org/wiki/File:2024_Yamaha_MT-09_Y-AMT.jpg) |
-| `yamaha-nmax-160.jpg` | [Yamaha nmax cpd150 YCP.JPG](https://commons.wikimedia.org/wiki/File:Yamaha_nmax_cpd150_YCP.JPG) |
+| `yamaha-nmax-160.jpg` | [Yamaha NMAX Turbo 155 front side view in Indonesia.jpg](https://commons.wikimedia.org/wiki/File:Yamaha_NMAX_Turbo_155_front_side_view_in_Indonesia.jpg) |
