@@ -111,9 +111,9 @@
 /* Nossos veículos */
 .car-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 .car-card { display: flex; flex-direction: column; }
-.car-card__img { display: flex; align-items: center; justify-content: center; height: 210px; padding: 0; border-radius: 14px; background: #f2f2f2; overflow: hidden; }
+.car-card__img { display: flex; align-items: center; justify-content: center; height: 210px; padding: 10px; border-radius: 14px; background: #fffbe2; overflow: hidden; }
 .car-card:first-child .car-card__img { background: #f2f2f2; }
-.car-card__img img, .car-card__img .veh__ph { width: 100%; height: 100%; object-fit: cover; border-radius: 0; background: transparent; }
+.car-card__img img, .car-card__img .veh__ph { width: 100%; height: 100%; object-fit: contain; border-radius: 0; background: transparent; mix-blend-mode: multiply; }
 .car-card__name { margin-top: 18px; color: var(--c-text); font-size: 20px; line-height: 1.25; font-weight: 500; letter-spacing: -0.01em; }
 .car-card__ex { margin-top: 2px; color: #8a8f95; font-size: 13px; }
 .car-card__specs { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 12px; margin-top: 14px; color: #6b7076; font-size: 13px; }
@@ -206,7 +206,7 @@
 .car-card__img img, .car-card__img .veh__ph { transition: transform 1.1s var(--ease-out); }
 .car-card:hover .car-card__img { background: #fff3c2; box-shadow: 0 26px 44px -30px rgba(130,96,0,.55); }
 .car-card:first-child:hover .car-card__img { background: #ececec; }
-.car-card:hover .car-card__img img { transform: scale(1.07); }
+.car-card:hover .car-card__img img { transform: translateX(6px) scale(1.05); }
 .car-card__price { transition: transform .6s var(--ease-out); }
 .car-card:hover .car-card__price { transform: translateY(-2px); }
 .how-step { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 1s var(--ease-out), background-color .5s var(--ease-out), box-shadow .8s var(--ease-out); }
