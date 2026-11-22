@@ -1223,10 +1223,10 @@ body:not(.is-home) #view.view-in { animation: viewIn .9s var(--ease-out) both; }
 }
 
 /* ===== Fotos reais dos veículos (claude/assets/carros) ===== */
-.veh__img, .group-card img, .unit .veh__img, .fleet-card .veh__img, .plan-card .veh__img { object-fit: cover; border-radius: 12px; background: #eef0f2; }
+.veh__img, .group-card img, .unit .veh__img, .fleet-card .veh__img, .plan-card .veh__img { object-fit: contain; border-radius: 12px; background: #f6f6f4; mix-blend-mode: multiply; }
 .group-card { overflow: hidden; }
 .group-card img { height: auto; aspect-ratio: 16 / 10; }
-body:not(.is-admin) .group-card:hover img { transform: scale(1.03); }
+body:not(.is-admin) .group-card:hover img { transform: translateX(4px) scale(1.03); }
 .veh { align-items: center; }
 /* ===== Lojas: lista compacta + Google Maps ===== */
 .lj-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 20px; }
