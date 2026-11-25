@@ -1,7 +1,7 @@
 /* Falls Car — base de demonstração (RNF36) */
 window.FC = window.FC || {};
 
-FC.SEED_VERSION = 4;
+FC.SEED_VERSION = 5;
 
 FC.buildSeed = function () {
   var now = new Date();
@@ -196,9 +196,12 @@ FC.buildSeed = function () {
   ];
 
   var usuarios = [
-    { id: "U1", nome: "Gestor (demo)", email: "gestor@fallscar.demo", perfil: "gestor", lojas: ["*"], ativo: true },
-    { id: "U2", nome: "Atendente (demo)", email: "atendente@fallscar.demo", perfil: "atendente", lojas: ["SPPAU", "SPPIN", "CGH", "GRU"], ativo: true },
-    { id: "U3", nome: "Operador de frota (demo)", email: "frota@fallscar.demo", perfil: "frota", lojas: ["SPPAU", "SPPIN", "CGH", "GRU"], ativo: true }
+    // senha de demonstração combinada com a equipe; aqui só o hash (RNF36)
+    { id: "U1", nome: "Bruno Oliveira de Almeida", email: "bruno@fallscar.com.br", senhaHash: "h20gerb", perfil: "gestor", lojas: ["*"], ativo: true },
+    { id: "U4", nome: "Vladmir dos Santos Oliveira", email: "vladmir@fallscar.com.br", senhaHash: "h20gerb", perfil: "gestor", lojas: ["*"], ativo: true },
+    { id: "U5", nome: "Carlos Eduardo de Moura Pinto (Cadu)", email: "cadu@fallscar.com.br", senhaHash: "h20gerb", perfil: "gestor", lojas: ["*"], ativo: true },
+    { id: "U2", nome: "Atendente (demo)", email: "atendente@fallscar.demo", senhaHash: "h20gerb", perfil: "atendente", lojas: ["SPPAU", "SPPIN", "CGH", "GRU"], ativo: true },
+    { id: "U3", nome: "Operador de frota (demo)", email: "frota@fallscar.demo", senhaHash: "h20gerb", perfil: "frota", lojas: ["SPPAU", "SPPIN", "CGH", "GRU"], ativo: true }
   ];
 
   // Histórico de locações para relatórios (encerradas) + algumas futuras
@@ -268,8 +271,36 @@ FC.buildSeed = function () {
 
   var chamados = [{ protocolo: "SUP-1001", clienteId: "C1", canal: "site", assunto: "Dúvida sobre cadeirinha", status: "respondido", loja: "SPPAU", atendente: "Atendente (demo)", criadoEm: iso(day(-3)), historico: [{ data: iso(day(-3)), autor: "Ana Souza", texto: "Posso incluir cadeirinha depois de reservar?" }, { data: iso(day(-2)), autor: "Atendente (demo)", texto: "Sim, pela área Minhas reservas > Alterar, sujeito à disponibilidade de estoque." }], anexos: [] }];
 
+  // Despesas de demonstração dos últimos 6 meses, por loja e categoria (painel do empresário)
+  var despesas = [], PESO = { parcelas: 0.40, manutencao: 0.22, seguro: 0.16, equipe: 0.13, outros: 0.09 };
+  for (var mo = 5; mo >= 0; mo--) {
+    var dm = new Date(now.getFullYear(), now.getMonth() - mo, 1);
+    var mes = dm.getFullYear() + "-" + String(dm.getMonth() + 1).padStart(2, "0");
+    lojas.filter(function (l) { return l.ativa; }).forEach(function (l) {
+      var frotaLoja = veiculos.filter(function (v) { return v.lojaResponsavel === l.id; }).length;
+      var base = frotaLoja * (1450 + rnd() * 250) * (1 + (5 - mo) * 0.015); // custo mensal por veículo, subindo levemente
+      Object.keys(PESO).forEach(function (cat) {
+        despesas.push({ id: "D-" + mes + "-" + l.id + "-" + cat, mes: mes, loja: l.id, categoria: cat, valor: Math.round(base * PESO[cat] * (0.9 + rnd() * 0.2)) });
+      });
+    });
+  }
+
+  // Cobranças (planos semanais e despesas a receber): algumas vencem hoje, duas estão atrasadas
+  var cobrancas = [
+    { id: "COB-1", clienteId: "C1", reservaCodigo: null, descricao: "Plano motorista de app · 2ª semana", valor: 640, vencimento: iso(day(0, 9)), pagoEm: iso(day(0, 9, 12)), metodo: "pix" },
+    { id: "COB-2", clienteId: "C2", reservaCodigo: null, descricao: "Plano motorista de app · 3ª semana", valor: 420, vencimento: iso(day(0, 12)), pagoEm: null, metodo: "credito" },
+    { id: "COB-3", clienteId: "C3", reservaCodigo: null, descricao: "Plano mensal · 2ª semana", valor: 2220, vencimento: iso(day(0, 18)), pagoEm: null, metodo: "pix" },
+    { id: "COB-4", clienteId: "C4", reservaCodigo: null, descricao: "Plano motorista de app · 4ª semana", valor: 780, vencimento: iso(day(-2, 9)), pagoEm: null, metodo: "pix" },
+    { id: "COB-5", clienteId: "C2", reservaCodigo: null, descricao: "Despesa adicional · combustível", valor: 370, vencimento: iso(day(-1, 9)), pagoEm: null, metodo: "pix" },
+    { id: "COB-6", clienteId: "C1", reservaCodigo: null, descricao: "Plano motorista de app · 1ª semana", valor: 640, vencimento: iso(day(-7, 9)), pagoEm: iso(day(-7, 9, 30)), metodo: "pix" }
+  ];
+
+  // Um veículo voltou e espera vistoria antes de ser liberado
+  var vVist = veiculos.filter(function (v) { return v.ativo && v.lojaResponsavel === "GRU" && v.tipo === "moto"; })[0] || veiculos[veiculos.length - 1];
+  vVist.aguardandoVistoria = true;
+
   return {
-    seedVersion: FC.SEED_VERSION, criadoEm: iso(now),
+    seedVersion: FC.SEED_VERSION, criadoEm: iso(now), despesas: despesas, cobrancas: cobrancas,
     lojas: lojas, grupos: grupos, tarifas: tarifas, veiculos: veiculos, movimentos: movimentos, motoristas: motoristas,
     protecoes: protecoes, acessorios: acessorios, cupons: cupons, config: config, historicoConfig: historicoConfig,
     clientes: clientes, usuarios: usuarios, reservas: reservas, agenda: agenda, manutencoes: manutencoes, transferencias: transferencias,
