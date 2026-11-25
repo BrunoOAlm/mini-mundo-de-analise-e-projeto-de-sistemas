@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { abrirBanco } from "./db-sqlite.mjs";
 import { carregarFC, contexto } from "./fc-servidor.mjs";
 import { cadastrar } from "../server/contas.mjs";
-import { criarReserva, obterReserva, pagar, prepararFC } from "../server/reservas.mjs";
+import { criarReserva, obterReserva, pagar, cancelar, prepararFC } from "../server/reservas.mjs";
 
 const FC = carregarFC();
 prepararFC(FC);
@@ -76,4 +76,35 @@ test("reserva de outro cliente dá 404 e método inválido dá 400", async () =>
   assert.equal((await pagar(ctx, outro, r.codigo, PG("aprovado"))).status, 404);
   assert.equal((await pagar(ctx, c, r.codigo, { ...PG("aprovado"), metodo: "boleto" })).status, 400);
   assert.equal((await obterReserva(ctx, c.id, r.codigo)).estado, "aguardando_pagamento");
+});
+
+test("revisão: duas aprovações simultâneas com idEvento diferente cobram uma vez só", async () => {
+  const { ctx, c, r } = await preparado();
+  const rs = await Promise.all([pagar(ctx, c, r.codigo, PG("aprovado", "a1")), pagar(ctx, c, r.codigo, PG("aprovado", "a2"))]);
+  assert.equal((await ctx.db.prepare("SELECT COUNT(*) AS n FROM pagamentos").first()).n, 1);
+  assert.ok(rs.every((x) => !x.status || x.status === 409));
+  assert.equal((await obterReserva(ctx, c.id, r.codigo)).estado, "confirmada");
+});
+
+test("revisão: mesmo idEvento simultâneo não dá erro interno", async () => {
+  const { ctx, c, r } = await preparado();
+  const rs = await Promise.all([pagar(ctx, c, r.codigo, PG("aprovado", "x1")), pagar(ctx, c, r.codigo, PG("aprovado", "x1"))]);
+  assert.ok(rs.every((x) => x.reserva || x.status === 409));
+  assert.equal((await ctx.db.prepare("SELECT COUNT(*) AS n FROM pagamentos").first()).n, 1);
+});
+
+test("revisão: reserva não paga aparece como expirada depois do bloqueio", async () => {
+  const { ctx, c, r } = await preparado();
+  ctx.avancar(16 * 60000);
+  assert.equal((await obterReserva(ctx, c.id, r.codigo)).estado, "expirada");
+});
+
+test("revisão: cancelar antes de pagar libera o carro na hora", async () => {
+  const { ctx, c, r } = await preparado();
+  const x = await cancelar(ctx, c, r.codigo);
+  assert.equal(x.reserva.estado, "cancelada");
+  assert.equal((await ctx.db.prepare("SELECT COUNT(*) AS n FROM ocupacao WHERE ref = ?").bind(r.codigo).first()).n, 0);
+  const outro = await cliente(ctx);
+  assert.ok((await criarReserva(ctx, outro, SEL)).reserva);
+  assert.equal((await cancelar(ctx, outro, r.codigo)).status, 404);
 });

@@ -1,5 +1,6 @@
 // Contas de cliente e sessão (RF20, RF22, RNF06, RNF09, RNF32). ctx = { db, FC, agora: () => Date }
 import { hashSenha, confereSenha, novoToken, sha256hex } from "./cripto.mjs";
+import { limparCnh } from "./reservas.mjs";
 
 const ERRO_LOGIN = "E-mail/CPF ou senha incorretos.";
 const SESSAO_DIAS = 30;
@@ -48,7 +49,7 @@ export async function cadastrar(ctx, d) {
 
   const id = "CL" + novoToken().slice(0, 10).toUpperCase().replace(/[^A-Z0-9]/g, "X");
   const linha = { id, nome, email, doc_tipo: docTipo, doc, telefone: String(d.telefone || "").trim(), nascimento: d.nascimento || null,
-    cnh_json: d.cnh ? JSON.stringify(d.cnh) : null, senha_hash: await hashSenha(d.senha), criado_em: iso(ctx.agora()) };
+    cnh_json: d.cnh && limparCnh(d.cnh).categoria ? JSON.stringify(limparCnh(d.cnh)) : null, senha_hash: await hashSenha(d.senha, ctx.iteracoes), criado_em: iso(ctx.agora()) };
   await ctx.db.prepare("INSERT INTO clientes (id, nome, email, doc_tipo, doc, telefone, nascimento, cnh_json, senha_hash, criado_em) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .bind(linha.id, linha.nome, linha.email, linha.doc_tipo, linha.doc, linha.telefone, linha.nascimento, linha.cnh_json, linha.senha_hash, linha.criado_em).run();
   return { cliente: linhaParaCliente(linha), token: await abrirSessao(ctx, id) };
@@ -85,5 +86,7 @@ export async function clienteDaSessao(ctx, token) {
 }
 
 export async function gravarCnh(ctx, clienteId, cnh) {
-  await ctx.db.prepare("UPDATE clientes SET cnh_json = ? WHERE id = ? AND cnh_json IS NULL").bind(JSON.stringify(cnh), clienteId).run();
+  const limpa = limparCnh(cnh);
+  if (!limpa || !limpa.categoria) return;
+  await ctx.db.prepare("UPDATE clientes SET cnh_json = ? WHERE id = ? AND cnh_json IS NULL").bind(JSON.stringify(limpa), clienteId).run();
 }

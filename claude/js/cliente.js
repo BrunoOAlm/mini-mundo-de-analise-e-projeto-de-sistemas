@@ -645,16 +645,30 @@
       });
     });
     // reserva do site: pagamento na API (idempotente por idEvento); assistida na área da empresa: simulador local
+    var tentativa = null;
     function processar(metodo, nParc, resultado) {
       if (!r.servidor) return Promise.resolve(FC.processarPagamento(r.codigo, metodo, nParc, resultado));
-      var idEvento = FC.uid("PG");
+      // mesma tentativa reenviada (ex.: rede caiu) usa o mesmo idEvento: o servidor não cobra de novo
+      var idEvento = tentativa && tentativa.resultado === resultado ? tentativa.id : FC.uid("PG");
+      tentativa = { id: idEvento, resultado: resultado };
       return FC.api("POST", "/reservas/" + encodeURIComponent(r.codigo) + "/pagamento", { metodo: metodo, parcelas: nParc, resultado: resultado, idEvento: idEvento }).then(function (x) {
+        if (x.status === 0) return { erro: x.dados.erro };
+        tentativa = null;
         if (!x.ok) return { erro: x.dados.erro || "Não foi possível processar o pagamento." };
         return { reserva: FC.guardarReservaServidor(x.dados.reserva), msg: x.dados.msg };
       });
     }
     var cancel = $("#pg-cancel", view);
     if (cancel) cancel.addEventListener("click", function () {
+      if (r.servidor) {
+        cancel.disabled = true;
+        FC.api("POST", "/reservas/" + encodeURIComponent(r.codigo) + "/cancelar", {}).then(function (x) {
+          if (x.ok) FC.guardarReservaServidor(x.dados.reserva);
+          FC.db.rascunho = null; FC.save();
+          FC.toast(x.ok ? "Reserva descartada e veículo liberado." : (x.dados.erro || "Não foi possível cancelar agora."), x.ok ? "ok" : "bad"); FC.go("#/");
+        });
+        return;
+      }
       r.estado = "cancelada"; FC.evento(r, "Cliente desistiu antes do pagamento; recursos liberados", FC.autorAtual()); FC.liberarRecursos(r);
       FC.db.rascunho = null; FC.save(); FC.toast("Reserva descartada e unidade liberada."); FC.go("#/");
     });

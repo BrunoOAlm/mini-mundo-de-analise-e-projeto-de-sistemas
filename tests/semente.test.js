@@ -71,3 +71,12 @@ test("revisão: toda cobrança tem loja", () => {
 test("revisão: base cabe com folga no localStorage (< 1,2 milhão de caracteres)", () => {
   assert.ok(JSON.stringify(db).length < 1200000, "tamanho " + JSON.stringify(db).length);
 });
+
+test("revisão: no servidor (FC.SERVIDOR) a semente não monta o histórico de demonstração", () => {
+  const { carregar } = require("./carregar");
+  const t0 = Date.now();
+  const FS = carregar(["dados.js"], undefined, { SERVIDOR: true });
+  const d = FS.buildSeed();
+  assert.ok(d.reservas.length < 20, "reservas " + d.reservas.length);
+  assert.ok(d.veiculos.length > 100);
+});

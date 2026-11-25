@@ -14,7 +14,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api" || url.pathname.startsWith("/api/")) {
       if (!env.DB) return new Response(JSON.stringify({ erro: "Banco de dados não configurado." }), { status: 503, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
-      return tratarApi(request, { db: env.DB, FC, agora: () => new Date() });
+      return tratarApi(request, { db: env.DB, FC, agora: () => new Date(), iteracoes: Number(env.PBKDF2_ITER) || undefined });
     }
     return servirAsset(request, env);
   }

@@ -11,9 +11,11 @@ async function derivar(senha, sal, iter) {
   return crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: sal, iterations: iter }, chave, 256);
 }
 
-export async function hashSenha(senha) {
+// iteracoes: padrão 100 000; o worker pode baixar via variável PBKDF2_ITER se o plano limitar CPU por requisição
+export async function hashSenha(senha, iteracoes) {
+  const it = Number(iteracoes) || ITER;
   const sal = crypto.getRandomValues(new Uint8Array(16));
-  return "pbkdf2$" + ITER + "$" + b64(sal) + "$" + b64(await derivar(senha, sal, ITER));
+  return "pbkdf2$" + it + "$" + b64(sal) + "$" + b64(await derivar(senha, sal, it));
 }
 
 export async function confereSenha(senha, guardado) {

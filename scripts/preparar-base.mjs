@@ -23,7 +23,7 @@ export async function gerarSQL(FC, agora) {
   for (const c of clientes) {
     const cnh = c.cnh ? { numero: c.cnh.numero, categoria: c.cnh.categoria, validade: c.cnh.validade, restricoes: c.cnh.restricoes || [], status: c.cnh.status } : null;
     linhas.push("INSERT INTO clientes (id, nome, email, doc_tipo, doc, telefone, nascimento, cnh_json, senha_hash, criado_em) VALUES (" +
-      [c.id, c.nome, c.email, c.docTipo, c.doc, c.telefone, c.nascimento, cnh ? JSON.stringify(cnh) : null, await hashSenha(SENHA_DEMO), c.criadoEm].map(q).join(", ") + ");");
+      [c.id, c.nome, c.email, c.docTipo, c.doc, c.telefone, c.nascimento, cnh ? JSON.stringify(cnh) : null, await hashSenha(SENHA_DEMO, process.env.PBKDF2_ITER || 10000), c.criadoEm].map(q).join(", ") + ");");
   }
   // carros da loja SPPAU sem exigência especial de habilitação, um por reserva
   const carros = FC.db.veiculos.filter((v) => v.ativo && v.tipo === "carro" && v.lojaResponsavel === "SPPAU" && !v.cnh && !v.acessibilidade.length);

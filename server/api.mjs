@@ -1,6 +1,6 @@
 // API JSON do site do cliente em /api/* (RNF05, RNF09, RNF17, RNF18, RNF32).
 import { cadastrar, entrar, sair, clienteDaSessao, perfilPublico } from "./contas.mjs";
-import { criarReserva, listarReservas, obterReserva, ocupados, pagar } from "./reservas.mjs";
+import { criarReserva, listarReservas, obterReserva, ocupados, pagar, cancelar } from "./reservas.mjs";
 
 const COOKIE = "fc_sessao";
 const MAX_AGE = 30 * 86400;
@@ -67,12 +67,13 @@ export async function tratarApi(req, ctx) {
       if (!cliente) return erro(401, "Entre na sua conta para continuar.");
       if (metodo === "GET" && caminho === "/api/reservas") return json(200, { reservas: await listarReservas(ctx, cliente.id) });
       if (metodo === "POST" && caminho === "/api/reservas") return resultado(await criarReserva(ctx, cliente, corpo || {}), 201, "reserva");
-      const m = /^\/api\/reservas\/([A-Z0-9-]{4,20})(\/pagamento)?$/.exec(caminho);
+      const m = /^\/api\/reservas\/([A-Z0-9-]{4,20})(\/pagamento|\/cancelar)?$/.exec(caminho);
       if (m && metodo === "GET" && !m[2]) {
         const r = await obterReserva(ctx, cliente.id, m[1]);
         return r ? json(200, { reserva: r }) : erro(404, "Reserva não encontrada.");
       }
-      if (m && metodo === "POST" && m[2]) return resultado(await pagar(ctx, cliente, m[1], corpo || {}), 200, "reserva");
+      if (m && metodo === "POST" && m[2] === "/pagamento") return resultado(await pagar(ctx, cliente, m[1], corpo || {}), 200, "reserva");
+      if (m && metodo === "POST" && m[2] === "/cancelar") return resultado(await cancelar(ctx, cliente, m[1]), 200, "reserva");
     }
     return erro(404, "Rota não encontrada.");
   } catch (e) {

@@ -224,7 +224,8 @@ FC.buildSeed = function () {
   function codigo() { rc++; var s = ""; var c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for (var i = 0; i < 6; i++) s += c[Math.floor(rnd() * c.length)]; return "FC-" + s; }
   // Cada veículo (exceto as unidades fixas V001–V006) tem locações seguidas nos últimos ~6 meses; cerca de 75%
   // da frota está alugada agora, para o painel do empresário mostrar números de uma locadora em operação.
-  veiculos.slice(6).forEach(function (v) {
+  // no servidor (FC.SERVIDOR) o histórico de demonstração não é usado: pula para não gastar CPU na partida
+  (FC.SERVIDOR ? [] : veiculos.slice(6)).forEach(function (v) {
   var cursor = day(-178 - Math.floor(rnd() * 5), 9);
   while (true) {
     cursor = addH(cursor, (Math.floor(rnd() * 3)) * 24 + 12);

@@ -11,10 +11,12 @@ export function prepararFC(FC) {
   FC._usosBase = {}; FC.db.cupons.forEach((c) => { FC._usosBase[c.codigo] = c.usos; });
 }
 
-function linhaParaReserva(l, eventos) {
+function linhaParaReserva(l, eventos, agora) {
+  // reserva não paga cujo bloqueio venceu aparece como expirada (o carro já foi liberado)
+  const expirada = l.estado === "aguardando_pagamento" && l.bloqueio_expira && agora && l.bloqueio_expira < iso(agora);
   return {
     codigo: l.codigo, veiculoId: l.veiculo_id, motorista: l.motorista_id, lojaRetirada: l.loja_retirada, lojaDevolucao: l.loja_devolucao,
-    inicio: l.inicio, fim: l.fim, estado: l.estado, pagamento: l.pagamento, metodo: l.metodo, parcelas: l.parcelas,
+    inicio: l.inicio, fim: l.fim, estado: expirada ? "expirada" : l.estado, pagamento: l.pagamento, metodo: l.metodo, parcelas: l.parcelas,
     preco: JSON.parse(l.preco_json), tarifaVersao: l.tarifa_versao, bloqueioExpira: l.bloqueio_expira, criadoEm: l.criado_em,
     eventos: (eventos || []).map((e) => ({ data: e.data, autor: e.autor, evento: e.texto }))
   };
@@ -47,6 +49,20 @@ async function precoNoServidor(ctx, cliente, s) {
   } finally { FC.db.reservas = []; }
 }
 
+// só os campos que a regra usa, com tipos e tamanhos limitados; status sempre pendente (conferência é da empresa)
+const CATEGORIAS = ["A", "B", "AB", "C", "D", "E", "AC", "AD", "AE", "ACC"];
+export function limparCnh(c) {
+  if (!c || typeof c !== "object") return null;
+  const validade = new Date(c.validade);
+  return {
+    numero: String(c.numero || "").replace(/[^0-9A-Za-z-]/g, "").slice(0, 20),
+    categoria: CATEGORIAS.indexOf(String(c.categoria || "").toUpperCase()) >= 0 ? String(c.categoria).toUpperCase() : "",
+    validade: isNaN(validade) ? "" : validade.toISOString().slice(0, 10),
+    restricoes: Array.isArray(c.restricoes) ? c.restricoes.slice(0, 5).map((x) => String(x).slice(0, 60)) : [],
+    status: "pendente"
+  };
+}
+
 function validar(ctx, cliente, s) {
   const FC = ctx.FC, campos = {}, agora = ctx.agora();
   const v = FC.veiculoById(s.veiculoId);
@@ -70,11 +86,13 @@ function validar(ctx, cliente, s) {
     if (!m || !m.ativo || m.lojas.indexOf(lr.id) < 0 || !FC.categoriaCompativel(m.categoria, v)) campos.motorista = "Motorista indisponível para esta loja ou veículo.";
   } else {
     const cp = s.condutorPrincipal || {};
-    const av = FC.avaliaCondutor(cp.cnh || (cp.proprio ? cliente.cnh : null), v, fim, "Condutor principal");
+    // o próprio cliente com CNH no perfil: vale a do perfil, não a que o navegador mandou
+    const cnh = cp.proprio && cliente.cnh ? cliente.cnh : limparCnh(cp.cnh);
+    const av = FC.avaliaCondutor(cnh, v, fim, "Condutor principal");
     if (!av.ok) campos.cnh = av.motivos.join(" ");
   }
   (s.condutores || []).forEach((c, i) => {
-    const av = FC.avaliaCondutor(c.cnh, v, fim, "Condutor adicional " + (i + 1));
+    const av = FC.avaliaCondutor(limparCnh(c && c.cnh), v, fim, "Condutor adicional " + (i + 1));
     if (!av.ok) campos["condutor" + i] = av.motivos.join(" ");
   });
   if ((s.condutores || []).length > FC.cfg().maxCondutoresAdicionais) campos.condutores = "Número de condutores adicionais acima do permitido.";
@@ -86,7 +104,9 @@ export async function criarReserva(ctx, cliente, sel) {
   const s = { veiculoId: sel.veiculoId, lojaRetirada: sel.lojaRetirada, lojaDevolucao: sel.lojaDevolucao || sel.lojaRetirada,
     inicio: sel.inicio, fim: sel.fim, motorista: sel.motorista || null, protecoes: sel.protecoes || [], acessorios: sel.acessorios || [],
     km: sel.km || null, cupom: sel.cupom ? String(sel.cupom).trim().toUpperCase() : null, plano: sel.plano || null,
-    condutorPrincipal: sel.condutorPrincipal || null, condutores: sel.condutores || [], aceite: sel.aceite || null };
+    condutorPrincipal: sel.condutorPrincipal ? { proprio: !!sel.condutorPrincipal.proprio, nome: String(sel.condutorPrincipal.nome || "").slice(0, 120), cnh: limparCnh(sel.condutorPrincipal.cnh) } : null,
+    condutores: (Array.isArray(sel.condutores) ? sel.condutores.slice(0, 5) : []).map((c) => ({ nome: String((c && c.nome) || "").slice(0, 120), cnh: limparCnh(c && c.cnh) })),
+    aceite: sel.aceite && sel.aceite.versao ? { versao: String(sel.aceite.versao).slice(0, 40) } : null };
   const campos = validar(ctx, cliente, s);
   if (campos) return { erro: "Revise os dados da reserva.", campos, status: 400 };
   const pr = await precoNoServidor(ctx, cliente, s);
@@ -116,7 +136,7 @@ export async function criarReserva(ctx, cliente, sel) {
   if (s.cupom) stmts.push(ctx.db.prepare("INSERT INTO cupons_uso (codigo, reserva_codigo, cliente_id) VALUES (?, ?, ?)").bind(s.cupom, codigo, cliente.id));
   await ctx.db.batch(stmts);
   const cp = s.condutorPrincipal;
-  if (cp && cp.proprio && cp.cnh && !cliente.cnh) await gravarCnh(ctx, cliente.id, cp.cnh);
+  if (cp && cp.proprio && cp.cnh && cp.cnh.categoria && !cliente.cnh) await gravarCnh(ctx, cliente.id, cp.cnh);
   return { reserva: await obterReserva(ctx, cliente.id, codigo) };
 }
 
@@ -124,12 +144,12 @@ export async function obterReserva(ctx, clienteId, codigo) {
   const l = await ctx.db.prepare("SELECT * FROM reservas WHERE codigo = ? AND cliente_id = ?").bind(String(codigo || ""), clienteId).first();
   if (!l) return null;
   const ev = (await ctx.db.prepare("SELECT data, autor, texto FROM eventos WHERE reserva_codigo = ? ORDER BY id").bind(l.codigo).all()).results;
-  return linhaParaReserva(l, ev);
+  return linhaParaReserva(l, ev, ctx.agora());
 }
 
 export async function listarReservas(ctx, clienteId) {
   const { results } = await ctx.db.prepare("SELECT * FROM reservas WHERE cliente_id = ? ORDER BY criado_em DESC, rowid DESC").bind(clienteId).all();
-  return results.map((l) => linhaParaReserva(l, []));
+  return results.map((l) => linhaParaReserva(l, [], ctx.agora()));
 }
 
 // Pagamento simulado (RF45, RF79–RF82, RF84). Idempotente por idEvento; confirma só com bloqueio/capacidade.
@@ -144,13 +164,32 @@ export async function pagar(ctx, cliente, codigo, p) {
   if (!idEvento) return { erro: "Identificador do pagamento ausente.", status: 400 };
   const l = await db.prepare("SELECT * FROM reservas WHERE codigo = ? AND cliente_id = ?").bind(String(codigo || ""), cliente.id).first();
   if (!l) return { erro: "Reserva não encontrada.", status: 404 };
+  const duplicado = async (msg) => ({ reserva: await obterReserva(ctx, cliente.id, l.codigo), duplicado: true, msg: msg || "Este pagamento já foi processado; nada foi cobrado de novo." });
+  if (await db.prepare("SELECT 1 FROM pagamentos WHERE id_evento = ?").bind(idEvento).first()) return duplicado();
+  if (l.pagamento === "aprovado") return duplicado("Pagamento já aprovado anteriormente; confirmação não duplicada.");
+  if (l.estado !== "aguardando_pagamento") return { erro: "Esta reserva não está aguardando pagamento.", status: 409 };
 
-  const ja = await db.prepare("SELECT resultado FROM pagamentos WHERE id_evento = ?").bind(idEvento).first();
-  if (ja) return { reserva: await obterReserva(ctx, cliente.id, l.codigo), duplicado: true, msg: "Este pagamento já foi processado; nada foi cobrado de novo." };
-  if (l.pagamento === "aprovado") return { reserva: await obterReserva(ctx, cliente.id, l.codigo), duplicado: true, msg: "Pagamento já aprovado anteriormente; confirmação não duplicada." };
-  if (l.estado !== "aguardando_pagamento")
-    return { erro: "Esta reserva não está aguardando pagamento.", status: 409 };
+  // só uma requisição por vez processa esta reserva (RF80, RNF34): quem não conseguir marcar "processando" para aqui
+  const anterior = l.pagamento;
+  const marcou = await db.prepare("UPDATE reservas SET pagamento = 'processando' WHERE codigo = ? AND cliente_id = ? AND estado = 'aguardando_pagamento' AND pagamento NOT IN ('aprovado', 'processando')")
+    .bind(l.codigo, cliente.id).run();
+  if (marcou.meta.changes !== 1) {
+    const atual = await db.prepare("SELECT pagamento FROM reservas WHERE codigo = ?").bind(l.codigo).first();
+    if (atual && atual.pagamento === "aprovado") return duplicado("Pagamento já aprovado anteriormente; confirmação não duplicada.");
+    return { erro: "Este pagamento já está sendo processado. Aguarde um instante.", status: 409 };
+  }
+  const devolver = () => db.prepare("UPDATE reservas SET pagamento = ? WHERE codigo = ? AND pagamento = 'processando'").bind(anterior, l.codigo).run();
+  try {
+    return await processarPagamento(ctx, cliente, l, p, idEvento);
+  } catch (e) {
+    await devolver();
+    if (await db.prepare("SELECT 1 FROM pagamentos WHERE id_evento = ?").bind(idEvento).first()) return duplicado();
+    throw e;
+  }
+}
 
+async function processarPagamento(ctx, cliente, l, p, idEvento) {
+  const db = ctx.db, FC = ctx.FC;
   const agora = ctx.agora(), agoraIso = iso(agora), nome = METODOS[p.metodo];
   const parcelas = p.metodo === "credito" ? Math.max(1, Math.min(12, Number(p.parcelas) || 1)) : 1;
   const preco = JSON.parse(l.preco_json), valor = preco.agora != null ? preco.agora : preco.total;
@@ -166,9 +205,11 @@ export async function pagar(ctx, cliente, codigo, p) {
       msg: p.resultado === "recusado" ? "Pagamento recusado. A reserva não foi confirmada; tente outro meio enquanto o bloqueio estiver ativo." : "Pagamento em análise. A reserva só será confirmada após a aprovação." };
   }
 
-  // aprovado: confirma se o bloqueio ainda vale; senão tenta ocupar de novo (aprovação tardia, RF81)
-  const bloqueio = await db.prepare("SELECT id FROM ocupacao WHERE ref = ? AND recurso LIKE 'V:%' AND (expira_em IS NULL OR expira_em > ?)").bind(l.codigo, agoraIso).first();
-  let ok = !!bloqueio, tardio = !bloqueio;
+  // aprovado: transforma o bloqueio ainda válido em reserva numa única instrução; se o bloqueio já venceu,
+  // tenta ocupar de novo (aprovação tardia, RF81)
+  const firmou = await db.prepare("UPDATE ocupacao SET tipo = 'reserva', expira_em = NULL WHERE ref = ? AND (expira_em IS NULL OR expira_em > ?)").bind(l.codigo, agoraIso).run();
+  const temVeiculo = firmou.meta.changes > 0 && (await db.prepare("SELECT 1 FROM ocupacao WHERE ref = ? AND recurso LIKE 'V:%' AND expira_em IS NULL").bind(l.codigo).first());
+  let ok = !!temVeiculo, tardio = !temVeiculo;
   if (tardio) {
     await db.prepare("DELETE FROM ocupacao WHERE ref = ?").bind(l.codigo).run();
     ok = await ocupar(ctx, "V:" + l.veiculo_id, l.inicio, l.fim, "reserva", l.codigo, null);
@@ -179,7 +220,6 @@ export async function pagar(ctx, cliente, codigo, p) {
   const parc = parcelas > 1 ? ", " + parcelas + "x" : "";
   if (ok) {
     await db.batch([regPg,
-      db.prepare("UPDATE ocupacao SET tipo = 'reserva', expira_em = NULL WHERE ref = ?").bind(l.codigo),
       db.prepare("UPDATE reservas SET estado = 'confirmada', pagamento = 'aprovado', metodo = ?, parcelas = ?, bloqueio_expira = NULL WHERE codigo = ?").bind(p.metodo, parcelas, l.codigo),
       ev("Pagamento aprovado (" + nome + parc + ")"),
       ev(tardio ? "Aprovação após o fim do bloqueio: o veículo ainda estava livre e a reserva foi confirmada após nova verificação (RF81)" : "Reserva confirmada após aprovação do pagamento e verificação final de capacidade (RF80)", "sistema")]);
@@ -192,3 +232,14 @@ export async function pagar(ctx, cliente, codigo, p) {
   return { reserva: await obterReserva(ctx, cliente.id, l.codigo),
     msg: "O pagamento foi aprovado depois que o veículo deixou de estar disponível. Nenhum outro veículo foi reservado e o reembolso integral foi iniciado." };
 }
+
+// Cliente desiste antes de pagar: cancela e libera o veículo (e o motorista) na hora
+export async function cancelar(ctx, cliente, codigo) {
+  const db = ctx.db;
+  const l = await db.prepare("SELECT * FROM reservas WHERE codigo = ? AND cliente_id = ?").bind(String(codigo || ""), cliente.id).first();
+  if (!l) return { erro: "Reserva não encontrada.", status: 404 };
+  const r = await db.prepare("UPDATE reservas SET estado = 'cancelada', bloqueio_expira = NULL WHERE codigo = ? AND estado = 'aguardando_pagamento' AND pagamento NOT IN ('aprovado', 'processando')").bind(l.codigo).run();
+  if (r.meta.changes !== 1) return { erro: "Esta reserva não pode mais ser cancelada por aqui.", status: 409 };
+  await db.batch([db.prepare("DELETE FROM ocupacao WHERE ref = ? AND tipo = 'bloqueio'").bind(l.codigo),
+    db.prepare("INSERT INTO eventos (reserva_codigo, data, autor, texto) VALUES (?, ?, ?, ?)").bind(l.codigo, iso(ctx.agora()), cliente.nome, "Cliente desistiu antes do pagamento; veículo liberado")]);
+  return { reserva: await obterReserva(ctx, cliente.id, l.codigo), msg: "Reserva cancelada e veículo liberado." }; }

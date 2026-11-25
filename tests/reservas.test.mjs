@@ -117,3 +117,22 @@ test("ocupados não leva dados do cliente", async () => {
   assert.equal(o.length, 1);
   assert.deepEqual(Object.keys(o[0]).sort(), ["fim", "inicio", "veiculoId"]);
 });
+
+test("revisão: com CNH no perfil, a CNH enviada pelo navegador é ignorada", async () => {
+  const ctx = novo(); const c = await cliente(ctx);
+  await criarReserva(ctx, c, sel()); // grava CNH B no perfil
+  const comCnh = { ...c, cnh: { numero: "1", categoria: "B", validade: "2030-01-01", restricoes: [] } };
+  const r = await criarReserva(ctx, comCnh, sel({ veiculoId: moto.id, inicio: data(30, 10), fim: data(32, 10), condutorPrincipal: { proprio: true, cnh: { ...CNH_AB, status: "conferida" } } }));
+  assert.equal(r.status, 400);
+  assert.ok(r.campos.cnh);
+});
+
+test("revisão: CNH gravada no perfil é saneada e fica pendente", async () => {
+  const ctx = novo(); const c = await cliente(ctx);
+  await criarReserva(ctx, c, sel({ condutorPrincipal: { proprio: true, cnh: { ...CNH_B, status: "conferida", lixo: "x".repeat(5000) } } }));
+  const l = await ctx.db.prepare("SELECT cnh_json FROM clientes WHERE id = ?").bind(c.id).first();
+  const cnh = JSON.parse(l.cnh_json);
+  assert.equal(cnh.status, "pendente");
+  assert.equal(cnh.lixo, undefined);
+  assert.ok(l.cnh_json.length < 400);
+});

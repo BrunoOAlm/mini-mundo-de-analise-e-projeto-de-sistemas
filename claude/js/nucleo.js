@@ -596,7 +596,8 @@
   FC.guardarClienteServidor = function (c) {
     var local = FC.clienteById(c.id);
     var dados = { id: c.id, nome: c.nome, email: c.email, docTipo: c.docTipo, doc: c.doc, telefone: c.telefone, nascimento: c.nascimento, cnh: c.cnh, criadoEm: c.criadoEm, servidor: true };
-    if (local) Object.assign(local, dados); else FC.db.clientes.push(Object.assign({ marketing: false, newsletter: false, bloqueado: null }, dados));
+    if (local) { if (!local.servidor) local.preexistente = true; Object.assign(local, dados); } // cliente de demonstração local com o mesmo id: não some ao sair
+    else FC.db.clientes.push(Object.assign({ marketing: false, newsletter: false, bloqueado: null }, dados));
     FC.db.sessao.clienteId = c.id; FC.save();
     return FC.clienteById(c.id);
   };
@@ -616,7 +617,8 @@
     var id = FC.db.sessao.clienteId, c = id && FC.clienteById(id);
     if (c && c.servidor) {
       FC.db.reservas = FC.db.reservas.filter(function (r) { return !(r.servidor && r.clienteId === id); });
-      FC.db.clientes = FC.db.clientes.filter(function (x) { return x.id !== id; });
+      if (c.preexistente) { delete c.servidor; delete c.preexistente; }
+      else FC.db.clientes = FC.db.clientes.filter(function (x) { return x.id !== id; });
     }
     FC.db.sessao.clienteId = null; FC.db.rascunho = null; FC.save();
   };

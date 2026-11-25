@@ -10,3 +10,8 @@ database_name = "fallscar"
 # id do banco remoto: preenchido ao criar o banco (wrangler d1 create fallscar); em desenvolvimento local não é usado
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "server/migracoes"
+
+[vars]
+# iterações do PBKDF2 das senhas: o plano gratuito do Workers limita a CPU por requisição; 10 000 cabe nesse limite
+# (o formato guardado registra as iterações, então dá para subir depois sem perder as senhas existentes)
+PBKDF2_ITER = "10000"
