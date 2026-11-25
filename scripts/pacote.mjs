@@ -1,4 +1,4 @@
-// Monta a pasta publicada no Cloudflare Pages: arquivos do site (do Git, como estão na pasta), 404.html,
+// Monta a pasta publicada no Cloudflare Pages: arquivos do site (do Git e os novos não ignorados, como estão na pasta), 404.html,
 // _routes.json (API e vídeos passam pelo worker) e o _worker.js empacotado com esbuild.
 // Uso: node scripts/pacote.mjs [pasta]   (padrão: .dist)
 import { execFileSync, execSync } from "node:child_process";
@@ -10,7 +10,7 @@ const FORA = /^(tests|docs|server|scripts)\/|^(README\.md|\.gitignore|wrangler\.
 
 rmSync(destino, { recursive: true, force: true });
 mkdirSync(destino, { recursive: true });
-const arquivos = execFileSync("git", ["ls-files"], { encoding: "utf8" }).split("\n").filter((f) => f && !FORA.test(f) && existsSync(f));
+const arquivos = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { encoding: "utf8" }).split("\n").filter((f) => f && !FORA.test(f) && existsSync(f));
 for (const f of arquivos) { mkdirSync(join(destino, dirname(f)), { recursive: true }); copyFileSync(f, join(destino, f)); }
 
 writeFileSync(join(destino, "404.html"), '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Página não encontrada — Falls Car</title>\n' +

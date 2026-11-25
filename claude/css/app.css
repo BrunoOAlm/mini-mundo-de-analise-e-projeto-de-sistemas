@@ -1304,3 +1304,4 @@ body:not(.is-admin) .group-card:hover img { transform: translateX(4px) scale(1.0
 .vnav__emp:hover { border-color: #FFC21A; color: #FFC21A; text-decoration: none; }
 .vnav__emp svg { fill: currentColor; }
 .vnav-wrap--light .vnav__emp { border-color: rgba(17,17,17,.18); }
+@media (max-width: 1100px) { .vnav__emp { display: none; } } /* no celular, "Área da empresa" fica no menu */

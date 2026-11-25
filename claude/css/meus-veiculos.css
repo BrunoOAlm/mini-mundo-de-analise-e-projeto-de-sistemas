@@ -1,0 +1,57 @@
+/* "Meus veículos" — painel do cliente no visual branco do site */
+.mv { padding-bottom: 48px; }
+.mv-topo { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+.mv-topo .muted { margin-top: 8px; }
+.mv-sec { margin-top: 40px; }
+.mv-sec__t { margin: 0 0 16px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.mv-vazio { padding: 20px; border: 1px dashed #e2e2e2; border-radius: 16px; color: #6b7076; }
+.mv-img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+.mv-selo { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.mv-selo--on { background: #fff3c2; color: #7a5300; }
+.mv-selo--ok { background: #e3f7ea; color: #15803d; }
+.mv-selo--warn { background: #fff4d6; color: #8a5a00; }
+.mv-selo--bad { background: #fde4e1; color: #b42318; }
+.mv-selo--mut { background: #f1f1f1; color: #555; }
+
+.mv-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; color: #444; font-size: 14px; }
+.mv-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.mv-meta svg { flex: none; color: #a06d00; }
+.mv-link { display: inline-flex; align-items: center; gap: 4px; color: #111; font-weight: 600; font-size: 14px; text-decoration: underline; text-decoration-color: #FFC21A; text-underline-offset: 4px; }
+.mv-link:hover { color: #7a5300; }
+
+.mv-destaque { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: center; padding: 24px; border: 1px solid #ececec; border-radius: 24px; background: radial-gradient(90% 120% at 0% 0%, #fffbe8, #fff 60%); box-shadow: 0 30px 60px -40px rgba(17,17,17,.35); }
+.mv-destaque__foto { height: 260px; border-radius: 18px; background: #fff; }
+.mv-destaque__modelo { margin: 10px 0 4px; font-size: clamp(26px, 3vw, 36px); line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; }
+.mv-destaque__quando { margin: 0; color: #7a5300; font-weight: 600; }
+.mv-destaque__pe { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #f0ece0; }
+.mv-destaque__pe b { display: block; font-size: 24px; }
+.mv-rot { display: block; color: #6b7076; font-size: 12px; }
+.mv-cod { padding: 4px 10px; border-radius: 8px; background: #f4f4f4; font-family: ui-monospace, monospace; font-size: 13px; letter-spacing: .04em; }
+
+.mv-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.mv-card { display: flex; flex-direction: column; border: 1px solid #ececec; border-radius: 18px; background: #fff; overflow: hidden; transition: box-shadow .5s var(--ease-out, ease), transform .5s var(--ease-out, ease); }
+.mv-card:hover { box-shadow: 0 26px 50px -30px rgba(17,17,17,.3); transform: translateY(-3px); }
+.mv-card__foto { height: 170px; padding: 10px; background: #fff; border-bottom: 1px solid #f3f3f3; }
+.mv-card__info { display: flex; flex: 1; flex-direction: column; padding: 16px 18px 18px; }
+.mv-card__info .mv-selo { align-self: flex-start; }
+.mv-card__modelo { margin: 10px 0 2px; font-size: 18px; font-weight: 600; }
+.mv-card__quando { margin: 0; color: #7a5300; font-size: 14px; font-weight: 600; }
+.mv-card__pe { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; }
+.mv-card__pe b { font-size: 18px; }
+
+.mv-lista { margin: 0; padding: 0; list-style: none; border: 1px solid #ececec; border-radius: 18px; overflow: hidden; }
+.mv-hist { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto auto auto; gap: 16px; align-items: center; padding: 12px 18px; border-bottom: 1px solid #f1f1f1; background: #fff; }
+.mv-hist:last-child { border-bottom: 0; }
+.mv-hist__foto { height: 60px; }
+.mv-hist__txt b { display: block; }
+.mv-sub { color: #6b7076; font-size: 13px; }
+.mv-hist__valor { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 820px) {
+  .mv-destaque { grid-template-columns: 1fr; padding: 18px; }
+  .mv-destaque__foto { height: 200px; }
+  .mv-hist { grid-template-columns: 72px minmax(0, 1fr) auto; }
+  .mv-hist .mv-selo, .mv-hist .mv-link { grid-column: 2 / -1; justify-self: start; }
+  .mv-hist__valor { grid-row: 1; grid-column: 3; }
+}
