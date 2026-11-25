@@ -15,10 +15,10 @@
     var cur = function (h) { return active && active !== "#/" && h.indexOf(active) === 0 ? ' aria-current="page"' : ""; };
     var menu = FC.NAV_LINKS.concat([[c ? "#/conta" : "#/consultar", "Minhas reservas"], ["#/produto/app", "Motoristas de app"]]);
     return '<div class="glass-wrap vnav-wrap' + (light ? " vnav-wrap--light" : "") + '"><div class="glass-halo" aria-hidden="true"></div><header class="glass vnav">' +
-      '<a class="vnav__logo" href="#/" aria-label="Falls Car — página inicial"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-car"/></svg><span>Falls Car</span></a>' +
+      '<a class="vnav__logo" href="#/" aria-label="Falls Car — página inicial"><svg viewBox="0 0 1362 375" aria-hidden="true"><use href="#i-logo"/></svg><span>Falls<b class="logo-car">Car</b></span></a>' +
       '<nav class="vnav__links" aria-label="Seções do site">' + FC.NAV_LINKS.map(function (l) { return '<a href="' + l[0] + '"' + cur(l[0]) + ">" + l[1] + "</a>"; }).join("") + "</nav>" +
       '<div class="vnav__end">' +
-      '<details class="vnav__lang"><summary aria-label="Idioma e moeda">' + GLOBO + '<span class="vs-lang-txt" data-notr>' + lang.toUpperCase() + ' | R$</span></summary><div class="glass vnav__lang-panel">' + (FC.langBtns ? FC.langBtns() : "") + "</div></details>" +
+      '<details class="vnav__lang"><summary aria-label="Idioma">' + GLOBO + '<span class="vs-lang-txt" data-notr>' + lang.toUpperCase() + '</span></summary><div class="glass vnav__lang-panel">' + (FC.langBtns ? FC.langBtns() : "") + "</div></details>" +
       '<a class="vnav__mine" href="' + (c ? "#/conta" : "#/consultar") + '">Minhas reservas</a>' +
       '<a class="vnav__cta" href="#/conta">' + (c ? esc(c.nome.split(" ")[0]) : "Entrar") + "</a>" +
       '<button type="button" class="vnav__burger" aria-expanded="false" aria-controls="' + id + '" aria-label="Abrir menu">' + BURGER + "</button>" +
@@ -70,7 +70,7 @@
     var nav = [["#/", "Início"], ["#/frota", "Frota"], ["#/lojas", "Lojas"], ["#/vantagens/retirada", "Serviços"], ["#/produto/app", "Motoristas de app"], ["#/ajuda", "Ajuda"]];
     var ativo = function (href) { return href === "#/" ? (h === "#/" || h === "#" || h === "") : h.indexOf(href.split("/").slice(0, 2).join("/")) === 0; };
     return '<footer class="ft"><div class="container">' +
-      '<div class="ft-top"><a class="ft-logo" href="#/" aria-label="Falls Car — página inicial"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-car"/></svg><span>Falls Car</span></a>' +
+      '<div class="ft-top"><a class="ft-logo" href="#/" aria-label="Falls Car — página inicial"><svg viewBox="0 0 1362 375" aria-hidden="true"><use href="#i-logo"/></svg><span>Falls<b class="logo-car">Car</b></span></a>' +
       '<nav class="ft-nav" aria-label="Rodapé">' + nav.map(function (n) { return '<a href="' + n[0] + '"' + (ativo(n[0]) ? ' aria-current="page"' : "") + ">" + n[1] + "</a>"; }).join("") + "</nav></div>" +
       '<div class="ft-mid">' +
       (cfg.newsletter ? '<form class="ft-news" id="news-form" novalidate><h3 class="ft-h">Assine nossa newsletter' + rf("RF57") + '</h3><p class="ft-news__sub">Ofertas, novidades e dicas de viagem. Sem spam.</p>' +

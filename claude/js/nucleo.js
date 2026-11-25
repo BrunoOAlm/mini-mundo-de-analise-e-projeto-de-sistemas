@@ -33,6 +33,35 @@
   };
   FC.brl = function (v) { return (Math.round(v * 100) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); };
   FC.pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  /* Falls Club e QR de demonstração: aqui no núcleo porque a página inicial (figma/) também usa */
+  FC.CLUB = {
+    ptsDiaria: 10, valorPonto: 0.1, maxPct: 0.5,
+    niveis: [
+      { nome: "Asfalto", min: 0, vantagens: ["10 pontos por diária", "Pontos viram desconto"] },
+      { nome: "Estrada", min: 300, vantagens: ["Tudo do Asfalto", "Atendimento prioritário no balcão"] },
+      { nome: "Rodovia", min: 900, vantagens: ["Tudo do Estrada", "Suporte dedicado no chat"] }
+    ]
+  };
+  // QR de demonstração: padrão determinístico a partir do token, não é um QR legível
+  FC.qrSvg = function (token) {
+    var n = 25, s = 0, cells = "";
+    for (var i = 0; i < token.length; i++) s = (s * 31 + token.charCodeAt(i)) >>> 0;
+    var rnd = function () { s = (s * 1103515245 + 12345) >>> 0; return (s >>> 16) & 1; };
+    var finder = function (x, y) {
+      var fs = [[0, 0], [n - 7, 0], [0, n - 7]];
+      for (var k = 0; k < fs.length; k++) {
+        var dx = x - fs[k][0], dy = y - fs[k][1];
+        if (dx >= 0 && dy >= 0 && dx <= 6 && dy <= 6) return dx === 0 || dy === 0 || dx === 6 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4);
+      }
+      return false;
+    };
+    var inFinder = function (x, y) { return [[0, 0], [n - 8, 0], [0, n - 8]].some(function (f) { return x >= f[0] && x < f[0] + 8 && y >= f[1] && y < f[1] + 8; }); };
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      var on = inFinder(x, y) ? finder(x, y) : rnd();
+      if (on) cells += '<rect x="' + x + '" y="' + y + '" width="1" height="1"/>';
+    }
+    return '<svg class="qr" viewBox="0 0 ' + n + " " + n + '" role="img" aria-label="QR code de retirada (demonstração)" shape-rendering="crispEdges"><g fill="#10213F">' + cells + "</g></svg>";
+  };
   FC.dataBR = function (d) { d = new Date(d); return FC.pad(d.getDate()) + "/" + FC.pad(d.getMonth() + 1) + "/" + d.getFullYear(); };
   FC.horaBR = function (d) { d = new Date(d); return FC.pad(d.getHours()) + ":" + FC.pad(d.getMinutes()); };
   FC.dtBR = function (d) { return FC.dataBR(d) + " " + FC.horaBR(d); };

@@ -1223,7 +1223,7 @@ body:not(.is-home) #view.view-in { animation: viewIn .9s var(--ease-out) both; }
 }
 
 /* ===== Fotos reais dos veículos (claude/assets/carros) ===== */
-.veh__img, .group-card img, .unit .veh__img, .fleet-card .veh__img, .plan-card .veh__img { object-fit: contain; border-radius: 12px; background: #f6f6f4; mix-blend-mode: multiply; }
+.veh__img, .group-card img, .unit .veh__img, .fleet-card .veh__img, .plan-card .veh__img { object-fit: contain; border-radius: 12px; background: #fff; mix-blend-mode: multiply; }
 .group-card { overflow: hidden; }
 .group-card img { height: auto; aspect-ratio: 16 / 10; }
 body:not(.is-admin) .group-card:hover img { transform: translateX(4px) scale(1.03); }
@@ -1294,3 +1294,7 @@ body:not(.is-admin) .group-card:hover img { transform: translateX(4px) scale(1.0
 .veh-list { grid-template-columns: minmax(0, 1fr); }
 .veh { min-width: 0; }
 .veh__meta { flex-wrap: wrap; }
+
+/* Logo Falls Car: faixa amarela fixa, faixa de baixo na cor do texto */
+.vnav__logo svg, .ft-logo svg, .logo__mark { width: 80px; height: 22px; flex-shrink: 0; color: inherit; }
+.logo-car { color: var(--c-accent); font-weight: inherit; }

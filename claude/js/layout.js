@@ -117,7 +117,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
       : '<a class="header__admin" href="' + (c ? "#/conta" : "#/consultar") + '">Minhas reservas</a>' +
         (c ? '<a class="btn btn--secondary-on-dark btn--sm" href="#/conta">' + icon("account", 16) + esc(c.nome.split(" ")[0]) + "</a>" : '<a class="btn login-btn btn--sm" href="#/conta">Entrar/Cadastrar</a>');
     return (admin ? "" : topbar()) + '<header class="header"><div class="container"><div class="header__top">' +
-      '<a class="logo" href="#/" aria-label="Falls Car — página inicial"><svg class="logo__mark" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-car"/></svg><span class="logo__text">Falls Car</span></a>' +
+      '<a class="logo" href="#/" aria-label="Falls Car — página inicial"><svg class="logo__mark" viewBox="0 0 1362 375" aria-hidden="true"><use href="#i-logo"/></svg><span class="logo__text">Falls<b class="logo-car">Car</b></span></a>' +
       (admin ? "" : '<nav class="primary-nav" aria-label="Seções do site">' + TABS.map(function (t) {
         var is = t[0] === active;
         return '<a class="nav-tab' + (is ? " is-active" : "") + '" href="' + t[0] + '"' + (is ? ' aria-current="page"' : "") + "><span>" + t[1] + "</span></a>";
@@ -189,7 +189,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     document.body.classList.toggle("is-admin", admin); FC.chatInit();
     var home = !admin && fn === FC.routes.inicio;
     document.body.classList.toggle("is-home", home);
-    app.innerHTML = demoBar() + (home ? "" : admin ? header(activeTab, admin) : FC.siteNav(activeTab)) + '<main id="view" tabindex="-1"></main>' + (admin ? "" : footer());
+    app.innerHTML = (admin ? demoBar() : "") + (home ? "" : admin ? header(activeTab, admin) : FC.siteNav(activeTab)) + '<main id="view" tabindex="-1"></main>' + (admin ? "" : footer());
     fn($("#view"), r);
     bindLayout();
     FC.motion.depois(admin);
