@@ -522,6 +522,25 @@
     return { cliente: c };
   };
   FC.clienteAtual = function () { return FC.db.sessao.clienteId ? FC.clienteById(FC.db.sessao.clienteId) : null; };
+  // Login da área da empresa por e-mail e senha (RF70, RNF06, RNF09); mesma contagem de tentativas do cliente
+  FC.loginAdmin = function (email, senha) {
+    email = String(email || "").trim().toLowerCase();
+    var cfg = FC.cfg(), chave = "admin:" + email;
+    var t = FC.db.sessao.tentativas[chave] || { n: 0, ate: 0 };
+    if (t.ate > Date.now()) return { erro: "Muitas tentativas. Tente novamente após " + FC.horaBR(t.ate) + "." };
+    var u = FC.db.usuarios.filter(function (x) { return x.ativo && String(x.email).toLowerCase() === email; })[0];
+    if (!u || u.senhaHash !== FC.hash(senha)) {
+      t.n++;
+      if (t.n >= cfg.loginMaxTentativas) { t.ate = Date.now() + cfg.loginBloqueioMin * 60000; t.n = 0; }
+      FC.db.sessao.tentativas[chave] = t; FC.save();
+      FC.audit("Falha de login administrativo", email, "credenciais inválidas", "negado", "visitante");
+      return { erro: "E-mail ou senha incorretos." };
+    }
+    FC.db.sessao.tentativas[chave] = { n: 0, ate: 0 };
+    FC.db.sessao.adminId = u.id;
+    FC.audit("Login administrativo", u.id, "e-mail e senha", "ok", u.nome); FC.save();
+    return { usuario: u };
+  };
   FC.adminAtual = function () { var id = FC.db.sessao.adminId; return id ? FC.db.usuarios.filter(function (u) { return u.id === id; })[0] : null; };
   FC.PERFIS = { gestor: "Administrador/gestor", atendente: "Atendente", frota: "Operador de frota" };
   FC.pode = function (acao) {
