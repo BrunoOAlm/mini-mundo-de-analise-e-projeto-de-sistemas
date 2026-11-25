@@ -210,15 +210,18 @@ FC.buildSeed = function () {
   var canais = ["site", "site", "site", "telefone", "loja"];
   var rc = 0;
   function codigo() { rc++; var s = ""; var c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for (var i = 0; i < 6; i++) s += c[Math.floor(rnd() * c.length)]; return "FC-" + s; }
-  for (var k = 0; k < 90; k++) {
-    var v = pick(veiculos);
-    var startOff = -Math.floor(rnd() * 175) - 3;
-    var dur = 1 + Math.floor(rnd() * 9);
-    var ini = day(startOff, 8 + Math.floor(rnd() * 8));
-    var fim = addH(ini, dur * 24);
-    if (fim > now) continue;
-    var conflito = agenda.some(function (a) { return a.veiculoId === v.id && new Date(a.inicio) < fim && new Date(a.fim) > ini; });
-    if (conflito) continue;
+  // Cada veículo (exceto as unidades fixas V001–V006) tem locações seguidas nos últimos ~6 meses; cerca de 75%
+  // da frota está alugada agora, para o painel do empresário mostrar números de uma locadora em operação.
+  veiculos.slice(6).forEach(function (v) {
+  var cursor = day(-178 - Math.floor(rnd() * 5), 9);
+  while (true) {
+    cursor = addH(cursor, (Math.floor(rnd() * 3)) * 24 + 12);
+    var dur = 2 + Math.floor(rnd() * 20);
+    var ini = addH(cursor, Math.floor(rnd() * 8)), fim = addH(ini, dur * 24);
+    if (ini > now) break;
+    var atual = fim > now;
+    if (atual && rnd() > 0.82) break; // ~20% da frota fica no pátio
+    cursor = fim;
     var diaria = tarifas[0].diarias[v.grupo];
     var cli = pick(["C1", "C2", "C3", "C4", "C1"]);
     var motorista = rnd() < 0.12;
@@ -226,17 +229,19 @@ FC.buildSeed = function () {
     var r = {
       codigo: codigo(), clienteId: cli, canal: pick(canais), veiculoId: v.id, grupo: v.grupo, tipo: v.tipo,
       lojaRetirada: v.lojaResponsavel, lojaDevolucao: v.lojaResponsavel, inicio: iso(ini), fim: iso(fim),
-      estado: "encerrada", pagamento: "aprovado", metodo: pick(["credito", "credito", "pix", "debito"]), parcelas: 1,
+      estado: atual ? "em_andamento" : "encerrada", pagamento: "aprovado", metodo: pick(["credito", "credito", "pix", "debito"]), parcelas: 1,
       preco: { total: Math.round(total), itens: [{ rotulo: "Locação", valor: diaria * dur }] }, tarifaVersao: 1, configVersao: 1,
       motorista: motorista ? "D1" : null, condutores: [], protecoes: [], acessorios: [], km: "LIVRE",
       criadoEm: iso(addH(ini, -72)), eventos: [{ data: iso(addH(ini, -72)), autor: "sistema", evento: "Reserva confirmada (histórico de demonstração)" }],
       retirada: { operador: "Operador de frota (demo)", data: iso(ini), km: 10000, combustivel: "Cheio", vistoria: "Sem avarias", aceite: true },
-      devolucao: { operador: "Operador de frota (demo)", data: iso(fim), km: 10000 + dur * 180, combustivel: "Cheio", vistoria: "Sem avarias", aceite: true },
-      despesas: [], infracoes: [], sinistros: [], avaliacao: rnd() < 0.5 ? { nota: 3 + Math.floor(rnd() * 3), comentario: "", data: iso(fim) } : null
+      devolucao: atual ? null : { operador: "Operador de frota (demo)", data: iso(fim), km: 10000 + dur * 180, combustivel: "Cheio", vistoria: "Sem avarias", aceite: true },
+      despesas: [], infracoes: [], sinistros: [], avaliacao: !atual && rnd() < 0.5 ? { nota: 3 + Math.floor(rnd() * 3), comentario: "", data: iso(fim) } : null
     };
     reservas.push(r);
     agenda.push({ id: "AG" + reservas.length, veiculoId: v.id, inicio: r.inicio, fim: r.fim, tipo: "locacao", ref: r.codigo });
+    if (atual) break;
   }
+  });
 
   // Reservas atuais da cliente Ana (para área do cliente)
   function addReserva(o) {
@@ -278,7 +283,7 @@ FC.buildSeed = function () {
     var mes = dm.getFullYear() + "-" + String(dm.getMonth() + 1).padStart(2, "0");
     lojas.filter(function (l) { return l.ativa; }).forEach(function (l) {
       var frotaLoja = veiculos.filter(function (v) { return v.lojaResponsavel === l.id; }).length;
-      var base = frotaLoja * (1450 + rnd() * 250) * (1 + (5 - mo) * 0.015); // custo mensal por veículo, subindo levemente
+      var base = frotaLoja * (3900 + rnd() * 400) * (1 + (5 - mo) * 0.015); // custo mensal por veículo, subindo levemente
       Object.keys(PESO).forEach(function (cat) {
         despesas.push({ id: "D-" + mes + "-" + l.id + "-" + cat, mes: mes, loja: l.id, categoria: cat, valor: Math.round(base * PESO[cat] * (0.9 + rnd() * 0.2)) });
       });
@@ -296,8 +301,15 @@ FC.buildSeed = function () {
   ];
 
   // Um veículo voltou e espera vistoria antes de ser liberado
-  var vVist = veiculos.filter(function (v) { return v.ativo && v.lojaResponsavel === "GRU" && v.tipo === "moto"; })[0] || veiculos[veiculos.length - 1];
+  var ocupadoAgora = function (v) { return agenda.some(function (a) { return a.veiculoId === v.id && new Date(a.inicio) <= now && new Date(a.fim) >= now; }); };
+  var livres = veiculos.slice(6).filter(function (v) { return v.ativo && !ocupadoAgora(v); });
+  var vVist = livres.filter(function (v) { return v.lojaResponsavel === "GRU" && v.tipo === "moto"; })[0] || livres[0];
   vVist.aguardandoVistoria = true;
+  livres.filter(function (v) { return v !== vVist; }).slice(0, 3).forEach(function (v, i) {
+    var id = "MAN-" + (manutencoes.length + 1), ini = day(-1 - i, 8), fim = day(1 + i, 18);
+    manutencoes.push({ id: id, veiculoId: v.id, motivo: ["Revisão de 40 mil km", "Troca de pastilhas e discos", "Funilaria — para-choque"][i], inicio: iso(ini), fim: iso(fim), status: "em andamento", responsavel: "Operador de frota (demo)", afetadas: [] });
+    agenda.push({ id: "AG" + id, veiculoId: v.id, inicio: iso(ini), fim: iso(fim), tipo: "manutencao", ref: id });
+  });
 
   return {
     seedVersion: FC.SEED_VERSION, criadoEm: iso(now), despesas: despesas, cobrancas: cobrancas,

@@ -12,7 +12,7 @@
 
   FC.route("admin", function (view, rt) {
     var u = FC.adminAtual();
-    if (!u) { loginAdmin(view); return; }
+    if (!u) { FC.telaLoginAdmin(view); return; }
     var page = rt.parts[1] || "painel";
     var item = null;
     MENU.forEach(function (g) { g[1].forEach(function (i) { if (i[0] === page) item = i; }); });
@@ -35,53 +35,13 @@
     FC.adminPages[page](main, rt);
   });
 
-  function loginAdmin(view) {
-    view.innerHTML = '<div class="container page" style="max-width:820px"><h1 class="t-h2">Área da empresa' + rf("RF70") + '</h1><p class="muted" style="margin:8px 0 24px">Escolha um usuário de demonstração. Cada perfil vê apenas o que lhe cabe, nas lojas do seu escopo. Neste protótipo não exibimos senhas de acesso.' + rf("RNF36") + '</p><div class="grid-3">' +
-      FC.db.usuarios.filter(function (u) { return u.ativo; }).map(function (u) {
-        return '<button class="box" type="button" data-u="' + u.id + '" style="text-align:left;cursor:pointer;border:0"><p class="t-h4">' + esc(u.nome) + '</p><p class="small muted">' + FC.PERFIS[u.perfil] + "</p><p class=\"small\" style=\"margin-top:8px\">Lojas: " + (u.lojas[0] === "*" ? "todas" : u.lojas.join(", ")) + '</p><span class="btn btn--primary btn--sm" style="margin-top:12px">Entrar</span></button>';
-      }).join("") + "</div></div>";
-    view.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-u]"); if (!b) return;
-      FC.db.sessao.adminId = b.dataset.u; FC.audit("Login administrativo", b.dataset.u, "demonstração", "ok"); FC.save(); FC.go("#/admin/painel");
-    });
-  }
-
   FC.lojasEscopo = function () { return FC.db.lojas.filter(function (l) { return FC.noEscopo(l.id); }); };
   FC.selLojaEscopo = function (id, val, todas) {
     return '<select class="sel" id="' + id + '">' + (todas !== false ? '<option value="">Todas do meu escopo</option>' : "") + FC.lojasEscopo().map(function (l) { return '<option value="' + l.id + '"' + (l.id === val ? " selected" : "") + ">" + esc(l.nome) + "</option>"; }).join("") + "</select>";
   };
   FC.head = function (titulo, sub, acoes) { return '<div class="page-head"><div><h1 class="t-h2">' + titulo + "</h1>" + (sub ? "<p>" + sub + "</p>" : "") + "</div>" + (acoes ? '<div class="row">' + acoes + "</div>" : "") + "</div>"; };
 
-  /* ---------- Painel (RF87) ---------- */
-  FC.adminPages.painel = function (main) {
-    var lojas = FC.lojasEscopo();
-    var vs = FC.db.veiculos.filter(function (v) { return FC.noEscopo(v.localAtual) || FC.noEscopo(v.lojaResponsavel); });
-    var cont = {};
-    vs.forEach(function (v) { var s = FC.situacaoAtual(v); cont[s] = (cont[s] || 0) + 1; });
-    var hoje = FC.isoDate(new Date());
-    var rs = FC.db.reservas.filter(function (r) { return FC.noEscopo(r.lojaRetirada); });
-    var retiradasHoje = rs.filter(function (r) { return r.estado === "confirmada" && FC.isoDate(r.inicio) === hoje; });
-    var devolHoje = rs.filter(function (r) { return r.estado === "em_andamento" && FC.isoDate(r.fim) === hoje; });
-    var pend = [];
-    rs.filter(function (r) { return r.estado === "aguardando_pagamento"; }).forEach(function (r) { pend.push(["Pagamento pendente", r.codigo, "#/admin/reserva/" + r.codigo]); });
-    rs.filter(function (r) { return r.estado === "excecao"; }).forEach(function (r) { pend.push(["Exceção de pagamento", r.codigo, "#/admin/reserva/" + r.codigo]); });
-    rs.filter(function (r) { return r.estado === "em_andamento" && new Date(r.fim) < new Date(); }).forEach(function (r) { pend.push(["Devolução atrasada", r.codigo, "#/admin/reserva/" + r.codigo]); });
-    FC.db.transferencias.filter(function (t) { return t.status !== "concluida" && (FC.noEscopo(t.origem) || FC.noEscopo(t.destino)) && new Date(t.chegadaPrevista) < new Date(); }).forEach(function (t) { pend.push(["Transferência atrasada", t.id, "#/admin/transferencias"]); });
-    FC.reservasAfetadas().forEach(function (a) { if (FC.noEscopo(a.reserva.lojaRetirada)) pend.push(["Reserva afetada (" + a.motivo + ")", a.reserva.codigo, "#/admin/manutencao"]); });
-    FC.db.clientes.filter(function (c) { return c.cnh && c.cnh.status === "pendente"; }).forEach(function (c) { pend.push(["CNH aguardando conferência", c.nome, "#/admin/clientes"]); });
-    FC.db.chamados.filter(function (h) { return h.status === "aberto" && (!h.loja || FC.noEscopo(h.loja)); }).forEach(function (h) { pend.push(["Chamado aberto", h.protocolo, "#/admin/atendimento"]); });
-    FC.db.reservas.forEach(function (r) { (r.despesas || []).forEach(function (d) { if (d.status === "em contestação" && FC.noEscopo(r.lojaRetirada)) pend.push(["Despesa contestada", r.codigo, "#/admin/reserva/" + r.codigo]); }); });
-    main.innerHTML = FC.head("Painel operacional" + rf("RF87", "RF03"), "Disponibilidade, movimentações e pendências nas lojas do seu escopo.") +
-      '<div class="kpis">' + [["disponível", "Disponíveis"], ["reservado", "Reservados agora"], ["locado", "Locados"], ["manutenção", "Em manutenção"], ["em transferência", "Em transferência"], ["inativo", "Inativos"]].map(function (k) { return '<div class="kpi"><b>' + (cont[k[0]] || 0) + "</b><span>" + k[1] + "</span></div>"; }).join("") +
-      '<div class="kpi"><b>' + retiradasHoje.length + '</b><span>Retiradas hoje</span></div><div class="kpi"><b>' + devolHoje.length + "</b><span>Devoluções hoje</span></div></div>" +
-      '<div class="grid-2"><section class="box"><h3>Pendências operacionais</h3>' + (pend.length ? '<ul class="events">' + pend.slice(0, 25).map(function (p) { return '<li><span class="status status--warn">' + esc(p[0]) + '</span> <a class="link" href="' + p[2] + '">' + esc(p[1]) + "</a></li>"; }).join("") + "</ul>" : '<p class="muted small">Nenhuma pendência.</p>') + "</section>" +
-      '<section class="box"><h3>Frota por loja</h3><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Loja</th><th class="num">Disp.</th><th class="num">Locados</th><th class="num">Manut.</th><th class="num">Total</th></tr></thead><tbody>' +
-      lojas.map(function (l) {
-        var vv = FC.db.veiculos.filter(function (v) { return v.localAtual === l.id && v.ativo; });
-        var c2 = {}; vv.forEach(function (v) { var s = FC.situacaoAtual(v); c2[s] = (c2[s] || 0) + 1; });
-        return "<tr><td>" + esc(l.nome) + '</td><td class="num">' + (c2["disponível"] || 0) + '</td><td class="num">' + (c2.locado || 0) + '</td><td class="num">' + (c2["manutenção"] || 0) + '</td><td class="num">' + vv.length + "</td></tr>";
-      }).join("") + "</tbody></table></div></section></div>";
-  };
+  /* Painel (RF87): claude/js/painel.js */
 
   /* ---------- Reservas e locações ---------- */
   var resFiltro = { estado: "", loja: "", canal: "", q: "" };

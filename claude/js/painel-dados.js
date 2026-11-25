@@ -96,17 +96,24 @@
       var base = new Date(t), meses = [];
       for (var i = 5; i >= 0; i--) meses.push(mesDe(new Date(base.getFullYear(), base.getMonth() - i, 1)));
       var VALIDOS = { encerrada: 1, em_andamento: 1, confirmada: 1 };
-      var resumo = function (mes) {
-        var rs = reservas.filter(function (r) { return r.pagamento === "aprovado" && VALIDOS[r.estado] && mesDe(r.inicio) === mes; });
+      // mês corrente: a receita é só até hoje, então as despesas (mensais) entram proporcionais aos dias corridos;
+      // a variação compara com o mesmo período do mês anterior
+      var diasNoMes = function (mes) { return new Date(+mes.slice(0, 4), +mes.slice(5), 0).getDate(); };
+      var diaHoje = base.getDate();
+      var resumo = function (mes, ateDia, frac) {
+        var noPeriodo = function (d) { return mesDe(d) === mes && (!ateDia || new Date(d).getDate() <= ateDia); };
+        var rs = reservas.filter(function (r) { return r.pagamento === "aprovado" && VALIDOS[r.estado] && noPeriodo(r.inicio); });
         var fatRes = soma(rs, function (r) { return (r.preco && r.preco.total) || 0; });
-        var fatCob = soma(cobr.filter(function (c) { return c.pagoEm && mesDe(c.pagoEm) === mes; }), function (c) { return c.valor; });
+        var fatCob = soma(cobr.filter(function (c) { return c.pagoEm && noPeriodo(c.pagoEm); }), function (c) { return c.valor; });
         var desp = (db.despesas || []).filter(function (d) { return d.mes === mes && noEscopo(d.loja); });
-        var despesas = soma(desp, function (d) { return d.valor; });
-        return { mes: mes, faturamento: fatRes + fatCob, despesas: despesas, lucro: fatRes + fatCob - despesas, fatRes: fatRes, n: rs.length, itens: desp };
+        var cats = {}; desp.forEach(function (d) { cats[d.categoria] = (cats[d.categoria] || 0) + d.valor; });
+        Object.keys(cats).forEach(function (c) { cats[c] = Math.round(cats[c] * frac); });
+        var despesas = soma(Object.keys(cats), function (c) { return cats[c]; }); // soma das categorias já arredondadas
+        return { mes: mes, faturamento: fatRes + fatCob, despesas: despesas, lucro: fatRes + fatCob - despesas, fatRes: fatRes, n: rs.length, cats: cats };
       };
-      var serie = meses.map(resumo), atual = serie[5], anterior = serie[4];
-      var porCat = {};
-      atual.itens.forEach(function (d) { porCat[d.categoria] = (porCat[d.categoria] || 0) + d.valor; });
+      var serie = meses.map(function (m, i) { return i === 5 ? resumo(m, 0, diaHoje / diasNoMes(m)) : resumo(m, 0, 1); });
+      var atual = serie[5], anterior = resumo(meses[4], diaHoje, Math.min(1, diaHoje / diasNoMes(meses[4])));
+      var porCat = atual.cats;
       financeiro = {
         mes: {
           faturamento: atual.faturamento, despesas: atual.despesas, lucro: atual.lucro,

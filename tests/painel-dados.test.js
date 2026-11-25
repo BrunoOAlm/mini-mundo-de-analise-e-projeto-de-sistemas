@@ -100,3 +100,21 @@ test("hoje: pendências incluem pagamento pendente e chamado aberto quando exist
   assert.ok(rot.includes("Pagamento pendente"));
   assert.ok(rot.includes("Chamado aberto"));
 });
+
+test("mês corrente: despesas proporcionais aos dias corridos (25 de 30 em novembro)", () => {
+  const FC = novo();
+  FC.db.reservas = []; FC.db.cobrancas = [];
+  FC.db.despesas = [{ id: "X", mes: "2026-11", loja: "SPPAU", categoria: "seguro", valor: 3000 }];
+  const fin = calc(FC).financeiro;
+  assert.equal(fin.mes.despesas, 2500);
+  assert.equal(fin.despesasPorCategoria[0].valor, 2500);
+  assert.equal(fin.serie[5].despesas, 2500);
+});
+
+test("variação do lucro compara com o mesmo período do mês anterior", () => {
+  const FC = novo();
+  FC.db.despesas = []; FC.db.cobrancas = [];
+  const r = (ini, total) => ({ codigo: "R" + ini.getTime(), veiculoId: "V001", estado: "encerrada", pagamento: "aprovado", inicio: ini.toISOString(), fim: ini.toISOString(), lojaRetirada: "SPPAU", preco: { total } });
+  FC.db.reservas = [r(new Date(2026, 9, 10), 1000), r(new Date(2026, 9, 28), 5000), r(new Date(2026, 10, 10), 1000)];
+  assert.equal(calc(FC).financeiro.mes.variacaoLucro, 0); // outubro até o dia 25 = 1000, igual a novembro
+});
