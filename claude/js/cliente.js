@@ -171,6 +171,12 @@
       var sp = $("[data-sair-plano]", view); if (sp) sp.addEventListener("click", function () { FC.busca.plano = null; FC.render(); });
       return;
     }
+    // carros já alugados por outras pessoas (servidor) saem da lista; busca o período uma vez e redesenha
+    if (FC._ocupChave !== new Date(ini).toISOString() + "|" + new Date(fim).toISOString()) {
+      view.innerHTML = head + '<div class="container page"><p class="muted" role="status">Conferindo a disponibilidade…</p></div>';
+      FC.ocupacaoServidor(ini, fim).then(function () { FC.render(); });
+      return;
+    }
     var lista = FC.unidadesDisponiveis(b.loja, ini, fim, { tipo: b.tipo, grupo: f.grupo, cambio: f.cambio, acess: f.acess });
     if (plano) lista = lista.filter(function (x) { return plano.grupos.indexOf(x.veiculo.grupo) >= 0; });
     var restr = cli && cli.cnh ? cli.cnh.restricoes || [] : [];
@@ -505,7 +511,7 @@
   }
   function bindDados(view, sel, cli) {
     if (!cli) FC.authWidget($("#auth-slot", view), function () { FC.render(); });
-    var s = $("#d-sair", view); if (s) s.addEventListener("click", function () { FC.db.sessao.clienteId = null; FC.save(); FC.render(); });
+    var s = $("#d-sair", view); if (s) s.addEventListener("click", function () { FC.sairCliente().then(FC.render); });
     $("#st-prev", view).addEventListener("click", function () { go(sel, 2); });
     $("#st-next", view).addEventListener("click", function () {
       var cia = $("#d-cia", view), voo = $("#d-voo", view);
@@ -561,10 +567,24 @@
       if (erros.length) { $("#r-err", view).innerHTML = '<div class="note note--bad" role="alert" style="margin-top:12px">' + icon("alert", 16) + "<span>" + erros.map(esc).join("<br>") + "</span></div>"; return; }
       cli.marketing = $("#r-mkt", view).checked;
       sel.aceite = { versao: FC.db.termosVersao, data: new Date().toISOString(), autor: cli.nome, precoAceito: FC.calcularPreco(sel, { clienteId: cli.id }).total };
-      var res = FC.criarReservaPendente(sel, cli.id, sel.canal || "site", cli.nome);
-      if (res.erro) { $("#r-err", view).innerHTML = '<div class="note note--bad" role="alert">' + esc(res.erro) + "</div>"; return; }
-      FC.audit("Aceite de termos registrado", res.reserva.codigo, "versão " + sel.aceite.versao, "ok", cli.nome);
-      sel.codigoPendente = res.reserva.codigo; sel.step = 5; FC.save(); FC.render();
+      var eu = sel.condutorModo === "eu";
+      var corpo = { veiculoId: sel.veiculoId, lojaRetirada: sel.lojaRetirada, lojaDevolucao: sel.lojaDevolucao || sel.lojaRetirada, inicio: new Date(sel.inicio).toISOString(), fim: new Date(sel.fim).toISOString(),
+        motorista: sel.condutorModo === "motorista" ? sel.motorista : null, protecoes: sel.protecoes || [], acessorios: sel.acessorios || [], km: sel.km || null, cupom: sel.cupom || null, plano: sel.plano || null,
+        condutorPrincipal: sel.condutorModo === "motorista" ? null : { proprio: eu, cnh: eu && cli.cnh ? cli.cnh : sel.condutorPrincipal },
+        condutores: (sel.condutores || []).map(function (c) { return { nome: c.nome, cnh: c }; }), aceite: { versao: sel.aceite.versao } };
+      var bt = this; bt.disabled = true;
+      FC.api("POST", "/reservas", corpo).then(function (r) {
+        bt.disabled = false;
+        if (!r.ok) {
+          if (r.status === 401) { FC.esquecerClienteServidor(); FC.toast("Sua sessão terminou. Entre de novo para concluir a reserva.", "bad"); FC.render(); return; }
+          var msgs = [r.dados.erro || "Não foi possível criar a reserva."].concat(Object.keys(r.dados.campos || {}).map(function (k) { return r.dados.campos[k]; }));
+          if (r.status === 409) { FC._ocupChave = null; msgs.push("Volte à lista de veículos para escolher outro."); }
+          $("#r-err", view).innerHTML = '<div class="note note--bad" role="alert" style="margin-top:12px">' + icon("alert", 16) + "<span>" + msgs.map(esc).join("<br>") + "</span></div>";
+          return;
+        }
+        var res = FC.guardarReservaServidor(r.dados.reserva);
+        sel.codigoPendente = res.codigo; sel.step = 5; FC.save(); FC.render();
+      });
     });
   }
 
@@ -609,18 +629,30 @@
       }
       pagar.disabled = true; // evita clique duplo (RF80)
       var parc = $("#pg-parc", view) ? +$("#pg-parc", view).value : 1;
-      var res = FC.processarPagamento(r.codigo, m, m === "credito" ? parc : 1, $("#pg-sim", view).value);
-      // dados do cartão nunca são guardados (RNF07)
+      var resultadoSim = $("#pg-sim", view).value, nParc = m === "credito" ? parc : 1;
+      // dados do cartão nunca são guardados nem enviados (RNF07)
       $$("#pg-num, #pg-cvv, #pg-val, #pg-nome", view).forEach(function (i) { i.value = ""; });
-      var rr = res.reserva;
-      if (rr.estado === "confirmada") { onDone(rr, res.msg); return; }
-      var kind = rr.pagamento === "recusado" || rr.estado === "excecao" ? "note--bad" : "note--warn";
-      $("#pg-msg", view).innerHTML = '<div class="note ' + kind + '" role="alert" style="margin-top:16px">' + icon("info", 16) + "<span>" + esc(res.msg) + (rr.pagamento === "pendente" ? ' <button class="btn btn--link small" type="button" id="pg-aprovar">Simular aprovação do provedor</button>' : "") + "</span></div>";
-      pagar.disabled = rr.estado !== "aguardando_pagamento";
-      var ap = $("#pg-aprovar", view);
-      if (ap) ap.addEventListener("click", function () { var r2 = FC.processarPagamento(r.codigo, m, parc, "aprovado"); if (r2.reserva.estado === "confirmada") onDone(r2.reserva, r2.msg); else FC.render(); });
-      if (rr.estado === "excecao") onDone(rr, res.msg);
+      processar(m, nParc, resultadoSim).then(function (res) {
+        if (res.erro) { pagar.disabled = false; $("#pg-msg", view).innerHTML = '<div class="note note--bad" role="alert" style="margin-top:16px">' + icon("alert", 16) + "<span>" + esc(res.erro) + "</span></div>"; return; }
+        var rr = res.reserva;
+        if (rr.estado === "confirmada") { onDone(rr, res.msg); return; }
+        var kind = rr.pagamento === "recusado" || rr.estado === "excecao" ? "note--bad" : "note--warn";
+        $("#pg-msg", view).innerHTML = '<div class="note ' + kind + '" role="alert" style="margin-top:16px">' + icon("info", 16) + "<span>" + esc(res.msg) + (rr.pagamento === "pendente" ? ' <button class="btn btn--link small" type="button" id="pg-aprovar">Simular aprovação do provedor</button>' : "") + "</span></div>";
+        pagar.disabled = rr.estado !== "aguardando_pagamento";
+        var ap = $("#pg-aprovar", view);
+        if (ap) ap.addEventListener("click", function () { ap.disabled = true; processar(m, nParc, "aprovado").then(function (r2) { if (r2.reserva && r2.reserva.estado === "confirmada") onDone(r2.reserva, r2.msg); else FC.render(); }); });
+        if (rr.estado === "excecao") onDone(rr, res.msg);
+      });
     });
+    // reserva do site: pagamento na API (idempotente por idEvento); assistida na área da empresa: simulador local
+    function processar(metodo, nParc, resultado) {
+      if (!r.servidor) return Promise.resolve(FC.processarPagamento(r.codigo, metodo, nParc, resultado));
+      var idEvento = FC.uid("PG");
+      return FC.api("POST", "/reservas/" + encodeURIComponent(r.codigo) + "/pagamento", { metodo: metodo, parcelas: nParc, resultado: resultado, idEvento: idEvento }).then(function (x) {
+        if (!x.ok) return { erro: x.dados.erro || "Não foi possível processar o pagamento." };
+        return { reserva: FC.guardarReservaServidor(x.dados.reserva), msg: x.dados.msg };
+      });
+    }
     var cancel = $("#pg-cancel", view);
     if (cancel) cancel.addEventListener("click", function () {
       r.estado = "cancelada"; FC.evento(r, "Cliente desistiu antes do pagamento; recursos liberados", FC.autorAtual()); FC.liberarRecursos(r);
@@ -645,6 +677,13 @@
   FC.route("confirmacao", function (view, rt) {
     var r = FC.reservaByCodigo(rt.parts[1]);
     var cli = FC.clienteAtual();
+    FC._buscadas = FC._buscadas || {};
+    if (cli && cli.servidor && (!r || r.servidor) && !FC._buscadas[rt.parts[1]]) {
+      FC._buscadas[rt.parts[1]] = true; // uma busca por código a cada carregamento da página
+      view.innerHTML = '<div class="container page"><p class="muted" role="status">Carregando a reserva…</p></div>';
+      FC.api("GET", "/reservas/" + encodeURIComponent(rt.parts[1] || "")).then(function (x) { if (x.ok) FC.guardarReservaServidor(x.dados.reserva); FC.render(); });
+      return;
+    }
     if (!r || !cli || r.clienteId !== cli.id) { view.innerHTML = '<div class="container page"><div class="note note--bad">' + icon("lock", 16) + '<span>Entre na conta do titular para ver esta reserva. Você também pode <a class="link" href="#/consultar">consultar pelo código</a>.' + rf("RNF32") + "</span></div></div>"; return; }
     var lr = FC.lojaById(r.lojaRetirada);
     var ok = r.estado === "confirmada";

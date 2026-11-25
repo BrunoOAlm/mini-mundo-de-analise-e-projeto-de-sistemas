@@ -336,11 +336,20 @@
           '<p class="small muted">Após ' + cfg.loginMaxTentativas + " tentativas erradas, o acesso fica bloqueado por " + cfg.loginBloqueioMin + " min (parâmetros de demonstração)." + rf("RF22", "RNF06", "RNF09") + "</p></form>";
         $("#lg-form", b).addEventListener("submit", function (e) {
           e.preventDefault(); FC.limparErros(b);
-          var r = FC.login($("#lg-id", b).value, $("#lg-pw", b).value);
-          if (r.erro) { FC.erroCampo($("#lg-pw", b), r.erro); return; }
-          FC.audit("Login de cliente", r.cliente.id, "", "ok", r.cliente.nome); FC.save(); FC.toast("Olá, " + r.cliente.nome.split(" ")[0] + "!", "ok"); onOk();
+          var bt = $("button[type=submit]", b); bt.disabled = true;
+          FC.entrarCliente($("#lg-id", b).value, $("#lg-pw", b).value).then(function (r) {
+            bt.disabled = false;
+            if (r.erro) { FC.erroCampo($("#lg-pw", b), r.erro); return; }
+            FC.toast("Olá, " + r.cliente.nome.split(" ")[0] + "!", "ok"); onOk();
+          });
         });
-        $("#lg-demo", b).addEventListener("click", function () { FC.db.sessao.clienteId = "C1"; FC.save(); FC.toast("Conta de demonstração: Ana Souza.", "ok"); onOk(); });
+        // conta de exemplo da base de apresentação (senha de demonstração pública, a mesma de dados.js)
+        $("#lg-demo", b).addEventListener("click", function () {
+          FC.entrarCliente("ana@exemplo.com", "Senha@123").then(function (r) {
+            if (r.erro) { FC.erroCampo($("#lg-pw", b), r.erro); return; }
+            FC.toast("Conta de demonstração: Ana Souza.", "ok"); onOk();
+          });
+        });
         var g = $("#lg-g", b); if (g) g.addEventListener("click", function () { FC.toast("Login social simulado — vincule à conta existente pelo e-mail. Alternativa: e-mail/CPF e senha."); });
       } else if (t === "cad") {
         b.innerHTML = '<form class="form-grid" id="cd-form" novalidate>' + FC.fld("Nome completo", '<input class="inp" id="cd-nome" autocomplete="name">') + FC.fld("E-mail", '<input class="inp" id="cd-email" type="email" autocomplete="email">') +
@@ -356,7 +365,7 @@
           function err(id, m) { FC.erroCampo($("#" + id, b), m); ok = false; }
           if (v("cd-nome").split(" ").length < 2) err("cd-nome", "Informe nome e sobrenome.");
           if (!FC.emailValido(v("cd-email"))) err("cd-email", "E-mail inválido.");
-          else if (FC.db.clientes.some(function (c) { return c.email.toLowerCase() === v("cd-email").toLowerCase(); })) err("cd-email", "Já existe conta com este e-mail. Entre ou recupere a senha.");
+
           if ($("#cd-tipo", b).value === "CPF") { if (!FC.cpfValido(v("cd-doc"))) err("cd-doc", "CPF inválido."); else if (FC.db.clientes.some(function (c) { return c.doc.replace(/\D/g, "") === v("cd-doc").replace(/\D/g, ""); })) err("cd-doc", "CPF já cadastrado."); }
           else if (v("cd-doc").length < 5) err("cd-doc", "Documento inválido.");
           if (!v("cd-nasc")) err("cd-nasc", "Informe a data de nascimento.");
@@ -367,10 +376,19 @@
           if (pw !== $("#cd-pw2", b).value) err("cd-pw2", "As senhas não conferem.");
           if (!$("#cd-priv", b).checked) err("cd-priv", "Necessário para criar a conta.");
           if (!ok) { var f = $(".has-error input, .has-error select", b); if (f) f.focus(); return; }
-          var c = { id: FC.uid("C"), nome: v("cd-nome"), email: v("cd-email").toLowerCase(), senhaHash: FC.hash(pw), docTipo: $("#cd-tipo", b).value, doc: v("cd-doc"), nascimento: v("cd-nasc"), telefone: v("cd-tel"), cnh: null, marketing: $("#cd-mkt", b).checked, newsletter: false, bloqueado: null, criadoEm: new Date().toISOString(), consentimentos: [{ tipo: "privacidade", data: new Date().toISOString() }].concat($("#cd-mkt", b).checked ? [{ tipo: "marketing", data: new Date().toISOString() }] : []) };
-          FC.db.clientes.push(c); FC.db.sessao.clienteId = c.id;
-          FC.outbox(c.email, "e-mail", "boas-vindas", "Bem-vindo(a) à Falls Car", "Sua conta foi criada. Envie sua CNH em Minha conta > Documentos para agilizar a retirada.");
-          FC.audit("Cadastro de cliente", c.id, "site", "ok", c.nome); FC.save(); FC.toast("Conta criada", "ok"); onOk();
+          var bt = $("button[type=submit]", b); bt.disabled = true;
+          FC.api("POST", "/cadastro", { nome: v("cd-nome"), email: v("cd-email"), docTipo: $("#cd-tipo", b).value === "CPF" ? "CPF" : "Passaporte", doc: v("cd-doc"), nascimento: v("cd-nasc"), telefone: v("cd-tel"), senha: pw }).then(function (r) {
+            bt.disabled = false;
+            if (!r.ok) {
+              var cs = r.dados.campos || {}, mapa = { nome: "cd-nome", email: "cd-email", doc: "cd-doc", telefone: "cd-tel", senha: "cd-pw" };
+              Object.keys(cs).forEach(function (k) { if (mapa[k]) FC.erroCampo($("#" + mapa[k], b), cs[k]); });
+              if (!Object.keys(cs).length) FC.erroCampo($("#cd-email", b), r.dados.erro || "Não foi possível criar a conta.");
+              return;
+            }
+            var c = FC.guardarClienteServidor(r.dados.cliente);
+            c.marketing = !!($("#cd-mkt", b) && $("#cd-mkt", b).checked); FC.save();
+            FC.toast("Conta criada", "ok"); onOk();
+          });
         });
       } else {
         b.innerHTML = '<form class="stack" id="rc-form" novalidate>' + FC.fld("E-mail cadastrado", '<input class="inp" id="rc-email" type="email" autocomplete="email">') + '<button class="btn btn--primary" type="submit">Enviar código</button></form><div id="rc-step2"></div>';
@@ -429,7 +447,7 @@
     view.innerHTML = '<div class="container page"><div class="page-head"><div><h1 class="t-h2">Olá, ' + esc(c.nome.split(" ")[0]) + "</h1><p>Você vê somente as suas reservas, pagamentos e documentos." + rf("RF53", "RNF32") + '</p></div><button class="btn btn--ghost" type="button" id="ct-sair">' + icon("logout", 16) + "Sair</button></div>" +
       (c.bloqueado ? '<div class="note note--bad" style="margin-bottom:16px">' + icon("alert", 16) + "<span>Cadastro em revisão: " + esc(c.bloqueado.motivo) + ". Reservas pagas não foram canceladas; nossa equipe entrará em contato." + rf("RF67") + "</span></div>" : "") +
       '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === contaTab) + '" data-tab="' + t[0] + '">' + t[1] + "</button>"; }).join("") + '</div><div id="ct-body"></div></div>';
-    $("#ct-sair", view).addEventListener("click", function () { FC.audit("Logout de cliente", c.id, "", "ok"); FC.db.sessao.clienteId = null; FC.save(); FC.go("#/"); });
+    $("#ct-sair", view).addEventListener("click", function () { FC.audit("Logout de cliente", c.id, "", "ok"); FC.sairCliente().then(function () { FC.go("#/"); }); });
     $$("[data-tab]", view).forEach(function (b) { b.addEventListener("click", function () { contaTab = b.dataset.tab; FC.render(); }); });
     var body = $("#ct-body", view);
     ({ reservas: tabReservas, pagamentos: tabPagamentos, documentos: tabDocumentos, dados: tabDados, seguranca: tabSeguranca, privacidade: tabPrivacidade, mensagens: tabMensagens, club: tabClub })[contaTab](body, c);

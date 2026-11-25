@@ -290,6 +290,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
   };
 
   window.addEventListener("hashchange", FC.render);
-  document.addEventListener("DOMContentLoaded", FC.render);
+  // primeiro confere a sessão do cliente no servidor (refresh não desloga); sem servidor, segue só com os dados locais
+  document.addEventListener("DOMContentLoaded", function () { FC.sessaoCliente().then(FC.render, FC.render); });
   setInterval(function () { var before = JSON.stringify(FC.db.agenda.length); FC.limparBloqueios(); }, 30000);
 })();

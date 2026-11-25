@@ -580,3 +580,74 @@
   };
   FC.noEscopo = function (lojaId) { var u = FC.adminAtual(); return !!u && (u.lojas.indexOf("*") >= 0 || u.lojas.indexOf(lojaId) >= 0); };
 })();
+
+/* ---------- Backend do cliente (API /api no mesmo site; banco D1) ---------- */
+(function () {
+  "use strict";
+  var FC = window.FC;
+  FC.api = function (metodo, caminho, corpo) {
+    var op = { method: metodo, credentials: "same-origin", headers: { Accept: "application/json" } };
+    if (corpo !== undefined) { op.headers["Content-Type"] = "application/json"; op.body = JSON.stringify(corpo); }
+    return fetch("/api" + caminho, op).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (dados) { return { ok: res.ok, status: res.status, dados: dados }; });
+    }, function () { return { ok: false, status: 0, dados: { erro: "Sem conexão com o servidor. Tente novamente." } }; });
+  };
+  // cópia local do cliente do servidor: as telas existentes (etapas da reserva, Minha conta) leem FC.db.clientes
+  FC.guardarClienteServidor = function (c) {
+    var local = FC.clienteById(c.id);
+    var dados = { id: c.id, nome: c.nome, email: c.email, docTipo: c.docTipo, doc: c.doc, telefone: c.telefone, nascimento: c.nascimento, cnh: c.cnh, criadoEm: c.criadoEm, servidor: true };
+    if (local) Object.assign(local, dados); else FC.db.clientes.push(Object.assign({ marketing: false, newsletter: false, bloqueado: null }, dados));
+    FC.db.sessao.clienteId = c.id; FC.save();
+    return FC.clienteById(c.id);
+  };
+  // cópia local de uma reserva do servidor (confirmação, comprovante e Minha conta leem FC.db.reservas)
+  FC.guardarReservaServidor = function (r) {
+    var v = FC.veiculoById(r.veiculoId) || {};
+    var local = FC.reservaByCodigo(r.codigo);
+    var dados = { codigo: r.codigo, clienteId: FC.db.sessao.clienteId, canal: "site", veiculoId: r.veiculoId, grupo: v.grupo, tipo: v.tipo, lojaRetirada: r.lojaRetirada,
+      lojaDevolucao: r.lojaDevolucao, inicio: r.inicio, fim: r.fim, estado: r.estado, pagamento: r.pagamento, metodo: r.metodo, parcelas: r.parcelas, preco: r.preco,
+      motorista: r.motorista, tarifaVersao: r.tarifaVersao, bloqueioExpira: r.bloqueioExpira, criadoEm: r.criadoEm, eventos: r.eventos || [], servidor: true };
+    if (local) Object.assign(local, dados);
+    else FC.db.reservas.push(Object.assign({ condutores: [], protecoes: [], acessorios: [], despesas: [], infracoes: [], sinistros: [], pagamentos: [], avaliacao: null }, dados));
+    FC.save();
+    return FC.reservaByCodigo(r.codigo);
+  };
+  FC.esquecerClienteServidor = function () {
+    var id = FC.db.sessao.clienteId, c = id && FC.clienteById(id);
+    if (c && c.servidor) {
+      FC.db.reservas = FC.db.reservas.filter(function (r) { return !(r.servidor && r.clienteId === id); });
+      FC.db.clientes = FC.db.clientes.filter(function (x) { return x.id !== id; });
+    }
+    FC.db.sessao.clienteId = null; FC.db.rascunho = null; FC.save();
+  };
+  // ao abrir qualquer página: quem tem sessão no servidor continua logado (o refresh não desloga)
+  FC.sessaoCliente = function () {
+    return FC.api("GET", "/eu").then(function (r) {
+      if (r.ok && r.dados.cliente) return FC.guardarClienteServidor(r.dados.cliente);
+      if (r.status === 401) FC.esquecerClienteServidor();
+      return null;
+    });
+  };
+  FC.entrarCliente = function (ident, senha) {
+    return FC.api("POST", "/login", { ident: ident, senha: senha }).then(function (r) {
+      if (!r.ok) return { erro: r.dados.erro || "Não foi possível entrar." };
+      return { cliente: FC.guardarClienteServidor(r.dados.cliente) };
+    });
+  };
+  FC.sairCliente = function () {
+    return FC.api("POST", "/sair", {}).then(function () { FC.esquecerClienteServidor(); });
+  };
+  // ocupações gravadas no servidor entram na agenda local para a busca não oferecer carro já alugado
+  FC.ocupacaoServidor = function (ini, fim) {
+    var chave = new Date(ini).toISOString() + "|" + new Date(fim).toISOString();
+    if (FC._ocupChave === chave) return Promise.resolve(true);
+    return FC.api("GET", "/ocupacao?inicio=" + encodeURIComponent(new Date(ini).toISOString()) + "&fim=" + encodeURIComponent(new Date(fim).toISOString())).then(function (r) {
+      FC._ocupChave = chave;
+      FC.db.agenda = FC.db.agenda.filter(function (a) { return !a.servidor; });
+      if (!r.ok) { FC._ocupErro = true; return false; }
+      FC._ocupErro = false;
+      (r.dados.ocupados || []).forEach(function (o, i) { FC.db.agenda.push({ id: "SRV" + i, veiculoId: o.veiculoId, inicio: o.inicio, fim: o.fim, tipo: "reserva", ref: "servidor", servidor: true }); });
+      return true;
+    });
+  };
+})();
