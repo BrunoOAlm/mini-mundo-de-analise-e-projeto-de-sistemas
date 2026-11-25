@@ -1,0 +1,12 @@
+# Cloudflare Pages: projeto faeterj (site em https://fallscar.faeterj.pages.dev). A pasta publicada é montada por
+# scripts/pacote.mjs em .dist (site + _worker.js com a API em /api/*).
+name = "faeterj"
+pages_build_output_dir = ".dist"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fallscar"
+# id do banco remoto: preenchido ao criar o banco (wrangler d1 create fallscar); em desenvolvimento local não é usado
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "server/migracoes"

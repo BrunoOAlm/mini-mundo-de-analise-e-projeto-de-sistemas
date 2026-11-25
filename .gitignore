@@ -1,2 +1,5 @@
 .playwright-mcp/
 .superpowers/
+.dist/
+.wrangler/
+.base.sql
