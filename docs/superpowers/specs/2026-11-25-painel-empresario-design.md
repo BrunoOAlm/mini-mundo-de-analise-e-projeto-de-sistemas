@@ -113,9 +113,8 @@ carbono.
 - Estrutura do código do painel (funções de cálculo separadas da montagem do HTML, para o backend reaproveitar).
 - Pontos de quebra responsiva e o comportamento do menu fixo em telas estreitas (rolagem horizontal das pílulas é
   aceitável).
-- Se o fundo de carbono vale para todo o shell da área da empresa ou só para painel e login (ver pergunta aberta).
 
-## Pergunta aberta para a equipe
+## Decidido depois da revisão
 
-- O fundo de carbono e os cartões de vidro ficam **só no painel e no login**, ou valem para **toda a área da
-  empresa** (menu lateral e os outros módulos)? Estender a todos os módulos é bem mais trabalho de estilo.
+- O fundo de carbono e os cartões de vidro valem **só para o painel e o login**. O menu lateral e os outros módulos
+  da área da empresa ficam com o visual atual.
