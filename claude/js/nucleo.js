@@ -16,13 +16,20 @@
     } catch (e) { storageOk = false; }
     return FC.buildSeed();
   }
-  FC.db = loadDB();
+  // o histórico de demonstração é gravado enxuto (RNF38/localStorage); listas vazias são completadas ao carregar
+  function completar(db) {
+    (db.reservas || []).forEach(function (r) {
+      ["condutores", "protecoes", "acessorios", "despesas", "infracoes", "sinistros", "eventos"].forEach(function (k) { if (!r[k]) r[k] = []; });
+    });
+    return db;
+  }
+  FC.db = completar(loadDB());
   FC.storageOk = storageOk;
   FC.save = function () {
     try { window.localStorage.setItem(KEY, JSON.stringify(FC.db)); FC.storageOk = true; }
     catch (e) { FC.storageOk = false; }
   };
-  FC.resetDB = function () { FC.db = FC.buildSeed(); FC.save(); };
+  FC.resetDB = function () { FC.db = completar(FC.buildSeed()); FC.save(); };
   FC.save();
 
   /* ---------- Utilitários ---------- */
@@ -540,6 +547,18 @@
     FC.db.sessao.adminId = u.id;
     FC.audit("Login administrativo", u.id, "e-mail e senha", "ok", u.nome); FC.save();
     return { usuario: u };
+  };
+  // Gestor define/troca a senha de um usuário interno; guarda só o hash (RNF36)
+  FC.definirSenhaAdmin = function (id, senha) {
+    var u = FC.db.usuarios.filter(function (x) { return x.id === id; })[0];
+    if (!u) return { erro: "Usuário não encontrado." };
+    var min = FC.cfg().senhaMin || 8;
+    if (String(senha || "").length < min) return { erro: "A senha precisa ter no mínimo " + min + " caracteres." };
+    u.senhaHash = FC.hash(senha);
+    FC.db.sessao.tentativas["admin:" + String(u.email).toLowerCase()] = { n: 0, ate: 0 };
+    var quem = FC.adminAtual();
+    FC.audit("Senha de usuário interno definida", u.id, "", "ok", quem ? quem.nome : "sistema"); FC.save();
+    return { ok: true };
   };
   FC.adminAtual = function () { var id = FC.db.sessao.adminId; return id ? FC.db.usuarios.filter(function (u) { return u.id === id; })[0] : null; };
   FC.PERFIS = { gestor: "Administrador/gestor", atendente: "Atendente", frota: "Operador de frota" };

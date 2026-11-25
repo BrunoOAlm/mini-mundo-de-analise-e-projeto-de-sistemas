@@ -24,7 +24,7 @@
           var ok = FC.pode(i[3]);
           return '<a href="#/admin/' + i[0] + '" class="' + (i[0] === (page === "reserva" ? "reservas" : page) ? "is-active" : "") + '"' + (ok ? "" : ' aria-disabled="true" tabindex="-1" title="Sem permissão para o seu perfil"') + ">" + icon(i[2], 16) + i[1] + "</a>";
         }).join("");
-      }).join("") + '</nav><div class="admin__main" id="admin-main"></div></div>';
+      }).join("") + '<div class="admin__demo"><label class="switch"><input type="checkbox" id="toggle-rf"' + (document.body.classList.contains("show-rf") ? " checked" : "") + '> Mostrar requisitos (RF/RNF)</label><button type="button" class="btn btn--link" id="reset-db">Restaurar base de demonstração</button></div></nav><div class="admin__main" id="admin-main"></div></div>';
     var main = $("#admin-main", view);
     if (!permitido) {
       FC.audit("Acesso negado", "admin/" + page, "perfil " + u.perfil, "negado");

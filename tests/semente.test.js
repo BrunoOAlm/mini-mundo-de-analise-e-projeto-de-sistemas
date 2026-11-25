@@ -50,3 +50,24 @@ test("cobranças: alguma vence hoje e alguma está vencida sem pagamento", () =>
 test("algum veículo aguardando vistoria", () => {
   assert.ok(db.veiculos.some((v) => v.aguardandoVistoria === true));
 });
+
+test("revisão: clientes de demonstração com login têm poucas reservas (Ana usável)", () => {
+  for (const id of ["C1", "C2", "C3", "C4"]) {
+    const rs = db.reservas.filter((r) => r.clienteId === id);
+    assert.ok(rs.length <= 10, id + " tem " + rs.length);
+    assert.ok(rs.filter((r) => r.estado === "em_andamento").length <= 1, id + " com várias locações em andamento");
+  }
+});
+
+test("revisão: locações em andamento terminam em até 5 dias (site com disponibilidade na semana seguinte)", () => {
+  const lim = Date.now() + 5.5 * 86400000;
+  assert.ok(db.reservas.filter((r) => r.estado === "em_andamento").every((r) => new Date(r.fim).getTime() <= lim));
+});
+
+test("revisão: toda cobrança tem loja", () => {
+  assert.ok(db.cobrancas.every((c) => typeof c.loja === "string" && c.loja));
+});
+
+test("revisão: base cabe com folga no localStorage (< 1,2 milhão de caracteres)", () => {
+  assert.ok(JSON.stringify(db).length < 1200000, "tamanho " + JSON.stringify(db).length);
+});

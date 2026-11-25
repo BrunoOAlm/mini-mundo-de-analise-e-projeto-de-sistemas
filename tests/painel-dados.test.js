@@ -118,3 +118,15 @@ test("variação do lucro compara com o mesmo período do mês anterior", () => 
   FC.db.reservas = [r(new Date(2026, 9, 10), 1000), r(new Date(2026, 9, 28), 5000), r(new Date(2026, 10, 10), 1000)];
   assert.equal(calc(FC).financeiro.mes.variacaoLucro, 0); // outubro até o dia 25 = 1000, igual a novembro
 });
+
+test("revisão: recebimentos e atrasados respeitam o escopo de loja", () => {
+  const FC = novo();
+  FC.db.cobrancas = [
+    { id: "A", clienteId: "C1", loja: "SPPAU", descricao: "x", valor: 100, vencimento: new Date(AGORA).toISOString(), pagoEm: null },
+    { id: "B", clienteId: "C2", loja: "POA", descricao: "y", valor: 200, vencimento: new Date(AGORA).toISOString(), pagoEm: null },
+    { id: "C", clienteId: "C2", loja: "POA", descricao: "z", valor: 300, vencimento: new Date(AGORA - 2 * 86400000).toISOString(), pagoEm: null }
+  ];
+  const h = calc(FC, { noEscopo: (l) => l === "SPPAU" }).hoje;
+  assert.equal(h.recebimentos.total, 100);
+  assert.equal(h.atrasados.itens.length, 0);
+});

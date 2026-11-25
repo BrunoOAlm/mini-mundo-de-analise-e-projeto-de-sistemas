@@ -118,5 +118,9 @@ carbono.
 
 ## Decidido depois da revisão
 
-- O fundo de carbono e os cartões de vidro valem **só para o painel e o login**. O menu lateral e os outros módulos
-  da área da empresa ficam com o visual atual.
+- Primeiro a equipe pediu carbono só no painel e no login. Ao ver a tela pronta, mudou: a **área da empresa inteira**
+  (cabeçalho, barra lateral e conteúdo) é um bloco só de carbono, com **uma barra única** no topo — logo, seções do
+  painel (Visão geral, Frota, Hoje, Financeiro), usuário e Sair. Os módulos ainda em tema claro (reservas, frota,
+  clientes…) aparecem num cartão claro dentro do carbono até serem escurecidos.
+- A faixa "Protótipo acadêmico / Demo" saiu; "Mostrar requisitos" e "Restaurar base de demonstração" ficam no fim da
+  barra lateral.

@@ -3,7 +3,6 @@
 (function () {
   "use strict";
   var FC = window.FC, esc = FC.esc, brl = FC.brl, $ = FC.$;
-  var LOGO = '<svg viewBox="0 0 1362 375" aria-hidden="true"><use href="#i-logo"/></svg>';
   var SIT = { alugado: ["Alugado", "al"], patio: ["Pátio", "pa"], oficina: ["Oficina", "of"], vistoria: ["Vistoria", "vi"], transferencia: ["Transferência", "tr"] };
   var CAT = { parcelas: "Parcelas da frota", manutencao: "Manutenção", seguro: "Seguro", equipe: "Equipe", outros: "Outros" };
   var MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
@@ -74,19 +73,28 @@
         t('<div class="m" style="margin-bottom:8px">Para onde foi a despesa</div>' + (fin.despesasPorCategoria.length ? fin.despesasPorCategoria.map(function (c) { return barra(CAT[c.categoria] || c.categoria, c.valor / maiorCat, curto(c.valor)); }).join("") : vazio("Sem despesas no mês."))) + "</div>";
     }
 
-    main.innerHTML = '<div class="pnl"><nav class="pnl-nav" aria-label="Seções do painel"><span class="pnl-marca">' + LOGO + "<span>Falls<b>Car</b></span></span>" +
-      secoes.map(function (s, i) { return '<button type="button" data-alvo="' + s[0] + '"' + (i ? "" : ' class="is-on" aria-current="true"') + ">" + s[1] + "</button>"; }).join("") + "</nav>" +
+    var navHtml = '<nav class="pnl-nav" aria-label="Seções do painel">' +
+      secoes.map(function (s, i) { return '<button type="button" data-alvo="' + s[0] + '"' + (i ? "" : ' class="is-on" aria-current="true"') + ">" + s[1] + "</button>"; }).join("") + "</nav>";
+    main.innerHTML = '<div class="pnl">' +
       sec("pnl-visao", "Visão geral", "Os 5 segundos da manhã: o essencial de cada seção.", visao) +
       sec("pnl-frota", "Frota", "Onde está cada veículo e o que está parado sem render.", frota) +
       sec("pnl-hoje", "Hoje", "O que vence hoje: dinheiro a receber, atrasos e o movimento do pátio.", hoje) +
       (fin ? sec("pnl-fin", "Financeiro", "Resultado do mês e tendência dos últimos 6 meses. Valores de demonstração.", financeiro) : "") + "</div>";
 
-    // menu de seções: botões (o # da URL é das rotas) e destaque da seção visível
-    var nav = $(".pnl-nav", main), botoes = FC.$$("button", nav);
+    // menu de seções vai para a barra de cima, ao lado da logo (uma barra só); sem cabeçalho, fica no topo do painel
+    var topo = document.querySelector(".header__top"), logo = topo && topo.querySelector(".logo");
+    var nav = document.createRange().createContextualFragment(navHtml).firstChild;
+    if (logo) logo.insertAdjacentElement("afterend", nav); else main.querySelector(".pnl").insertAdjacentElement("afterbegin", nav);
+    var botoes = FC.$$("button", nav);
     function marcar(id) { botoes.forEach(function (b) { var on = b.dataset.alvo === id; b.classList.toggle("is-on", on); if (on) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current"); }); }
-    nav.addEventListener("click", function (e) { var b = e.target.closest("[data-alvo]"); if (!b) return; marcar(b.dataset.alvo); document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: "smooth", block: "start" }); });
+    var travaAte = 0; // depois de um clique, o botão clicado fica marcado enquanto a página rola até a seção
+    nav.addEventListener("click", function (e) { var b = e.target.closest("[data-alvo]"); if (!b) return; marcar(b.dataset.alvo); travaAte = Date.now() + 1200; document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: "smooth", block: "start" }); });
     if ("IntersectionObserver" in window) {
-      var io = new IntersectionObserver(function (es) { es.forEach(function (x) { if (x.isIntersecting) marcar(x.target.id); }); }, { rootMargin: "-30% 0px -60% 0px" });
+      var io = new IntersectionObserver(function (es) {
+        if (Date.now() < travaAte) return;
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) { marcar(secoes[secoes.length - 1][0]); return; } // fim da página: última seção
+        es.forEach(function (x) { if (x.isIntersecting) marcar(x.target.id); });
+      }, { rootMargin: "-30% 0px -60% 0px" });
       secoes.forEach(function (s) { io.observe(document.getElementById(s[0])); });
     }
   };

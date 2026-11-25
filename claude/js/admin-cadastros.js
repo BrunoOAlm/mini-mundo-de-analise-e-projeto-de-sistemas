@@ -500,9 +500,21 @@
   /* ---------- Usuários internos (RF70) ---------- */
   P.usuarios = function (main) {
     main.innerHTML = FC.head("Usuários internos" + rf("RF70", "RNF32"), "Três perfis aprovados, com escopo por loja. Só o administrador/gestor cria usuários e atribui perfis.") +
-      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Lojas</th><th>Situação</th><th></th></tr></thead><tbody>' + FC.db.usuarios.map(function (u) { return "<tr><td>" + esc(u.nome) + "</td><td>" + esc(u.email) + "</td><td>" + FC.PERFIS[u.perfil] + "</td><td>" + (u.lojas[0] === "*" ? "todas" : u.lojas.join(", ")) + "</td><td>" + (u.ativo ? "ativo" : "inativo") + "</td><td>" + (u.id !== FC.adminAtual().id ? '<button class="btn btn--ghost btn--sm" type="button" data-us="' + u.id + '">' + (u.ativo ? "Inativar" : "Ativar") + "</button>" : '<span class="small muted">você</span>') + "</td></tr>"; }).join("") + "</tbody></table></div>" +
-      '<form class="box form-grid form-grid--3" id="us-f" style="margin-top:16px"><h3 class="span-all">Novo usuário</h3>' + FC.fld("Nome", '<input class="inp" id="us-n">') + FC.fld("E-mail", '<input class="inp" id="us-e">') + FC.fld("Perfil", '<select class="sel" id="us-p">' + Object.keys(FC.PERFIS).map(function (k) { return '<option value="' + k + '">' + FC.PERFIS[k] + "</option>"; }).join("") + "</select>") +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Lojas</th><th>Situação</th><th></th></tr></thead><tbody>' + FC.db.usuarios.map(function (u) { return "<tr><td>" + esc(u.nome) + "</td><td>" + esc(u.email) + "</td><td>" + FC.PERFIS[u.perfil] + "</td><td>" + (u.lojas[0] === "*" ? "todas" : u.lojas.join(", ")) + "</td><td>" + (u.ativo ? "ativo" : "inativo") + "</td><td>" + (u.id !== FC.adminAtual().id ? '<button class="btn btn--ghost btn--sm" type="button" data-us="' + u.id + '">' + (u.ativo ? "Inativar" : "Ativar") + '</button> <button class="btn btn--ghost btn--sm" type="button" data-us-senha="' + u.id + '">Definir senha</button>' : '<span class="small muted">você</span>') + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+      '<form class="box form-grid form-grid--3" id="us-f" style="margin-top:16px"><h3 class="span-all">Novo usuário</h3>' + FC.fld("Nome", '<input class="inp" id="us-n">') + FC.fld("E-mail", '<input class="inp" id="us-e">') + FC.fld("Senha inicial", '<input class="inp" id="us-s" type="password" autocomplete="new-password">', "Mínimo " + (FC.cfg().senhaMin || 8) + " caracteres. Fica guardada só como hash.") + FC.fld("Perfil", '<select class="sel" id="us-p">' + Object.keys(FC.PERFIS).map(function (k) { return '<option value="' + k + '">' + FC.PERFIS[k] + "</option>"; }).join("") + "</select>") +
       '<fieldset class="fld span-all"><legend>Lojas do escopo</legend><div class="row"><label class="chk"><input type="checkbox" id="us-todas"> Todas</label>' + FC.db.lojas.map(function (l) { return '<label class="chk"><input type="checkbox" class="us-l" value="' + l.id + '"> ' + l.id + "</label>"; }).join("") + '</div></fieldset><div class="span-all"><button class="btn btn--primary" type="submit">Criar usuário</button><p class="small muted" style="margin-top:8px">No produto real, o usuário define a própria senha por convite; senhas não são exibidas nem registradas.</p></div></form>';
+    main.addEventListener("click", function (e) {
+      var bs = e.target.closest("[data-us-senha]"); if (!bs) return;
+      var alvo = FC.db.usuarios.filter(function (x) { return x.id === bs.dataset.usSenha; })[0];
+      var m = FC.modal("Definir senha · " + alvo.nome, '<form id="us-sf" novalidate>' + FC.fld("Nova senha", '<input class="inp" id="us-sn" type="password" autocomplete="new-password">', "Mínimo " + (FC.cfg().senhaMin || 8) + " caracteres.") + '<p class="small muted" id="us-se" role="alert"></p><button class="btn btn--primary" type="submit" style="margin-top:12px">Salvar senha</button></form>');
+      var f = (m && m.querySelector ? m : document).querySelector("#us-sf");
+      f.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        var res = FC.definirSenhaAdmin(alvo.id, f.querySelector("#us-sn").value);
+        if (res.erro) { f.querySelector("#us-se").textContent = res.erro; return; }
+        $("#modal").hidden = true; FC.toast("Senha de " + alvo.nome + " definida.", "ok");
+      });
+    });
     main.addEventListener("click", function (e) { var b = e.target.closest("[data-us]"); if (!b) return; var u = FC.db.usuarios.filter(function (x) { return x.id === b.dataset.us; })[0]; u.ativo = !u.ativo; FC.audit(u.ativo ? "Usuário ativado" : "Usuário inativado", u.id, "", "ok"); FC.save(); FC.render(); });
     $("#us-f", main).addEventListener("submit", function (e) {
       e.preventDefault();
@@ -510,7 +522,9 @@
       if (!$("#us-n", main).value.trim() || !FC.emailValido(em) || FC.db.usuarios.some(function (u) { return u.email === em; })) { FC.toast("Nome e e-mail válido (não repetido) são obrigatórios.", "bad"); return; }
       var lojas = $("#us-todas", main).checked ? ["*"] : $$(".us-l:checked", main).map(function (x) { return x.value; });
       if (!lojas.length) { FC.toast("Escolha ao menos uma loja.", "bad"); return; }
-      var u = { id: FC.uid("U"), nome: $("#us-n", main).value.trim(), email: em, perfil: $("#us-p", main).value, lojas: lojas, ativo: true };
+      var senha = $("#us-s", main).value;
+      if (senha.length < (FC.cfg().senhaMin || 8)) { FC.toast("Defina uma senha inicial com no mínimo " + (FC.cfg().senhaMin || 8) + " caracteres.", "bad"); return; }
+      var u = { id: FC.uid("U"), nome: $("#us-n", main).value.trim(), email: em, perfil: $("#us-p", main).value, lojas: lojas, ativo: true, senhaHash: FC.hash(senha) };
       FC.db.usuarios.push(u); FC.audit("Usuário criado", u.id, FC.PERFIS[u.perfil], "ok"); FC.save(); FC.render();
     });
   };

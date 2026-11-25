@@ -194,6 +194,18 @@ FC.buildSeed = function () {
     { id: "C3", nome: "Carla Mendes", email: "carla@exemplo.com", senhaHash: hash("Senha@123"), docTipo: "CPF", doc: "390.533.447-05", nascimento: "1978-01-22", telefone: "(31) 96666-3333", cnh: { numero: "00000000003", categoria: "AB", validade: iso(day(400)), restricoes: ["Exige câmbio automático"], status: "conferida", analisadoPor: "Atendente (demo)", analisadoEm: iso(day(-20)), metodo: "Conferência manual de imagem — não é verificação oficial" }, marketing: false, newsletter: false, bloqueado: null, criadoEm: iso(day(-200)) },
     { id: "C4", nome: "John Miller", email: "john@exemplo.com", senhaHash: hash("Senha@123"), docTipo: "Passaporte", doc: "XK123456", nascimento: "1982-06-05", telefone: "+1 555 0100", cnh: { numero: "INT-0004", categoria: "B", validade: iso(day(200)), restricoes: [], status: "pendente", analisadoPor: null, analisadoEm: null, metodo: null }, marketing: false, newsletter: false, bloqueado: null, criadoEm: iso(day(-15)) }
   ];
+  // Clientes do histórico (sem login): as locações antigas ficam com eles, não com as contas de demonstração C1–C4
+  var NOMES = ["Mariana Costa", "Rafael Lima", "Juliana Rocha", "Pedro Alves", "Fernanda Dias", "Lucas Martins", "Camila Ribeiro", "Gustavo Pereira",
+    "Beatriz Gomes", "Thiago Barbosa", "Larissa Freitas", "Diego Cardoso", "Patrícia Nunes", "André Teixeira", "Aline Moreira", "Rodrigo Castro",
+    "Vanessa Lopes", "Felipe Araújo", "Natália Pinto", "Eduardo Souza", "Gabriela Cunha", "Marcelo Ramos", "Isabela Duarte", "Ricardo Melo"];
+  NOMES.forEach(function (n, i) {
+    var base = JSON.parse(JSON.stringify(clientes[0]));
+    base.id = "CH" + (i + 1); base.nome = n; base.email = n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ /g, ".") + "@exemplo.com";
+    base.senhaHash = null; base.doc = "000.000." + String(100 + i).padStart(3, "0") + "-00"; base.telefone = "(11) 90000-" + String(1000 + i);
+    base.criadoEm = iso(day(-200 - i));
+    clientes.push(base);
+  });
+  var historicoIds = NOMES.map(function (_, i) { return "CH" + (i + 1); });
 
   var usuarios = [
     // senha de demonstração combinada com a equipe; aqui só o hash (RNF36)
@@ -216,14 +228,16 @@ FC.buildSeed = function () {
   var cursor = day(-178 - Math.floor(rnd() * 5), 9);
   while (true) {
     cursor = addH(cursor, (Math.floor(rnd() * 3)) * 24 + 12);
-    var dur = 2 + Math.floor(rnd() * 20);
+    var dur = 3 + Math.floor(rnd() * 22);
     var ini = addH(cursor, Math.floor(rnd() * 8)), fim = addH(ini, dur * 24);
     if (ini > now) break;
     var atual = fim > now;
+    // locação em andamento termina em até 5 dias: a semana seguinte fica com disponibilidade para o site
+    if (atual) { var ate = addH(now, 24 + Math.floor(rnd() * 96)); if (fim > ate) { fim = ate; dur = Math.max(1, Math.round((fim - ini) / 864e5)); } }
     if (atual && rnd() > 0.82) break; // ~20% da frota fica no pátio
     cursor = fim;
     var diaria = tarifas[0].diarias[v.grupo];
-    var cli = pick(["C1", "C2", "C3", "C4", "C1"]);
+    var cli = pick(historicoIds);
     var motorista = rnd() < 0.12;
     var total = diaria * dur + (motorista ? config.motoristaDiaria * dur : 0) + (rnd() < 0.5 ? 39 * dur : 0);
     var r = {
@@ -231,15 +245,14 @@ FC.buildSeed = function () {
       lojaRetirada: v.lojaResponsavel, lojaDevolucao: v.lojaResponsavel, inicio: iso(ini), fim: iso(fim),
       estado: atual ? "em_andamento" : "encerrada", pagamento: "aprovado", metodo: pick(["credito", "credito", "pix", "debito"]), parcelas: 1,
       preco: { total: Math.round(total), itens: [{ rotulo: "Locação", valor: diaria * dur }] }, tarifaVersao: 1, configVersao: 1,
-      motorista: motorista ? "D1" : null, condutores: [], protecoes: [], acessorios: [], km: "LIVRE",
-      criadoEm: iso(addH(ini, -72)), eventos: [{ data: iso(addH(ini, -72)), autor: "sistema", evento: "Reserva confirmada (histórico de demonstração)" }],
-      retirada: { operador: "Operador de frota (demo)", data: iso(ini), km: 10000, combustivel: "Cheio", vistoria: "Sem avarias", aceite: true },
-      devolucao: atual ? null : { operador: "Operador de frota (demo)", data: iso(fim), km: 10000 + dur * 180, combustivel: "Cheio", vistoria: "Sem avarias", aceite: true },
-      despesas: [], infracoes: [], sinistros: [], avaliacao: !atual && rnd() < 0.5 ? { nota: 3 + Math.floor(rnd() * 3), comentario: "", data: iso(fim) } : null
+      motorista: motorista ? "D1" : null, km: "LIVRE", criadoEm: iso(addH(ini, -72))
     };
+    if (atual) {
+      r.eventos = [{ data: iso(addH(ini, -72)), autor: "sistema", evento: "Reserva confirmada (histórico de demonstração)" }];
+      r.retirada = { operador: "Operador de frota (demo)", data: iso(ini), km: 10000, combustivel: "Cheio", vistoria: "Sem avarias", aceite: true };
+    } else if (rnd() < 0.5) r.avaliacao = { nota: 3 + Math.floor(rnd() * 3), comentario: "", data: iso(fim) };
     reservas.push(r);
-    agenda.push({ id: "AG" + reservas.length, veiculoId: v.id, inicio: r.inicio, fim: r.fim, tipo: "locacao", ref: r.codigo });
-    if (atual) break;
+    if (atual) { agenda.push({ id: "AG" + reservas.length, veiculoId: v.id, inicio: r.inicio, fim: r.fim, tipo: "locacao", ref: r.codigo }); break; } // agenda só do que ainda ocupa o veículo
   }
   });
 
@@ -283,7 +296,7 @@ FC.buildSeed = function () {
     var mes = dm.getFullYear() + "-" + String(dm.getMonth() + 1).padStart(2, "0");
     lojas.filter(function (l) { return l.ativa; }).forEach(function (l) {
       var frotaLoja = veiculos.filter(function (v) { return v.lojaResponsavel === l.id; }).length;
-      var base = frotaLoja * (3900 + rnd() * 400) * (1 + (5 - mo) * 0.015); // custo mensal por veículo, subindo levemente
+      var base = frotaLoja * (3050 + rnd() * 300) * (1 + (5 - mo) * 0.015); // custo mensal por veículo, subindo levemente
       Object.keys(PESO).forEach(function (cat) {
         despesas.push({ id: "D-" + mes + "-" + l.id + "-" + cat, mes: mes, loja: l.id, categoria: cat, valor: Math.round(base * PESO[cat] * (0.9 + rnd() * 0.2)) });
       });
@@ -292,12 +305,12 @@ FC.buildSeed = function () {
 
   // Cobranças (planos semanais e despesas a receber): algumas vencem hoje, duas estão atrasadas
   var cobrancas = [
-    { id: "COB-1", clienteId: "C1", reservaCodigo: null, descricao: "Plano motorista de app · 2ª semana", valor: 640, vencimento: iso(day(0, 9)), pagoEm: iso(day(0, 9, 12)), metodo: "pix" },
-    { id: "COB-2", clienteId: "C2", reservaCodigo: null, descricao: "Plano motorista de app · 3ª semana", valor: 420, vencimento: iso(day(0, 12)), pagoEm: null, metodo: "credito" },
-    { id: "COB-3", clienteId: "C3", reservaCodigo: null, descricao: "Plano mensal · 2ª semana", valor: 2220, vencimento: iso(day(0, 18)), pagoEm: null, metodo: "pix" },
-    { id: "COB-4", clienteId: "C4", reservaCodigo: null, descricao: "Plano motorista de app · 4ª semana", valor: 780, vencimento: iso(day(-2, 9)), pagoEm: null, metodo: "pix" },
-    { id: "COB-5", clienteId: "C2", reservaCodigo: null, descricao: "Despesa adicional · combustível", valor: 370, vencimento: iso(day(-1, 9)), pagoEm: null, metodo: "pix" },
-    { id: "COB-6", clienteId: "C1", reservaCodigo: null, descricao: "Plano motorista de app · 1ª semana", valor: 640, vencimento: iso(day(-7, 9)), pagoEm: iso(day(-7, 9, 30)), metodo: "pix" }
+    { id: "COB-1", loja: "SPPAU", clienteId: "C1", reservaCodigo: null, descricao: "Plano motorista de app · 2ª semana", valor: 640, vencimento: iso(day(0, 9)), pagoEm: iso(day(0, 9, 12)), metodo: "pix" },
+    { id: "COB-2", loja: "GIG", clienteId: "C2", reservaCodigo: null, descricao: "Plano motorista de app · 3ª semana", valor: 420, vencimento: iso(day(0, 12)), pagoEm: null, metodo: "credito" },
+    { id: "COB-3", loja: "CNF", clienteId: "C3", reservaCodigo: null, descricao: "Plano mensal · 2ª semana", valor: 2220, vencimento: iso(day(0, 18)), pagoEm: null, metodo: "pix" },
+    { id: "COB-4", loja: "POA", clienteId: "C4", reservaCodigo: null, descricao: "Plano motorista de app · 4ª semana", valor: 780, vencimento: iso(day(-2, 9)), pagoEm: null, metodo: "pix" },
+    { id: "COB-5", loja: "GIG", clienteId: "C2", reservaCodigo: null, descricao: "Despesa adicional · combustível", valor: 370, vencimento: iso(day(-1, 9)), pagoEm: null, metodo: "pix" },
+    { id: "COB-6", loja: "SPPAU", clienteId: "C1", reservaCodigo: null, descricao: "Plano motorista de app · 1ª semana", valor: 640, vencimento: iso(day(-7, 9)), pagoEm: iso(day(-7, 9, 30)), metodo: "pix" }
   ];
 
   // Um veículo voltou e espera vistoria antes de ser liberado

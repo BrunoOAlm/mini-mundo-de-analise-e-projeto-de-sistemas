@@ -1,7 +1,9 @@
 /* Falls Car — painel do empresário e login da área da empresa: fibra de carbono e cartões de vidro.
    Só vale dentro de .pnl; o resto da área da empresa mantém o visual de app.css. */
-.pnl {
+.pnl, body.is-admin {
   --pnl-y: #FFC21A; --pnl-r: #ff6b5b; --pnl-g: #4ade80; --pnl-m: #8f8a80;
+}
+.pnl {
   position: relative; isolation: isolate; color: #fff; border-radius: 20px; overflow: clip; font-size: 14px; line-height: 1.4;
   background:
     radial-gradient(90% 60% at 85% 0%, rgba(255,194,26,.13), rgba(255,194,26,0) 60%),
@@ -100,3 +102,48 @@
   .pnl-sec { padding: 22px 14px; } .pnl-nav { padding: 10px 14px; }
   .pnl-hb { grid-template-columns: 92px 1fr 64px; }
 }
+
+/* ===== Área da empresa inteira em carbono: cabeçalho, barra lateral e conteúdo num bloco só ===== */
+body.is-admin {
+  color-scheme: dark;
+  background:
+    radial-gradient(70% 50% at 90% 0%, rgba(255,194,26,.10), rgba(255,194,26,0) 60%),
+    radial-gradient(120% 80% at 50% 120%, rgba(0,0,0,.85), rgba(0,0,0,0) 60%),
+    linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+    linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0,
+    linear-gradient(27deg, #222 5px, transparent 5px) 0 10px,
+    linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+    linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+    linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+  background-color: #131313;
+  background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
+  background-attachment: fixed;
+}
+body.is-admin .demo-bar { background: rgba(255,194,26,.08); color: rgba(255,255,255,.7); border-bottom: 1px solid rgba(255,255,255,.06); }
+body.is-admin .demo-bar a, body.is-admin .demo-bar summary { color: rgba(255,255,255,.85); }
+body.is-admin .header { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,.55); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,.07); }
+body.is-admin .admin { min-height: calc(100vh - 64px); }
+body.is-admin .admin__side { background: linear-gradient(180deg, rgba(20,20,20,.72), rgba(10,10,10,.78)); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-right: 1px solid rgba(255,255,255,.07); }
+body.is-admin .admin__side a.is-active { background: rgba(255,194,26,.14); color: #FFC21A; box-shadow: inset 3px 0 0 #FFC21A; }
+body.is-admin .admin__side a:hover { background: rgba(255,255,255,.06); }
+body.is-admin .admin__user { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07); }
+body.is-admin .admin__main { background: transparent; }
+/* painel e login encaixam direto no fundo, sem caixa própria */
+body.is-admin .pnl { background: transparent; border-radius: 0; overflow: visible; }
+body.is-admin .admin__main:has(> .pnl) { padding: 0; }
+body.is-admin .pnl-nav { top: 64px; }
+/* módulos ainda em tema claro: cartão claro dentro do carbono, para o texto continuar legível */
+body.is-admin .admin__main:not(:has(> .pnl)) { margin: 20px; padding: 24px 28px 48px; border-radius: 20px; background: var(--c-canvas); color-scheme: light; box-shadow: 0 30px 60px -30px rgba(0,0,0,.8); }
+@media (max-width: 900px) { body.is-admin .admin__main:not(:has(> .pnl)) { margin: 12px; padding: 16px; } body.is-admin .pnl-nav { top: 0; } }
+/* menu de seções dentro da barra de cima */
+body.is-admin .header .pnl-nav { position: static; flex: 1; justify-content: flex-start; min-width: 0; margin-left: 32px; padding: 0; background: none; border: 0; -webkit-backdrop-filter: none; backdrop-filter: none; }
+body.is-admin .header .pnl-nav button { color: rgba(255,255,255,.75); }
+body.is-admin .header .pnl-nav button.is-on { color: #111; }
+body.is-admin .header .pnl-nav :focus-visible { outline: 2px solid #FFC21A; outline-offset: 2px; }
+body.is-admin .pnl-sec { scroll-margin-top: 80px; }
+@media (max-width: 760px) { body.is-admin .header .pnl-nav { order: 3; flex-basis: 100%; margin: 6px 0 0; } }
+/* controles de demonstração no fim da barra lateral (antes ficavam na faixa do topo) */
+body.is-admin .admin__demo { display: grid; gap: 8px; margin: 24px 4px 0; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.08); font-size: 12px; color: rgba(255,255,255,.6); }
+body.is-admin .admin__demo .btn--link { justify-self: start; padding: 0; color: rgba(255,255,255,.6); font-size: 12px; }
+body.is-admin .admin__demo .btn--link:hover { color: #FFC21A; }
+body.is-admin .admin { min-height: 100vh; }

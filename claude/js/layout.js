@@ -72,15 +72,7 @@
   };
 
   /* ---------- Layout ---------- */
-  function demoBar() {
-    return '<div class="demo-bar" role="note"><div class="container">' +
-      "<span>Protótipo acadêmico" + rf("RNF05", "RNF36") +
-      (FC.storageOk ? "" : " · <strong>armazenamento bloqueado: dados só nesta sessão</strong>") + "</span>" +
-      '<details class="demo-menu"><summary>Demo</summary><div class="demo-menu__panel">' +
-      '<label class="switch"><input type="checkbox" id="toggle-rf"' + (document.body.classList.contains("show-rf") ? " checked" : "") + "> Mostrar requisitos (RF/RNF)</label>" +
-      '<button type="button" class="btn btn--link" id="reset-db">Restaurar base de demonstração</button>' +
-      '<a class="link" href="#/admin">Área da empresa</a></div></details></div></div>';
-  }
+
   var PRODUTOS = [["#/", "Aluguel de carros"], ["#/frota?grupo=MOT1", "Motos"], ["#/produto/app", "Para motoristas de app"]];
 var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="22" fill="#fff"/><g fill="#b22234"><rect y="0" width="22" height="1.7"/><rect y="3.4" width="22" height="1.7"/><rect y="6.8" width="22" height="1.7"/><rect y="10.2" width="22" height="1.7"/><rect y="13.6" width="22" height="1.7"/><rect y="17" width="22" height="1.7"/><rect y="20.4" width="22" height="1.6"/></g><rect width="10" height="11.9" fill="#3c3b6e"/><g fill="#fff"><circle cx="2.5" cy="2.5" r=".7"/><circle cx="5" cy="2.5" r=".7"/><circle cx="7.5" cy="2.5" r=".7"/><circle cx="3.75" cy="5" r=".7"/><circle cx="6.25" cy="5" r=".7"/><circle cx="2.5" cy="7.5" r=".7"/><circle cx="5" cy="7.5" r=".7"/><circle cx="7.5" cy="7.5" r=".7"/><circle cx="3.75" cy="10" r=".7"/><circle cx="6.25" cy="10" r=".7"/></g></svg>';
   var BR = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="22" fill="#009c3b"/><path d="M11 3.5 19.5 11 11 18.5 2.5 11z" fill="#ffdf00"/><circle cx="11" cy="11" r="4.2" fill="#002776"/></svg>';
@@ -189,7 +181,7 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     document.body.classList.toggle("is-admin", admin); FC.chatInit();
     var home = !admin && fn === FC.routes.inicio;
     document.body.classList.toggle("is-home", home);
-    app.innerHTML = (admin ? demoBar() : "") + (home ? "" : admin ? header(activeTab, admin) : FC.siteNav(activeTab)) + '<main id="view" tabindex="-1"></main>' + (admin ? "" : footer());
+    app.innerHTML = (home ? "" : admin ? header(activeTab, admin) : FC.siteNav(activeTab)) + '<main id="view" tabindex="-1"></main>' + (admin ? "" : footer());
     fn($("#view"), r);
     bindLayout();
     FC.motion.depois(admin);
@@ -197,10 +189,6 @@ var US = '<svg viewBox="0 0 22 22" aria-hidden="true"><rect width="22" height="2
     FC._firstRender = false;
   };
   FC._firstRender = true;
-  document.addEventListener("click", function (e) {
-    var m = document.querySelector(".demo-menu[open]");
-    if (m && !m.contains(e.target)) m.open = false;
-  });
 
   function bindLayout() {
     $$("[data-lang]").forEach(function (b) { b.addEventListener("click", function () { FC.i18n.set(b.dataset.lang); }); });

@@ -42,3 +42,16 @@ test("usuário inativo recebe o erro de credenciais", () => {
   FC.db.usuarios.find((u) => u.email === "cadu@fallscar.com.br").ativo = false;
   assert.equal(FC.loginAdmin("cadu@fallscar.com.br", "senha-de-teste-1").erro, ERRO);
 });
+
+test("revisão: gestor define a senha de um usuário interno e ele passa a entrar", () => {
+  const FC = novo();
+  FC.db.usuarios.push({ id: "U9", nome: "Nova Pessoa", email: "nova@fallscar.com.br", perfil: "atendente", lojas: ["SPPAU"], ativo: true });
+  assert.equal(FC.loginAdmin("nova@fallscar.com.br", "outra-senha-9").erro, ERRO);
+  assert.equal(FC.definirSenhaAdmin("U9", "outra-senha-9").ok, true);
+  assert.equal(FC.loginAdmin("nova@fallscar.com.br", "outra-senha-9").usuario.id, "U9");
+});
+
+test("revisão: senha curta é recusada", () => {
+  const FC = novo();
+  assert.match(FC.definirSenhaAdmin("U1", "123").erro, /mínimo/);
+});

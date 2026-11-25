@@ -57,7 +57,7 @@
     }).sort(function (a, b) { return b.ocupacao - a.ocupacao; });
 
     /* ---------- Hoje ---------- */
-    var hoje0 = inicioDia(t), cobr = db.cobrancas || [];
+    var hoje0 = inicioDia(t), cobr = (db.cobrancas || []).filter(function (c) { return noEscopo(c.loja); });
     var deHoje = cobr.filter(function (c) { return mesmoDia(c.vencimento, t); });
     var atrasados = cobr.filter(function (c) { return !c.pagoEm && inicioDia(c.vencimento) < hoje0; })
       .map(function (c) { return { cobranca: c, dias: Math.round((hoje0 - inicioDia(c.vencimento)) / DIA) }; })
