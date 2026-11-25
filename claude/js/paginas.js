@@ -146,12 +146,6 @@
   });
 
   /* ---------- Motoristas de app: planos semanais ---------- */
-  FC.PLANOS_APP = [
-    { id: "APP1", nome: "Rota Básica", nivel: "Básica", grupos: ["ECO", "COM"], semana: 590 },
-    { id: "APP2", nome: "Rota Conforto", nivel: "Conforto", grupos: ["SED"], semana: 760 },
-    { id: "APP3", nome: "Rota Premium", nivel: "Premium", grupos: ["SEDM", "SUVG"], semana: 990 }
-  ];
-  FC.planoApp = function (id) { return FC.PLANOS_APP.filter(function (p) { return p.id === id; })[0] || null; };
   FC.planoAppCard = function (p, comBotao) {
     var vs = FC.db.veiculos.filter(function (v) { return v.ativo && p.grupos.indexOf(v.grupo) >= 0; });
     var foto = vs.filter(function (v) { return v.foto; })[0] || vs[0];
