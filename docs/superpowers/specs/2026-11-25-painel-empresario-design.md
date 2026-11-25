@@ -105,7 +105,9 @@ carbono.
   usado para clientes; informada à equipe fora do código e trocável pela tela de usuários internos. Limite de
   tentativas e bloqueio reaproveitam `loginMaxTentativas` e `loginBloqueioMin` da configuração.
 - **Gráficos** feitos com HTML/CSS (colunas e barras), sem biblioteca, seguindo o esboço.
-- **Base salva antiga**: quem já tem `fallscar-demo` no navegador recebe os novos usuários e despesas por migração
+- **Base salva antiga**: sobe `FC.SEED_VERSION` para 5; o `loadDB` existente recria a base de demonstração quando a
+  versão muda (padrão do projeto). Quem tinha dados de teste no navegador volta à base inicial.
+- **Aguardando vistoria**: campo novo `aguardandoVistoria` no veículo, semeado em 1 veículo disponível.
   (mesmo padrão de `clubMigrado` em `FC.render`), sem apagar o que existe.
 
 ## Para o builder decidir
