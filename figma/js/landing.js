@@ -222,6 +222,28 @@
       '<div class="app-prev__stores"><button type="button" data-loja-app="App Store"><img src="img/app-store.png" alt="Baixar na App Store" width="164" height="55"></button>' +
       '<button type="button" data-loja-app="Google Play"><img src="img/google-play.png" alt="Disponível no Google Play" width="164" height="55"></button></div></div>' + appPhoneHtml() + '</div></div></div></section><div class="container">';
   };
+  // "Cha-ching" de caixa registradora gerado com Web Audio (sem arquivo). Precisa ser criado dentro de um clique.
+  function somDinheiro(atraso) {
+    var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    var ctx = new AC(), t0 = ctx.currentTime + (atraso || 0), saida = ctx.createGain();
+    saida.gain.value = 0.55; saida.connect(ctx.destination);
+    function tom(freq, ini, dur, vol, tipo) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = tipo || "sine"; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, ini); g.gain.exponentialRampToValueAtTime(vol, ini + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, ini + dur);
+      o.connect(g); g.connect(saida); o.start(ini); o.stop(ini + dur + 0.05);
+    }
+    function clique(ini) { // "ka": estalo mecânico da gaveta
+      var n = Math.floor(ctx.sampleRate * 0.06), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
+      for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
+      var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      f.type = "bandpass"; f.frequency.value = 1800; g.gain.value = 0.9; s.buffer = b; s.connect(f); f.connect(g); g.connect(saida); s.start(ini);
+    }
+    clique(t0);
+    [[2093, 0.06], [2637, 0.06], [3136, 0.07], [4186, 0.08]].forEach(function (p, i) { tom(p[0], t0 + p[1] + i * 0.004, 1.1 - i * 0.15, 0.22 - i * 0.03, i ? "sine" : "triangle"); }); // "ching": sino
+    for (var k = 0; k < 7; k++) tom(3200 + Math.random() * 2200, t0 + 0.32 + k * 0.045 + Math.random() * 0.02, 0.12, 0.06); // moedas
+    setTimeout(function () { ctx.close(); }, (atraso || 0) * 1000 + 2000);
+  }
   function bindAppPreview(root) {
     var ph = $(".fa-phone", root); if (!ph) return;
     var $$ = FC.$$, pts = APP_PTS0, conq = {}, raf = 0;
@@ -269,6 +291,7 @@
       if ("zoomFechar" in el.dataset) { var zz = $("[data-zoom]", ph); zz.classList.remove("is-on"); setTimeout(function () { zz.hidden = true; }, 250); $("[data-perfil]", ph).focus(); return; }
       if ("pagar" in el.dataset) {
         var pay = $(".fa-pay", ph); pay.dataset.pay = "wait";
+        somDinheiro(1.4); // agendado junto com a tela de Pix concluído
         setTimeout(function () { pay.dataset.pay = "ok"; }, 1400);
         setTimeout(function () { pay.classList.add("is-saindo"); }, 3200);
         setTimeout(function () { pay.hidden = true; ir("inicio"); toast("<b>" + icon("check", 14) + "</b><span>Reserva confirmada. Boa viagem!</span>"); }, 3650);
