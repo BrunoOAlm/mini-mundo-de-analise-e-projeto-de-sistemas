@@ -13,12 +13,13 @@
     var lang = FC.i18n ? FC.i18n.lang() : "pt";
     var id = light ? "vnav-menu-l" : "vnav-menu";
     var cur = function (h) { return active && active !== "#/" && h.indexOf(active) === 0 ? ' aria-current="page"' : ""; };
-    var menu = FC.NAV_LINKS.concat([[c ? "#/conta" : "#/consultar", "Minhas reservas"], ["#/produto/app", "Motoristas de app"]]);
+    var menu = FC.NAV_LINKS.concat([[c ? "#/conta" : "#/consultar", "Minhas reservas"], ["#/produto/app", "Motoristas de app"], ["#/admin", "Área da empresa"]]);
     return '<div class="glass-wrap vnav-wrap' + (light ? " vnav-wrap--light" : "") + '"><div class="glass-halo" aria-hidden="true"></div><header class="glass vnav">' +
       '<a class="vnav__logo" href="#/" aria-label="Falls Car — página inicial"><svg viewBox="0 0 1362 375" aria-hidden="true"><use href="#i-logo"/></svg><span>Falls<b class="logo-car">Car</b></span></a>' +
       '<nav class="vnav__links" aria-label="Seções do site">' + FC.NAV_LINKS.map(function (l) { return '<a href="' + l[0] + '"' + cur(l[0]) + ">" + l[1] + "</a>"; }).join("") + "</nav>" +
       '<div class="vnav__end">' +
       '<details class="vnav__lang"><summary aria-label="Idioma">' + GLOBO + '<span class="vs-lang-txt" data-notr>' + lang.toUpperCase() + '</span></summary><div class="glass vnav__lang-panel">' + (FC.langBtns ? FC.langBtns() : "") + "</div></details>" +
+      '<a class="vnav__mine vnav__emp" href="#/admin" title="Área da empresa (acesso da equipe)">' + FC.icon("lock", 15) + "<span>Empresa</span></a>" +
       '<a class="vnav__mine" href="' + (c ? "#/conta" : "#/consultar") + '">Minhas reservas</a>' +
       '<a class="vnav__cta" href="#/conta">' + (c ? esc(c.nome.split(" ")[0]) : "Entrar") + "</a>" +
       '<button type="button" class="vnav__burger" aria-expanded="false" aria-controls="' + id + '" aria-label="Abrir menu">' + BURGER + "</button>" +

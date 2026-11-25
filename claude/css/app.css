@@ -1298,3 +1298,9 @@ body:not(.is-admin) .group-card:hover img { transform: translateX(4px) scale(1.0
 /* Logo Falls Car: faixa amarela fixa, faixa de baixo na cor do texto */
 .vnav__logo svg, .ft-logo svg, .logo__mark { width: 80px; height: 22px; flex-shrink: 0; color: inherit; }
 .logo-car { color: var(--c-accent); font-weight: inherit; }
+
+/* acesso à área da empresa na barra do site */
+.vnav__emp { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; font-size: 14px; }
+.vnav__emp:hover { border-color: #FFC21A; color: #FFC21A; text-decoration: none; }
+.vnav__emp svg { fill: currentColor; }
+.vnav-wrap--light .vnav__emp { border-color: rgba(17,17,17,.18); }
