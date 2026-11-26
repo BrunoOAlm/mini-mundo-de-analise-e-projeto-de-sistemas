@@ -7,8 +7,8 @@ compatibility_date = "2026-11-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "fallscar"
-# id do banco remoto: preenchido ao criar o banco (wrangler d1 create fallscar); em desenvolvimento local não é usado
-database_id = "00000000-0000-0000-0000-000000000000"
+# id do banco remoto (criado com wrangler d1 create fallscar); em desenvolvimento local não é usado
+database_id = "0a0ead8c-41f7-4075-9ffc-67d4bc990615"
 migrations_dir = "server/migracoes"
 
 [vars]
